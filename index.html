@@ -82,7 +82,8 @@
         ];
         function no(){
             const yesButton = document.querySelector(".yes"); 
-
+            
+            document.querySelector(".no").style.background-color = "transparent";
             const buttonWidth = yesButton.offsetWidth; // make button center
             const halfViewportWidth = window.innerWidth / 2;
             yesButton.style.left = "50%";
@@ -124,7 +125,7 @@
             document.querySelector("h1").textContent = "เราเป็นแฟนกันแล้วนะ💞";
             document.querySelector("p").textContent = "ขอสัญญาว่าจะรัก ดูแลและมีแค่เธอคนเดียวตลอดไปนะคะคุณแฟน"; // change text
 
-            document.getElementById("im").src = "https://i.pinimg.com/originals/c0/be/cc/c0becc3b682d092c7394080862fd47f9.gif"
+            
             // Change background color
             //body.style.backgroundColor = "#ff6dac";
             
