@@ -7,7 +7,9 @@
                 z-index: 100;
                 padding: 10 15 10 15;
                 border-radius: 15px;
-                
+                text-align: center;
+                width: auto;
+                height: auto;
             }
             .no {
                 top: 410;
@@ -87,8 +89,6 @@
             yesButton.style.transform = `translateX(-${buttonWidth / 2}px)`;
             
             // Center the text within the button
-            yesButton.style.textAlign = "center";
-            yesButton.style.lineHeight = `${yesButton / 2 - 12.5}px`;
 
             // make text button get bigger
             const currentFontSize = parseInt(window.getComputedStyle(yesButton).fontSize);
@@ -99,10 +99,6 @@
             // make button get bigger
             const currentWidth = parseInt(yesButton.style.width) || 50; // Get the current width of the button
             const currentHeight = parseInt(yesButton.style.height) || 35; // Get the current height of the button
-            
-
-            yesButton.style.width = (currentWidth + 2) + "px"; // Increase the width of the "Yes" button by 2 pixels
-            yesButton.style.height = (currentHeight + 2) + "px"; // Increase the height of the "Yes" button by 2 pixels
 
     
             document.getElementById("but").style.setProperty("top", Math.floor(Math.random() * 90)+"vh");
