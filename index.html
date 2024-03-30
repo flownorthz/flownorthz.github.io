@@ -17,7 +17,7 @@
   }
   
   .big-text {
-    font-size: 4rem; 
+    font-size: 2.5rem; 
     color: white; 
     text-align: center; 
     margin-bottom: 20px;
@@ -25,7 +25,7 @@
 
   .btn {
     padding: 10px 20px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     background-color: white;
     border: none;
     border-radius: 5px;
@@ -36,7 +36,7 @@
     font-family: 'IrisUPC'; /* Specify the Thai font */
     background-color: rgb(48, 181, 48);
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,15 +44,24 @@
   }
 
   .falling-question-marks {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
+    display: none; /* Hide falling question marks on mobile */
   }
   
+  @media only screen and (min-width: 600px) {
+    .big-text {
+      font-size: 4rem;
+    }
+    .btn {
+      font-size: 1.5rem;
+    }
+    .text-explain {
+      font-size: 2rem;
+    }
+    .falling-question-marks {
+      display: block; /* Show falling question marks on larger screens */
+    }
+  }
+
   .falling-question-mark {
     position: absolute;
     color: #000000;
@@ -84,27 +93,22 @@
   <div class="falling-question-mark" style="left: 70%; animation-duration: 2.5s;">?</div>
   <div class="falling-question-mark" style="left: 90%; animation-duration: 3.5s;">?</div>
 </div>
-</body>
-</html>
 
-</style>
-</head>
-<body>
-  <div class="big-text" id="randomWord">คำถามที่ตัดสินใจไม่ได้ลองให้เราช่วยตัดสินใจดูสิ</div>
-  <div class="text-explain">เพียงตั้งคำถามที่คุณตัดสินใจไม่ได้แล้วกดที่ปุ่ม ทางเราจะช่วยให้คำตอบคุณเอง</div>
-  <button class="btn" onclick="generateRandomWord()">กดสิ!</button>
+<div class="big-text" id="randomWord">คำถามที่ตัดสินใจไม่ได้ลองให้เราช่วยตัดสินใจดูสิ</div>
+<div class="text-explain">เพียงตั้งคำถามที่คุณตัดสินใจไม่ได้แล้วกดที่ปุ่ม ทางเราจะช่วยให้คำตอบคุณเอง</div>
+<button class="btn" onclick="generateRandomWord()">กดสิ!</button>
 
 
-  <script>
-    function generateRandomWord() {
-      var words = ["ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", 
-      "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย","จัด","เฉยๆว่ะ","คิดอีกทีดิ้","จางๆว่ะ","คิดใหม่ๆ","หาตัวเลือกมาดิ้","กดอีกรอบ","กดอีก!","แย่มากไม่ดี","ไม่เอาๆ"
-      ,"ไม่ผ่าน","เป็นความคิดที่ห่วย","ไม่น่าทำจัดหาใหม่","แอ๊ดๆ","โนเว เลิกคิดเดี๋ยวนี้","Error","ถามงี้ ไปนอนแทนเถอะ","น้ำขึ้นให้รีบตัก","ดูหนังน่าสนุกนะ"
-      ,"นั่นสิ ทำดีมั้ย?","หนีห่าว","ก็น่าสนใจดีนะ","เลือกเองเลย","ตอบไม่ได้ว่ะ","ไม่รู้เหมือนกัน","ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา","รักนะ","ลองดูยัง?ก่อนถาม"];
-      var randomIndex = Math.floor(Math.random() * words.length);
-      var randomWord = words[randomIndex];
-      document.getElementById("randomWord").textContent = randomWord;
-    }
-  </script>
+<script>
+  function generateRandomWord() {
+    var words = ["ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", 
+    "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย","จัด","เฉยๆว่ะ","คิดอีกทีดิ้","จางๆว่ะ","คิดใหม่ๆ","หาตัวเลือกมาดิ้","กดอีกรอบ","กดอีก!","แย่มากไม่ดี","ไม่เอาๆ"
+    ,"ไม่ผ่าน","เป็นความคิดที่ห่วย","ไม่น่าทำจัดหาใหม่","แอ๊ดๆ","โนเว เลิกคิดเดี๋ยวนี้","Error","ถามงี้ ไปนอนแทนเถอะ","น้ำขึ้นให้รีบตัก","ดูหนังน่าสนุกนะ"
+    ,"นั่นสิ ทำดีมั้ย?","หนีห่าว","ก็น่าสนใจดีนะ","เลือกเองเลย","ตอบไม่ได้ว่ะ","ไม่รู้เหมือนกัน","ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา","รักนะ","ลองดูยัง?ก่อนถาม"];
+    var randomIndex = Math.floor(Math.random() * words.length);
+    var randomWord = words[randomIndex];
+    document.getElementById("randomWord").textContent = randomWord;
+  }
+</script>
 </body>
 </html>
