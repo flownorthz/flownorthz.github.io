@@ -1,153 +1,110 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Will You Be My Valentine?</title>
-        <style>
-            .but {
-                position: absolute;
-                z-index: 100;
-                padding: 10 15 10 15;
-                border-radius: 15px;
-                text-align: center;
-                width: auto;
-                height: auto;
-            }
-            .no {
-                top: 410;
-                left: 52vw;
-                color: #fff;
-                background-color: #cb7373;
-                border: solid #d44545 2px;
-            }
-            .yes {
-                top: 410;
-                left: 45vw;
-                color: #ffffff;
-                background-color: #6dc966;
-                border: solid #228221 2px;
-            }
-            
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เพื่อนแท้</title>
+<style>
+  body {
+    font-family: 'IrisUPC'; /* Specify the Thai font */
+    background-color: rgb(48, 181, 48);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .big-text {
+    font-size: 4rem; 
+    color: white; 
+    text-align: center; 
+    margin-bottom: 20px;
+  }
 
-            body{
-                overflow: hidden;
-                background-color: #ffffff; /* black2d2d2d */
-            }
+  .btn {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    background-color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
-            .fa-heart {
-                color: transparent; /* Make the heart transparent */
-                font-size: 25px;
-                position: absolute;
-                animation:  heartMove linear 1;
-                top: -10vh;
-                z-index: 0;
-                /* Use gradient for two colors */
-                background: linear-gradient(45deg, #ff7b7b, #ff4885);
-                -webkit-background-clip: text;
-                background-clip: text;
-}
-            
+  .text-explain {
+    font-family: 'IrisUPC'; /* Specify the Thai font */
+    background-color: rgb(48, 181, 48);
+    margin: 0;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
-            @keyframes heartMove {
-                0%{
-                    transform: translateY(-10vh) ;
-                }
-                100%{
-                    transform: translateY(110vh) ;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <center>  
-            <img id="im" src="https://i.pinimg.com/originals/c0/be/cc/c0becc3b682d092c7394080862fd47f9.gif" alt="GIF" style="margin-top: 20px;">
-            <h1 style="color:black;margin-top:20px">เป็นแฟนกันมั้ย?</h1>
-            <p style="color:black;margin-top:10px">หากตกลงขอให้กดปุ่ม "Yes!" แล้วเราจะขอสัญญาว่าจะรัก ดูแลและมีแค่แกคนเดียวตลอดไป</p>
-            <input class="but no" id="but" type="button" value="No" onmouseover="no()" onclick="no()"/>
-            <input class="but yes" id="but" type="button" value="yes" onclick="yes()"/>
+  .falling-question-marks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  .falling-question-mark {
+    position: absolute;
+    color: #000000;
+    font-size: 80px;
+    animation: fall linear infinite;
+  }
+  
+  @keyframes fall {
+    0% {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 1;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="falling-question-marks">
+  <!-- Generate multiple question marks -->
+  <!-- Adjust the number according to your preference -->
+  <!-- You can also use JavaScript to dynamically generate these -->
+  <!-- for (let i = 0; i < numQuestionMarks; i++) {} -->
+  <div class="falling-question-mark" style="left: 10%; animation-duration: 2s;">?</div>
+  <div class="falling-question-mark" style="left: 30%; animation-duration: 4s;">?</div>
+  <div class="falling-question-mark" style="left: 50%; animation-duration: 3s;">?</div>
+  <div class="falling-question-mark" style="left: 70%; animation-duration: 2.5s;">?</div>
+  <div class="falling-question-mark" style="left: 90%; animation-duration: 3.5s;">?</div>
+</div>
+</body>
+</html>
 
-            <p style="color:black;margin-top:200px">Made By Overflow</p>
-
-        </center>
-        <script src="https://kit.fontawesome.com/4f3ce16e3e.js" crossorigin="anonymous"></script>
-    </body>
-
-
-
-
-    <script>
-        const randomWords = [
-            "คบกันเหอะ", "เรามากันขนาดนี้แล้วนะ", "เราชอบแกจริงๆ", "กดปุ่มเขียวเถอะ", "พ่องตาย", "มึงอย่าพยายามกดปุ่มแดงเลย", "มาเป็นวาเลนไทน์ของเรานะ", 
-            "กดปุ่มเขียวไม่ยากเลยนะ", "ไม่มีใครทนแกได้เท่าเราแล้ว", "จริงใจและจริงจังมากนะ!", "เอาดี...ให้คิดคำตอบใหม่อีกที", "ไม่อยากเป็นเพื่อนกันแล้วอ่าา อยากเป็นผัว", 
-            "เศร้ามากนะเลือกปุ่มนี้เนี่ย", "อยากมีแกในทุกๆวัน", "ขอเราเป็นคนดูแลแกนะ", "ขอโอกาสสักครั้งได้มั้ย...", "เราจะไม่ทำแกเสียใจเลย..", "ฮืออ..คิดดีๆ", 
-            "แกจะพลาดคนหล่อๆดีๆแบบเราจริงๆหรอ", "เลือกใหม่เลยไอสัส"
-        ];
-        function no(){
-            const yesButton = document.querySelector(".yes"); 
-            const buttonWidth = yesButton.offsetWidth; // make button center
-            const halfViewportWidth = window.innerWidth / 2;
-            yesButton.style.left = "50%";
-            yesButton.style.transform = `translateX(-${buttonWidth / 2}px)`;
-            
-            // Center the text within the button
-
-            // make text button get bigger
-            const currentFontSize = parseInt(window.getComputedStyle(yesButton).fontSize);
-            yesButton.style.fontSize = (currentFontSize + 2) + "px";
-
-            document.getElementById("im").src = "data:image/png;base64,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"
+</style>
+</head>
+<body>
+  <div class="big-text" id="randomWord">คำถามที่ตัดสินใจไม่ได้ลองให้เราช่วยตัดสินใจดูสิ</div>
+  <div class="text-explain">เพียงตั้งคำถามที่คุณตัดสินใจไม่ได้แล้วกดที่ปุ่ม ทางเราจะช่วยให้คำตอบคุณเอง</div>
+  <button class="btn" onclick="generateRandomWord()">กดสิ!</button>
 
 
-            // make button get bigger
-            const currentWidth = parseInt(yesButton.style.width) || 50; // Get the current width of the button
-            const currentHeight = parseInt(yesButton.style.height) || 35; // Get the current height of the button
-
-    
-            document.getElementById("but").style.setProperty("top", Math.floor(Math.random() * 90)+"vh");
-            document.getElementById("but").style.setProperty("left", Math.floor(Math.random() * 90)+"vw");
-            
-            //document.querySelector("h1").style.display = "none"; // Hide the "เป็นแฟนกันมั้ย?" text
-            //document.querySelector("p").style.display = "none"; // Hide the accompanying paragraph
-            //document.querySelector("h1").textContent = "คบกันเหอะ"; // change text
-
-            // Change the text to a random word
-            const randomIndex = Math.floor(Math.random() * randomWords.length);
-            document.querySelector("h1").textContent = randomWords[randomIndex];
-            
-
-        }
-
-
-        function yes(){
-            const body = document.querySelector("body");
-            document.querySelector(".yes").style.display = "none";
-            document.querySelector(".no").style.display = "none";
-            document.querySelector("h1").textContent = "เราเป็นแฟนกันแล้วนะ💞";
-            document.querySelector("p").textContent = "ขอสัญญาว่าจะรัก ดูแลและมีแค่เธอคนเดียวตลอดไปนะคะคุณแฟน"; // change text
-
-            
-            // Change background color
-            //body.style.backgroundColor = "#ff6dac";
-            
-            // Change the GIF source
-            const gif = document.querySelector("img");
-            gif.src = "https://i.pinimg.com/originals/c0/68/60/c06860b058d7aadaa28874be0a723947.gif";
-            gif.style.width = "310px"; // Set the width to 200 pixels
-            gif.style.height = "250px"; // Set the height to 200 pixels
-
-            function createHeart() {
-                const heart = document.createElement("div");
-                heart.className = "fas fa-heart";
-                heart.style.left = (Math.random() * 100)+"vw";
-                heart.style.animationDuration = (Math.random()*3)+2+"s"
-                body.appendChild(heart);
-            }
-            setInterval(createHeart,100);
-            setInterval(function name(params) {
-                var heartArr = document.querySelectorAll(".fa-heart")
-                if (heartArr.length > 200) {
-                heartArr[0].remove()
-                }
-            },100)
-        }
-    </script>
+  <script>
+    function generateRandomWord() {
+      var words = ["ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", 
+      "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย","จัด","เฉยๆว่ะ","คิดอีกทีดิ้","จางๆว่ะ","คิดใหม่ๆ","หาตัวเลือกมาดิ้","กดอีกรอบ","กดอีก!","แย่มากไม่ดี","ไม่เอาๆ"
+      ,"ไม่ผ่าน","เป็นความคิดที่ห่วย","ไม่น่าทำจัดหาใหม่","แอ๊ดๆ","โนเว เลิกคิดเดี๋ยวนี้","Error","ถามงี้ ไปนอนแทนเถอะ","น้ำขึ้นให้รีบตัก","ดูหนังน่าสนุกนะ"
+      ,"นั่นสิ ทำดีมั้ย?","หนีห่าว","ก็น่าสนใจดีนะ","เลือกเองเลย","ตอบไม่ได้ว่ะ","ไม่รู้เหมือนกัน","ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา","รักนะ","ลองดูยัง?ก่อนถาม"];
+      var randomIndex = Math.floor(Math.random() * words.length);
+      var randomWord = words[randomIndex];
+      document.getElementById("randomWord").textContent = randomWord;
+    }
+  </script>
+</body>
 </html>
