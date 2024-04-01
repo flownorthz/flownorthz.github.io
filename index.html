@@ -9,15 +9,14 @@
     font-family: 'IrisUPC'; /* Specify the Thai font */
     background-color: rgb(48, 181, 48);
     margin: 0;
-    height: 100vh;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
   }
   
   .big-text {
-    font-size: 2.5rem; 
+    font-size: 1.8rem; 
     color: white; 
     text-align: center; 
     margin-bottom: 20px;
@@ -30,17 +29,28 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    animation: pulse 2s infinite; /* Added pulsating animation */
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   .text-explain {
     font-family: 'IrisUPC'; /* Specify the Thai font */
     background-color: rgb(48, 181, 48);
     margin: 0;
-    font-size: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 10px;
   }
 
   .falling-question-marks {
@@ -49,13 +59,13 @@
   
   @media only screen and (min-width: 600px) {
     .big-text {
-      font-size: 4rem;
+      font-size: 2.5rem;
     }
     .btn {
       font-size: 1.5rem;
     }
     .text-explain {
-      font-size: 2rem;
+      font-size: 1.5rem;
     }
     .falling-question-marks {
       display: block; /* Show falling question marks on larger screens */
@@ -65,7 +75,7 @@
   .falling-question-mark {
     position: absolute;
     color: #000000;
-    font-size: 80px;
+    font-size: 40px;
     animation: fall linear infinite;
   }
   
