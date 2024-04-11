@@ -3,122 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เพื่อนแท้</title>
+<title>แดกเหล้า</title>
 <style>
-  body {
-    font-family: 'IrisUPC'; /* Specify the Thai font */
-    background-color: rgb(48, 181, 48);
+  body, html {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+  .black-banner {
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    width: 100%;
+    height: 100vh;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    flex-direction: column;
   }
-  
-  .big-text {
-    font-size: 1.8rem; 
-    color: white; 
-    text-align: center; 
-    margin-bottom: 20px;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    background-color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    animation: pulse 2s infinite; /* Added pulsating animation */
-  }
-
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  .text-explain {
-    font-family: 'IrisUPC'; /* Specify the Thai font */
-    background-color: rgb(48, 181, 48);
-    margin: 0;
-    font-size: 1.2rem;
+  .banner-text {
+    font-size: 3rem;
     text-align: center;
-    padding: 10px;
+    background-color: rgba(138, 64, 20, 0.5);
+    padding: 20px 22px;
+    border-radius: 10px;
   }
-
-  .falling-question-marks {
-    display: none; /* Hide falling question marks on mobile */
+  .above-text {
+    font-family: 'IrisUPC';
+    font-size: 100px;
+    text-align: center;
+    margin-bottom: 10px;
   }
-  
-  @media only screen and (min-width: 600px) {
-    .big-text {
-      font-size: 2.5rem;
-    }
-    .btn {
-      font-size: 1.5rem;
-    }
-    .text-explain {
-      font-size: 1.5rem;
-    }
-    .falling-question-marks {
-      display: block; /* Show falling question marks on larger screens */
-    }
-  }
-
-  .falling-question-mark {
-    position: absolute;
-    color: #000000;
-    font-size: 40px;
-    animation: fall linear infinite;
-  }
-  
-  @keyframes fall {
-    0% {
-      transform: translateY(-100px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(100vh);
-      opacity: 1;
-    }
+  #randomize-button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
   }
 </style>
 </head>
 <body>
-<div class="falling-question-marks">
-  <!-- Generate multiple question marks -->
-  <!-- Adjust the number according to your preference -->
-  <!-- You can also use JavaScript to dynamically generate these -->
-  <!-- for (let i = 0; i < numQuestionMarks; i++) {} -->
-  <div class="falling-question-mark" style="left: 10%; animation-duration: 2s;">?</div>
-  <div class="falling-question-mark" style="left: 30%; animation-duration: 4s;">?</div>
-  <div class="falling-question-mark" style="left: 50%; animation-duration: 3s;">?</div>
-  <div class="falling-question-mark" style="left: 70%; animation-duration: 2.5s;">?</div>
-  <div class="falling-question-mark" style="left: 90%; animation-duration: 3.5s;">?</div>
+
+<div class="black-banner">
+  <div class="above-text">
+    บทลงโทษ!
+  </div>
+  <div class="banner-text" id="banner-text">
+    จงน้อมยอมรับบทลงโทษตามโชคชะตาที่เจ้าเลือก!
+  </div>
+  <button id="randomize-button">กดตรงนี้เลย!</button>
 </div>
 
-<div class="big-text" id="randomWord">คำถามที่ตัดสินใจไม่ได้ลองให้เราช่วยตัดสินใจดูสิ</div>
-<div class="text-explain">เพียงตั้งคำถามที่คุณตัดสินใจไม่ได้แล้วกดที่ปุ่ม ทางเราจะช่วยให้คำตอบคุณเอง</div>
-<button class="btn" onclick="generateRandomWord()">กดสิ!</button>
-
-
 <script>
-  function generateRandomWord() {
-    var words = ["ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", 
-    "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย","จัด","เฉยๆว่ะ","คิดอีกทีดิ้","จางๆว่ะ","คิดใหม่ๆ","หาตัวเลือกมาดิ้","กดอีกรอบ","กดอีก!","แย่มากไม่ดี","ไม่เอาๆ"
-    ,"ไม่ผ่าน","เป็นความคิดที่ห่วย","ไม่น่าทำจัดหาใหม่","แอ๊ดๆ","โนเว เลิกคิดเดี๋ยวนี้","Error","ถามงี้ ไปนอนแทนเถอะ","น้ำขึ้นให้รีบตัก","ดูหนังน่าสนุกนะ"
-    ,"นั่นสิ ทำดีมั้ย?","หนีห่าว","ก็น่าสนใจดีนะ","เลือกเองเลย","ตอบไม่ได้ว่ะ","ไม่รู้เหมือนกัน","ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา","รักนะ","ลองดูยัง?ก่อนถาม"];
-    var randomIndex = Math.floor(Math.random() * words.length);
-    var randomWord = words[randomIndex];
-    document.getElementById("randomWord").textContent = randomWord;
+  // Array of random words
+  const randomWords = ['วิดพื้น 6 ครั้ง', 'ทำตัวเหมือนไก่เป็นเวลา 2 นาที', 'ดื่ม 1 แก้ว', 'เลียนแบบท่าทางคนที่ชนะคนแรก', 'เรียกฝ่ายตรงข้ามว่า "สุดที่รัก" ตลอดทั้งเกมหน้า'
+  ,'พูดด้วยสำเนียงเหน่อ 1 เกม','เต้นท่าสไลด์หนอน','แลบลิ้นค้างไว้ 2 นาที','เต้นเพลงไก๊ไก่','ตบหัวไอเมธ 1 ที','หันหน้าไปหาออมแล้วยิ้มให้','บอกเรื่องน่าอายมา 1 เรื่อง'
+  ,'ป้อนเหล้าคนที่นั่งข้างๆ 1 กึ้บ (ข้างไหนก็ได้)','โดนบทลงโทษกดสุ่ม เพิ่มอีก 2 ครั้ง','รอดตัวไป','บีบมะนาวเข้าปากตัวเอง','ให้คนที่อยู่ด้านซ้ายรับแทน','กินหมู 3 ชิ้นในคำเดียว'
+  ,'ยกแขนซ้ายค้างไว้ห้ามตก 3 นาที','คนที่กดโดนรับแทน (หากเป็นตัวเองคือรอด)','อมเหล้าไว้ให้เต็มปากค้างไว้ 20 วินาที','ทำปากจู๋ตลอด 1 เกม','ชูไอเลิฟยูให้ผู้ชนะ'
+  ,'หันไปด่าใครสักคน','Twerk 3 ที','กินโค้ก 1 แก้ว','ปั่นจิ้งหรีด 10 ที','นำท่าให้เพื่อนเต้นตาม (ทำทุกคน)','นอนลงกับพื้นแล้วให้เพื่อนกลิ้ง','ให้เพื่อนดีดมะกอกทุกคน'
+  ,'ตบหน้าตัวเองดังๆ 1 ครั้ง','แทงปลาไหล 10 ที','กินเหล้า 1 เป๊ก','กินน้ำปลา 1 ช้อน (ครึ่งช้อนก็ได้หากไม่ไหว)','บีบจมูกพูดกับเพื่อนตลอด 1 เกม','เล่าเรื่องตลกให้เพื่อนฟัง ถ้าไม่ฮากดเพิ่มอีก 2 ครั้ง'
+  ,'ป้อนหมูเพื่อนคนละชิ้น','ตีคนที่อยู่ข้างๆ (ข้างไหนก็ได้)','ด่าแพง 1 ประโยค','เอาน้ำลาดหัวตัวเอง','เปิด 1 เพลง แล้วร้องให้เพื่อนฟัง','กินเหล้า 1 แก้ว','พูดภาษา "ล" (ลาหลัดลีลับ)'
+];
+
+  // Function to pick a random word from the array
+  function getRandomWord() {
+    return randomWords[Math.floor(Math.random() * randomWords.length)];
   }
+
+  // Function to replace text with a random word
+  function replaceText() {
+    const bannerText = document.getElementById('banner-text');
+    bannerText.textContent = getRandomWord();
+  }
+
+  // Event listener for the button click
+  document.getElementById('randomize-button').addEventListener('click', replaceText);
 </script>
+
 </body>
 </html>
