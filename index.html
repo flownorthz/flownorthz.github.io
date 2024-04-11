@@ -49,6 +49,17 @@
     cursor: pointer;
     border-radius: 5px;
   }
+  .icon {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+  .fullscreen {
+  width: 100%;
+  height: 100%;
+  }
+
 </style>
 </head>
 <body>
@@ -88,6 +99,34 @@
   // Event listener for the button click
   document.getElementById('randomize-button').addEventListener('click', replaceText);
 </script>
+
+<div class="icon" onclick="toggleFullscreen()">
+    <img src="https://cdn.discordapp.com/attachments/733512116295827557/1228050493163700414/fullscreen-12-16.png?ex=662aa225&is=66182d25&hm=d69212dd8f13c7c5417967a93c7ab5a23d22d6b31c27c5861430fe1adb9e19f8&" alt="Fullscreen Icon" width="30">
+  </div>
+  
+  <script>
+  // Function to toggle fullscreen mode
+  function toggleFullscreen() {
+    var elem = document.documentElement;
+    if (!document.fullscreenElement) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+      }
+    }
+  }
+  </script>
 
 </body>
 </html>
