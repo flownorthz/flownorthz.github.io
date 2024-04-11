@@ -60,6 +60,7 @@
   height: 100%;
   }
 
+  
 </style>
 </head>
 <body>
@@ -83,6 +84,8 @@
   ,'หันไปด่าใครสักคน','Twerk 3 ที','กินโค้ก 1 แก้ว','ปั่นจิ้งหรีด 10 ที','นำท่าให้เพื่อนเต้นตาม (ทำทุกคน)','นอนลงกับพื้นแล้วให้เพื่อนกลิ้ง','ให้เพื่อนดีดมะกอกทุกคน'
   ,'ตบหน้าตัวเองดังๆ 1 ครั้ง','แทงปลาไหล 10 ที','กินเหล้า 1 เป๊ก','กินน้ำปลา 1 ช้อน (ครึ่งช้อนก็ได้หากไม่ไหว)','บีบจมูกพูดกับเพื่อนตลอด 1 เกม','เล่าเรื่องตลกให้เพื่อนฟัง ถ้าไม่ฮากดเพิ่มอีก 2 ครั้ง'
   ,'ป้อนหมูเพื่อนคนละชิ้น','ตีคนที่อยู่ข้างๆ (ข้างไหนก็ได้)','ด่าแพง 1 ประโยค','เอาน้ำลาดหัวตัวเอง','เปิด 1 เพลง แล้วร้องให้เพื่อนฟัง','กินเหล้า 1 แก้ว','พูดภาษา "ล" (ลาหลัดลีลับ)'
+  ,'พูดลงท้ายเมธเจ้าชู้ตลอด 10 เกม','พูดลงท้ายค่ะ/ครับทุกครั้งตลอด 10 เกม','นั่งหัวเราะ เป็นเวลา 1 นาที ห้ามหยุด','เต้นไก่ย่างให้คนข้างขวาดู','ลงท้ายคำว่า แพงสวยมาก ตลอด 10 เกม'
+
 ];
 
   // Function to pick a random word from the array
@@ -99,34 +102,6 @@
   // Event listener for the button click
   document.getElementById('randomize-button').addEventListener('click', replaceText);
 </script>
-
-<div class="icon" onclick="toggleFullscreen()">
-    <img src="https://cdn.discordapp.com/attachments/733512116295827557/1228050493163700414/fullscreen-12-16.png?ex=662aa225&is=66182d25&hm=d69212dd8f13c7c5417967a93c7ab5a23d22d6b31c27c5861430fe1adb9e19f8&" alt="Fullscreen Icon" width="30">
-  </div>
-  
-  <script>
-  // Function to toggle fullscreen mode
-  function toggleFullscreen() {
-    var elem = document.documentElement;
-    if (!document.fullscreenElement) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) { /* Safari */
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) { /* IE11 */
-        elem.msRequestFullscreen();
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) { /* Safari */
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) { /* IE11 */
-        document.msExitFullscreen();
-      }
-    }
-  }
-  </script>
 
 </body>
 </html>
