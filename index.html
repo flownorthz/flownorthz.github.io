@@ -59,6 +59,20 @@
   width: 100%;
   height: 100%;
   }
+  .reveal-animation {
+    animation: reveal 0.5s ease-in-out forwards;
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
 </style>
 </head>
@@ -76,7 +90,7 @@
 
 <script>
   // Array of random words
-  const randomWords = ['วิดพื้น 6 ครั้ง', 'ทำตัวเหมือนไก่เป็นเวลา 2 นาที', 'ดื่ม 1 แก้ว', 'เลียนแบบท่าทางคนที่ชนะคนแรก', 'เรียกฝ่ายตรงข้ามว่า "สุดที่รัก" ตลอดทั้งเกมหน้า'
+  const randomWords = ['วิดพื้น 6 ครั้ง', 'ทำตัวเหมือนไก่เป็นเวลา 2 นาที', 'ดื่ม 1 แก้ว', 'เลียนแบบท่าทางคนที่ชนะคนแรก'
   ,'พูดด้วยสำเนียงเหน่อ 1 เกม','เต้นท่าสไลด์หนอน','แลบลิ้นค้างไว้ 2 นาที','เต้นเพลงไก๊ไก่','ตบหัวไอเมธ 1 ที','หันหน้าไปหาออมแล้วยิ้มให้','บอกเรื่องน่าอายมา 1 เรื่อง'
   ,'ป้อนเหล้าคนที่นั่งข้างๆ 1 กึ้บ (ข้างไหนก็ได้)','โดนบทลงโทษกดสุ่ม เพิ่มอีก 2 ครั้ง','รอดตัวไป','บีบมะนาวเข้าปากตัวเอง','ให้คนที่อยู่ด้านซ้ายรับแทน','กินหมู 3 ชิ้นในคำเดียว'
   ,'ยกแขนซ้ายค้างไว้ห้ามตก 3 นาที','คนที่กดโดนรับแทน (หากเป็นตัวเองคือรอด)','อมเหล้าไว้ให้เต็มปากค้างไว้ 20 วินาที','ทำปากจู๋ตลอด 1 เกม','ชูไอเลิฟยูให้ผู้ชนะ'
@@ -84,6 +98,8 @@
   ,'ตบหน้าตัวเองดังๆ 1 ครั้ง','แทงปลาไหล 10 ที','กินเหล้า 1 เป๊ก','กินน้ำปลา 1 ช้อน (ครึ่งช้อนก็ได้หากไม่ไหว)','บีบจมูกพูดกับเพื่อนตลอด 1 เกม','เล่าเรื่องตลกให้เพื่อนฟัง ถ้าไม่ฮากดเพิ่มอีก 2 ครั้ง'
   ,'ป้อนหมูเพื่อนคนละชิ้น','ตีคนที่อยู่ข้างๆ (ข้างไหนก็ได้)','ด่าแพง 1 ประโยค','เอาน้ำลาดหัวตัวเอง','เปิด 1 เพลง แล้วร้องให้เพื่อนฟัง','กินเหล้า 1 แก้ว','พูดภาษา "ล" (ลาหลัดลีลับ)'
   ,'พูดลงท้ายเมธเจ้าชู้ตลอด 10 เกม','พูดลงท้ายค่ะ/ครับทุกครั้งตลอด 10 เกม','นั่งหัวเราะ เป็นเวลา 1 นาที ห้ามหยุด','เต้นไก่ย่างให้คนข้างขวาดู','ลงท้ายคำว่า แพงสวยมาก ตลอด 10 เกม'
+  ,'เปลี่ยนรูปโปรไฟล์เป็นรูปซัน','ลุกยืน 1 เกม','โทรหาเพื่อน 1 คน แล้วพูดตามคนชนะคนแรก','ลงไปเก็บก้อนหินข้างล่าง แล้วขึ้นมาข้างบน พอถึงเกมถัดไปเอาไปวางที่เดิม','พูดว่าใช่ ตลอด 5 เกม'
+  ,'ถ่ายรูปหน้าตัวเองแล้วโพสต์ลงสตอรี่'
 
 ];
 
@@ -94,9 +110,13 @@
 
   // Function to replace text with a random word
   function replaceText() {
-    const bannerText = document.getElementById('banner-text');
-    bannerText.textContent = getRandomWord();
-  }
+  const bannerText = document.getElementById('banner-text');
+  bannerText.classList.remove('reveal-animation'); // Remove animation class if already applied
+  void bannerText.offsetWidth; // Trigger reflow to restart the animation
+  bannerText.classList.add('reveal-animation'); // Add animation class
+  bannerText.textContent = getRandomWord();
+}
+
 
   // Event listener for the button click
   document.getElementById('randomize-button').addEventListener('click', replaceText);
