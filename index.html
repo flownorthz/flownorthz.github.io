@@ -88,16 +88,23 @@
             }
 
             let syllables = splitIntoSyllables(userInput);
-            let duplicateInfo = syllables.map(s => {
+            let duplicateInfo = [];
+
+            syllables.forEach(s => {
                 if (allSyllables.has(s)) {
-                    return { syllable: s, word: syllableToWordMap[s] };
+                    // Find the index of the existing word that has the same syllable
+                    let existingWordIndex = previousWords.findIndex(word => syllableToWordMap[s] === word);
+                    duplicateInfo.push({
+                        syllable: s,
+                        existingWord: syllableToWordMap[s],
+                        existingIndex: existingWordIndex + 1 // +1 for 1-based index
+                    });
                 }
-                return null;
-            }).filter(info => info !== null);
+            });
 
             if (duplicateInfo.length > 0) {
                 let duplicateText = duplicateInfo.map(info => 
-                    `* "${info.syllable}" ซ้ำกับคำ "${info.word}" *`
+                    `[ ${info.syllable} ] ซ้ำกับคำข้อ ${info.existingIndex}. "${info.existingWord}"`
                 ).join(", ");
                 document.getElementById("result").innerText = duplicateText;
             } else {
@@ -106,7 +113,7 @@
 
             syllables.forEach(s => {
                 allSyllables.add(s);
-                syllableToWordMap[s] = userInput;
+                syllableToWordMap[s] = userInput; // Store the mapping of syllables to words
             });
 
             previousWords.push(userInput);
@@ -116,11 +123,11 @@
 
         function updatePreviousWords() {
             let wordList = document.getElementById("previousWords");
-            wordList.innerHTML = "";
+            wordList.innerHTML = ""; // Clear previous words
 
-            previousWords.forEach(word => {
+            previousWords.forEach((word, index) => {
                 let listItem = document.createElement("li");
-                listItem.textContent = word;
+                listItem.textContent = `${index + 1}. ${word}`; // Add numbering
                 wordList.appendChild(listItem);
             });
         }
