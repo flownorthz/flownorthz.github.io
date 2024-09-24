@@ -21,6 +21,8 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 300px;
+            max-height: 400px; /* Set a fixed height */
+            overflow-y: auto; /* Allow scrolling if content overflows */
         }
         h1 {
             color: #333;
@@ -69,12 +71,10 @@
         }
     </style>
     <script>
-        // ฟังก์ชันแบ่งพยางค์
         function splitIntoSyllables(word) {
             return word.match(/[ก-ฮ]{1,2}[ะ-ูเ-์]?/g) || [];
         }
 
-        // เก็บค่าพยางค์และคำทั้งหมดที่เคยรับ
         let allSyllables = new Set();
         let previousWords = [];
         let syllableToWordMap = {};
@@ -82,10 +82,12 @@
         function checkDuplicates() {
             let userInput = document.getElementById("inputWord").value;
 
-            // แบ่งพยางค์ของคำที่รับเข้ามา
-            let syllables = splitIntoSyllables(userInput);
+            if (userInput.trim() === "") {
+                document.getElementById("result").innerText = "กรุณากรอกคำ";
+                return; // Don't proceed if the input is empty
+            }
 
-            // ตรวจหาพยางค์ที่ซ้ำและเก็บคำที่ซ้ำ
+            let syllables = splitIntoSyllables(userInput);
             let duplicateInfo = syllables.map(s => {
                 if (allSyllables.has(s)) {
                     return { syllable: s, word: syllableToWordMap[s] };
@@ -102,25 +104,19 @@
                 document.getElementById("result").innerText = "";
             }
 
-            // เพิ่มพยางค์ที่รับเข้ามาในเซ็ตทั้งหมด
             syllables.forEach(s => {
                 allSyllables.add(s);
-                syllableToWordMap[s] = userInput;  // เก็บการจับคู่ระหว่างพยางค์และคำ
+                syllableToWordMap[s] = userInput;
             });
 
-            // เพิ่มคำใหม่ไปยังรายการคำก่อนหน้า
-            if (userInput.trim() !== "") {
-                previousWords.push(userInput);
-                updatePreviousWords();
-            }
-
-            // ล้าง input field หลังการเช็ค
+            previousWords.push(userInput);
+            updatePreviousWords();
             document.getElementById("inputWord").value = "";
         }
 
         function updatePreviousWords() {
             let wordList = document.getElementById("previousWords");
-            wordList.innerHTML = ""; // เคลียร์รายการก่อนหน้า
+            wordList.innerHTML = "";
 
             previousWords.forEach(word => {
                 let listItem = document.createElement("li");
@@ -139,9 +135,7 @@
         <p id="result"></p>
         
         <h2>คำก่อนหน้า:</h2>
-        <ul id="previousWords">
-            <!-- รายการคำที่เคยป้อนจะแสดงที่นี่ -->
-        </ul>
+        <ul id="previousWords"></ul>
         <footer>Made by Overflow</footer>
     </div>
 </body>
