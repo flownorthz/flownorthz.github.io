@@ -71,13 +71,9 @@
         }
     </style>
     <script>
-        function splitIntoSyllables(word) {
-            return word.match(/[ก-ฮ]{1,2}[ะ-ูเ-์]?/g) || [];
-        }
-
-        let allSyllables = new Set();
+        let allWords = new Set();
         let previousWords = [];
-        let syllableToWordMap = {};
+        let wordToSentenceMap = {};
 
         function checkDuplicates() {
             let userInput = document.getElementById("inputWord").value;
@@ -87,33 +83,34 @@
                 return; // Don't proceed if the input is empty
             }
 
-            let syllables = splitIntoSyllables(userInput);
+            // Split the input into words based on spaces
+            let words = userInput.trim().split(/\s+/);
             let duplicateInfo = [];
 
-            syllables.forEach(s => {
-                if (allSyllables.has(s)) {
-                    // Find the index of the existing word that has the same syllable
-                    let existingWordIndex = previousWords.findIndex(word => syllableToWordMap[s] === word);
+            words.forEach(word => {
+                if (allWords.has(word)) {
+                    // Find the index of the existing sentence that has the same word
+                    let existingSentenceIndex = previousWords.findIndex(sentence => wordToSentenceMap[word] === sentence);
                     duplicateInfo.push({
-                        syllable: s,
-                        existingWord: syllableToWordMap[s],
-                        existingIndex: existingWordIndex + 1 // +1 for 1-based index
+                        word: word,
+                        existingSentence: wordToSentenceMap[word],
+                        existingIndex: existingSentenceIndex + 1 // +1 for 1-based index
                     });
                 }
             });
 
             if (duplicateInfo.length > 0) {
                 let duplicateText = duplicateInfo.map(info => 
-                    `[ ${info.syllable} ] ซ้ำกับคำข้อ ${info.existingIndex}. "${info.existingWord}"`
+                    `[ ${info.word} ] ซ้ำกับคำข้อ ${info.existingIndex}. "${info.existingSentence}"`
                 ).join(", ");
                 document.getElementById("result").innerText = duplicateText;
             } else {
                 document.getElementById("result").innerText = "";
             }
 
-            syllables.forEach(s => {
-                allSyllables.add(s);
-                syllableToWordMap[s] = userInput; // Store the mapping of syllables to words
+            words.forEach(word => {
+                allWords.add(word);
+                wordToSentenceMap[word] = userInput; // Store the mapping of words to sentences
             });
 
             previousWords.push(userInput);
@@ -125,9 +122,9 @@
             let wordList = document.getElementById("previousWords");
             wordList.innerHTML = ""; // Clear previous words
 
-            previousWords.forEach((word, index) => {
+            previousWords.forEach((sentence, index) => {
                 let listItem = document.createElement("li");
-                listItem.textContent = `${index + 1}. ${word}`; // Add numbering
+                listItem.textContent = `${index + 1}. ${sentence}`; // Add numbering
                 wordList.appendChild(listItem);
             });
         }
@@ -136,11 +133,11 @@
 <body>
     <div class="container">
         <h1>ตรวจสอบคำซ้ำ</h1>
+        <footer>เกมคำต้องเชื่อม</footer>
+        <p>หากมีมากกว่า 1 พยางค์ให้เว้นวรรคแยกให้ชัดเจนเช่น "กำ แพง เพชร"</p>
         <input type="text" id="inputWord" placeholder="กรุณาป้อนคำ">
         <button onclick="checkDuplicates()">ตรวจสอบ</button>
-        
         <p id="result"></p>
-        
         <h2>คำก่อนหน้า:</h2>
         <ul id="previousWords"></ul>
         <footer>Made by Overflow</footer>
