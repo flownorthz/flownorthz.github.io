@@ -69,6 +69,10 @@
             font-size: 14px;
             color: #666;
         }
+        /* Initially hide the previous words section */
+        .hidden {
+            display: none;
+        }
     </style>
     <script>
         let allWords = new Set();
@@ -127,7 +131,22 @@
                 listItem.textContent = `${index + 1}. ${sentence}`; // Add numbering
                 wordList.appendChild(listItem);
             });
+
+            // Show the "คำก่อนหน้า:" section if it's hidden
+            if (previousWords.length > 0) {
+                document.getElementById("previousWordsSection").classList.remove("hidden");
+            }
         }
+
+        // Add event listener to check for "Enter" key press
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("inputWord").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent form submission (if any)
+                    checkDuplicates(); // Call the function when "Enter" is pressed
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -138,8 +157,11 @@
         <input type="text" id="inputWord" placeholder="กรุณาป้อนคำ">
         <button onclick="checkDuplicates()">ตรวจสอบ</button>
         <p id="result"></p>
-        <h2>คำก่อนหน้า:</h2>
-        <ul id="previousWords"></ul>
+        <!-- Initially hidden section -->
+        <div id="previousWordsSection" class="hidden">
+            <h2>คำก่อนหน้า:</h2>
+            <ul id="previousWords"></ul>
+        </div>
         <footer>Made by Overflow</footer>
     </div>
 </body>
