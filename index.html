@@ -8,6 +8,10 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #e1b1ff;
+            background-image: url('https://cdn.discordapp.com/attachments/1288325589991821334/1288325692819247137/bg1.jpg?ex=66f4c64d&is=66f374cd&hm=c32db67ba35446eb08ba76a168bf46d872b8778d3027e340a92610899ffac06f&'); /* ใส่ URL ของภาพที่ต้องการ */
+            background-size: cover; /* ปรับให้ภาพครอบคลุมพื้นที่เต็มหน้าจอ */
+            background-position: center; /* วางภาพให้อยู่ตรงกลาง */
+            background-repeat: no-repeat; /* ไม่ให้ภาพซ้ำ */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -119,6 +123,7 @@
 
             previousWords.push(userInput);
             updatePreviousWords();
+            updateFooterText(userInput); // Update footer with the latest input
             document.getElementById("inputWord").value = "";
         }
 
@@ -138,6 +143,11 @@
             }
         }
 
+        function updateFooterText(latestText) {
+            let footerElement = document.querySelector("footer");
+            footerElement.innerText = latestText;
+        }
+
         // Add event listener to check for "Enter" key press
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("inputWord").addEventListener("keydown", function(event) {
@@ -152,7 +162,7 @@
 <body>
     <div class="container">
         <h1>ตรวจสอบคำซ้ำ</h1>
-        <footer>เกมคำต้องเชื่อม - เทพลีลา</footer>
+        <footer>เกมคำต้องเชื่อม - ยกกำลัง</footer>
         <p>หากมีมากกว่า 1 พยางค์ให้เว้นวรรคแยกให้ชัดเจนเช่น "กำ แพง เพชร"</p>
         <input type="text" id="inputWord" placeholder="กรุณาป้อนคำ">
         <button onclick="checkDuplicates()">ตรวจสอบ</button>
