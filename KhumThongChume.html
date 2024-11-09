@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมคำต้องเชื่อม</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e1b1ff;
+            background-image: url('https://cdn.discordapp.com/attachments/1288325589991821334/1288325692819247137/bg1.jpg?ex=66f4c64d&is=66f374cd&hm=c32db67ba35446eb08ba76a168bf46d872b8778d3027e340a92610899ffac06f&');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            background-image: url('https://media.discordapp.net/attachments/1288325589991821334/1288330123761815633/logo.png?ex=66f4ca6d&is=66f378ed&hm=3ee1a948150dca5234f5336c37298e7ecb28d1bebcc5a0796d4ac866519d3953&=&format=webp&quality=lossless&width=281&height=281');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #b300ff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #9b00a6;
+        }
+
+        #result {
+            margin: 10px 0;
+            color: red;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* CSS for falling emojis */
+        .emoji {
+            position: absolute;
+            font-size: 2.5em;
+            animation: fall 2s linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+    </style>
+    <script>
+        let allWords = new Set();
+        let previousWords = [];
+        let wordToSentenceMap = {};
+
+        function checkDuplicates() {
+            let userInput = document.getElementById("inputWord").value;
+
+            if (userInput.trim() === "") {
+                document.getElementById("result").innerText = "กรุณากรอกคำ";
+                return;
+            }
+
+            let words = userInput.trim().split(/\s+/);
+            let duplicateInfo = [];
+
+            words.forEach(word => {
+                if (allWords.has(word)) {
+                    let existingSentenceIndex = previousWords.findIndex(sentence => wordToSentenceMap[word] === sentence);
+                    duplicateInfo.push({
+                        word: word,
+                        existingSentence: wordToSentenceMap[word],
+                        existingIndex: existingSentenceIndex + 1
+                    });
+                }
+            });
+
+            if (duplicateInfo.length > 0) {
+                let duplicateText = duplicateInfo.map(info =>
+                    `[ ${info.word} ] ซ้ำกับคำข้อ ${info.existingIndex}. "${info.existingSentence}"`
+                ).join(", ");
+                document.getElementById("result").innerText = duplicateText;
+
+                // Trigger the emoji rain
+                createEmojiRain();
+            } else {
+                document.getElementById("result").innerText = "";
+            }
+
+            words.forEach(word => {
+                allWords.add(word);
+                wordToSentenceMap[word] = userInput;
+            });
+
+            previousWords.push(userInput);
+            updatePreviousWords();
+            updateFooterText(userInput);
+            document.getElementById("inputWord").value = "";
+        }
+
+        function updatePreviousWords() {
+            let wordList = document.getElementById("previousWords");
+            wordList.innerHTML = "";
+
+            previousWords.forEach((sentence, index) => {
+                let listItem = document.createElement("li");
+                listItem.textContent = `${index + 1}. ${sentence}`;
+                wordList.appendChild(listItem);
+            });
+
+            if (previousWords.length > 0) {
+                document.getElementById("previousWordsSection").classList.remove("hidden");
+            }
+        }
+
+        function updateFooterText(latestText) {
+            let footerElement = document.querySelector("footer");
+            footerElement.innerText = latestText;
+        }
+
+        // Function to create falling emojis
+        function createEmojiRain() {
+            for (let i = 0; i < 100; i++) {
+                let emoji = document.createElement("div");
+                emoji.classList.add("emoji");
+                emoji.innerText = "❌";
+                emoji.style.left = Math.random() * 100 + "vw"; // Random position
+                emoji.style.animationDuration = Math.random() * 1 + 1.5 + "s"; // Random fall duration
+
+                document.body.appendChild(emoji);
+
+                // Remove the emoji after animation ends
+                setTimeout(() => {
+                    emoji.remove();
+                }, 2000);
+            }
+        }
+
+        // Add event listener to check for "Enter" key press
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("inputWord").addEventListener("keydown", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkDuplicates();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>ตรวจสอบคำซ้ำ</h1>
+        <footer>เกมคำต้องเชื่อม - ยกกำลัง</footer>
+        <p>หากมีมากกว่า 1 พยางค์ให้เว้นวรรคแยกให้ชัดเจนเช่น "กำ แพง เพชร"</p>
+        <input type="text" id="inputWord" placeholder="กรุณาป้อนคำ">
+        <button onclick="checkDuplicates()">ตรวจสอบ</button>
+        <p id="result"></p>
+        <div id="previousWordsSection" class="hidden">
+            <h2>คำก่อนหน้า:</h2>
+            <ul id="previousWords"></ul>
+        </div>
+        <footer>Made by Overflow</footer>
+    </div>
+</body>
+</html>
