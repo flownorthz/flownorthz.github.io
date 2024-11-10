@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หนังสือเพื่อนแท้</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #88ff8c;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 36px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .book {
+            width: 300px;
+            height: 200px;
+            background-color: #4CAF50;
+            margin: 20px auto;
+            border: 3px solid #227e25;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform-origin: left;
+            transform: perspective(1000px);
+            transition: transform 1s ease;
+        }
+        .book.open {
+            transform: perspective(1000px) rotateY(-120deg);
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .book-content {
+            font-size: 18px;
+            color: #000000;  /* เปลี่ยนสีข้อความที่เหลือเป็นสีดำ */
+            padding: 20px;
+            text-align: center;
+        }
+
+        #book-content {
+            color: #ffffff;  /* เปลี่ยนสีเฉพาะข้อความ "หนังสือเพื่อนแท้" เป็นสีขาว */
+        }
+
+        .book2 {
+            width: 300px;
+            height: 200px;
+            background-color: #cfffd0;
+            margin: -285px auto;
+            border: 3px solid #227e25;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        
+
+    </style>
+</head>
+<body>
+    <h1>มา!เดี๋ยวช่วยตัดสินใจ</h1>
+
+    <div class="book">
+        <div class="book-content" id="book-content">
+            หนังสือเพื่อนแท้
+        </div>
+    </div>
+
+    <button class="button" onclick="openBook()">เปิด</button>
+
+    <script>
+        const messages = [
+            "ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", 
+            "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย", "จัด", "เฉยๆว่ะ", 
+            "คิดอีกทีดิ้", "จางๆว่ะ", "คิดใหม่ๆ", "หาตัวเลือกมาดิ้", "กดอีกรอบ", "กดอีก!", 
+            "แย่มากไม่ดี", "ไม่เอาๆ", "ไม่ผ่าน", "เป็นความคิดที่ห่วย", "ไม่น่าทำจัดหาใหม่", 
+            "แอ๊ดๆ", "โนเว เลิกคิดเดี๋ยวนี้", "Error", "ถามงี้ ไปนอนแทนเถอะ", "น้ำขึ้นให้รีบตัก", 
+            "ดูหนังน่าสนุกนะ", "นั่นสิ ทำดีมั้ย?", "หนีห่าว", "ก็น่าสนใจดีนะ", "เลือกเองเลย", 
+            "ตอบไม่ได้ว่ะ", "ไม่รู้เหมือนกัน", "ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา", 
+            "รักนะ", "ลองดูยัง?ก่อนถาม", "ไม่อะ", "ใช่เลย", "มีล้มก็มีลุก งั้นก็ไปกันต่อ", "ทำไรก็คิดดีๆ"
+            , "ก็น่าสนนะ แต่ยังไม่ใช่ตอนนี้ว่ะๆ", "ลองคิกอย่างอื่นก่อน", "ทำใจดีกว่า ถามงี้", "หรือจะลองไปนั่งสมาธิ?"
+            , "กลับบ้านเถอะ ถ้าอยู่บ้านก็นอนเลย", "เออคำถามนี้ก็น่านใจดีแฮะ", "ไม่รู้ลองถามคนใกล้ๆดู", "งี้ก็ไปกันต่อ"
+            , "ชาวบ้านบางระจันยังไม่ย้อท้อเลย ก็ลุยเลยดิ", "ค่อนข้างแย่นะ55 ไม่เอาละกัน", "คิดว่าไม่ควรนะ", "อย่าเลย"
+            , "ไม่อ่ะ รีบเปลี่ยนความคิดเลย", "มีเงินก็เก็บๆไว้บ้างนะ", "ชีวิตมีครั้งเดียว เอาสิวะ", "ลุยย","Let's Go ชวยเธอมาขยับครับ In my zone!"
+            , "จัดไปน้องชาย", "มาม่าก็น่ากินนะ"
+        ];
+
+        let firstClick = true;  // Flag to check if it's the first click
+
+        function openBook() {
+            if (firstClick) {
+                // สุ่มข้อความจากลิสต์
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+                // เปลี่ยนข้อความใน .book และเปิดการหมุนของมัน
+                document.querySelector('.book').classList.add('open');
+                document.getElementById('book-content').textContent = "";
+
+                // สร้าง .book2 ใหม่ที่จะแสดงข้อความสุ่ม
+                const book2 = document.createElement('div');
+                book2.classList.add('book2');
+                const bookContent2 = document.createElement('div');
+                bookContent2.classList.add('book-content');
+                bookContent2.textContent = randomMessage;
+                book2.appendChild(bookContent2);
+
+                // เพิ่ม .book2 ไปยังหน้า
+                document.body.appendChild(book2);
+
+                firstClick = false;  // Set the flag to false after the first click
+            } else {
+                // ลบข้อความจาก .book และสุ่มข้อความใหม่เมื่อกดเปิดครั้งที่ 2
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+                const book2 = document.querySelector('.book2');
+                if (book2) {
+                    const bookContent2 = book2.querySelector('.book-content');
+                    bookContent2.textContent = randomMessage;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
