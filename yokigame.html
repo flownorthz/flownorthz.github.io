@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมการ์ดโยคี</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #c2ff8d;
+        }
+
+        .card-container {
+            text-align: center;
+        }
+
+        .card {
+            width: 200px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            background-color: white;
+            border: 2px solid #ccc;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 1s ease, opacity 0.5s ease;
+            opacity: 1;
+            transform: rotateY(180deg);
+            font-size: 1.5em;
+            position: relative;
+        }
+
+        .card.show {
+            opacity: 1;
+            transform: rotateY(0);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.postimg.cc/qq5D5xT6/yoki1.jpg') no-repeat center;
+            background-size: cover;
+            border-radius: 10px;
+            transition: opacity 1s ease;
+            opacity: 1;
+        }
+
+        .card.show::before {
+            opacity: 0;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            background-color: #27ae60;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        .message {
+            font-size: 0.8em;
+            margin-top: 10px;
+            color: #2a2a2a;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div id="card" class="card">
+            <div id="cardValue">Press Draw to Start</div>
+        </div>
+        <button id="drawButton" onclick="drawCard()">จั่วการ์ด</button>
+        <footer>Made by Overflow</footer>
+    </div>
+    
+    <script>
+        const messages = [
+    "ถือการ์ดนี้ไว้บนศีรษะ",
+    "วางการ์ดนี้ไว้ระหว่างคางและหน้าอก",
+    "ใช้มือซ้ายแตะที่หัวไหล่ขวา",
+    "ยืนขาเดียวจนกว่าจะถึงตาคุณอีกครั้ง",
+    "วางมือขวาไว้บนหัวและห้ามเอาลง",
+    "ใช้มือซ้ายแตะที่ข้อเท้าขวา",
+    "จับการ์ดนี้ด้วยฟันจนกว่าจะถึงตาคุณ",
+    "วางการ์ดนี้บนหลังมือขวาและห้ามให้ตก",
+    "วางการ์ดนี้ไว้บนหัวไหล่ซ้ายและห้ามให้ตก",
+    "ใช้ศอกข้างหนึ่งแตะเข่าของคุณไว้ตลอดเวลา",
+    "ทำมือเป็นรูปหัวใจและต้องค้างไว้จนกว่าจะถึงตาคุณ",
+    "ยกเท้าขึ้นจากพื้นอย่างน้อยหนึ่งข้างจนกว่าจะถึงตาคุณอีกครั้ง",
+    "ถือการ์ดนี้ด้วยมือซ้ายและใช้แค่มือขวาในการทำทุกอย่าง",
+    "ขยับตัวเหมือนหุ่นยนต์ทุกครั้ง",
+    "วางการ์ดนี้ไว้บนฝ่าเท้าของคุณจนกว่าจะจบตา",
+    "ก่อนพูดทุกครั้ง ให้พูดคำว่า 'โยคี'",
+    "ห้ามพูดคำว่า 'ไม่' จนกว่าจะจบเกม",
+    "ต้องพูดประโยคสุดท้ายของคุณซ้ำทุกครั้งที่พูด",
+    "ห้ามพูดเกิน 5 คำต่อประโยค",
+    "ทุกครั้งที่มีคนพูด ให้พูดว่า 'เห็นด้วย' ตามทันที",
+    "ก่อนพูด ให้ทำเสียงสัตว์ชนิดหนึ่งก่อน",
+    "ทุกครั้งที่พูด ต้องพูดเสียงต่ำกว่าปกติ",
+    "ห้ามใช้คำว่า 'กู' หรือ 'มึง' ตลอดทั้งเกม",
+    "เมื่อพูด ต้องทำเสียงเหมือนคุณเป็นตัวละครในภาพยนตร์",
+    "ทุกครั้งที่พูด ให้ใช้ประโยคจบด้วย 'ครับ/ค่ะ'",
+    "พูดได้เฉพาะคำที่ขึ้นต้นด้วยตัวอักษร 'ส'",
+    "ยิ้มกว้างตลอดเวลา",
+    "ทำหน้าเศร้าทุกครั้งที่มีคนมอง",
+    "ทุกครั้งที่มีคนหัวเราะ คุณต้องหัวเราะเสียงดังยิ่งกว่า",
+    "ทำท่าเหมือนกำลังเต้นทุกครั้งที่ขยับตัว",
+    "ต้องแสดงสีหน้าตกใจทุกครั้งที่มีคนพูดชื่อคุณ",
+    "ทำหน้าบึ้งตลอดเวลาที่เล่น",
+    "ทุกครั้งที่มีคนหัวเราะ ให้คุณร้องเพลงหนึ่งท่อนสั้น ๆ",
+    "ต้องยักคิ้วทุกครั้งที่มีคนพูดถึงตัวเลข",
+    "ถ้าใครเรียกชื่อคุณ ต้องทำท่าก้มหัวเหมือนขอบคุณ",
+    "แกล้งทำเหมือนกำลังนอนหลับทุกครั้งที่คนอื่นเริ่มพูด",
+    "ใช้มือข้างที่ถนัดจับหูตัวเองไว้ตลอดเวลา",
+    "ห้ามแตะพื้นด้วยมือหรือเท้าจนกว่าจะจบตา",
+    "วางการ์ดนี้ไว้บนหัวและเดินไปหาคนถัดไปโดยไม่ทำตก",
+    "ทำเสียงหมูทุกครั้งที่คุณขยับตัว",
+    "ห้ามใช้มือข้างหนึ่งจนกว่าจะถึงตาคุณอีกครั้ง",
+    "ทุกครั้งที่มีคนพูด ให้ปรบมือ 3 ครั้ง",
+    "ถือการ์ดนี้ด้วยนิ้วก้อยเท่านั้น",
+    "ใช้ศีรษะหนีบการ์ดนี้ไว้",
+    "ทุกครั้งที่คุณเคลื่อนไหว ต้องหมุนตัวหนึ่งรอบ",
+    "ห้ามพูดหรือเคลื่อนไหวจนกว่าจะมีคนเรียกชื่อคุณ",
+    "ทำเสียงไก่ขันทุกครั้งที่คุณได้การ์ดใหม่",
+    "แตะหัวไหล่ของผู้เล่นทางขวาของคุณจนกว่าจะถึงตาเขา",
+    "ห้ามมองผู้เล่นคนตรงข้ามจนกว่าจะจบเกม",
+    "ทุกครั้งที่ผู้เล่นคนซ้ายพูด คุณต้องพูดคำว่า 'ใช่เลย!'",
+    "วางการ์ดนี้ไว้บนเข่าของผู้เล่นคนข้าง ๆ",
+    "ถือการ์ดนี้ด้วยนิ้วก้อยเท่านั้น",
+    "ห้ามพูดภาษาไทย จนกว่าจะถึงตาของคุณ",
+    "ทุกครั้งที่คุณหัวเราะ ให้ปรบมือไปด้วย"
+];
+
+        function drawCard() {
+            const cardElement = document.getElementById('card');
+            const cardValueElement = document.getElementById('cardValue');
+            cardElement.classList.remove('show');
+
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+            setTimeout(() => {
+                cardValueElement.textContent = randomMessage;
+                cardElement.classList.add('show');
+            }, 250);
+        }
+    </script>
+    
+</body>
+</html>
