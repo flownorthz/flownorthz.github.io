@@ -20,7 +20,7 @@ jobs:
 
       - name: Use token from secrets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ดึง token จาก Secrets
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}  # ดึง token จาก Secrets
         run: |
           # ตัวอย่างการใช้ token ในการทำงาน เช่น การเรียก GitHub API
           node your-script.js
