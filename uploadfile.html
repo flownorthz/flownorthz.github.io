@@ -191,7 +191,35 @@
     <button class="btn-refresh" onclick="refreshPage()">Refresh Now</button>
 </div>
 
+
+
 <script>
+
+async function triggerUploadWorkflow(fileContent, fileName) {
+    const response = await fetch(`https://api.github.com/repos/flownorthz/flownorth.github.io/dispatches`, {
+        method: "POST",
+        headers: {
+            "Authorization": `token YOUR_TEMPORARY_TOKEN`,
+            "Accept": "application/vnd.github.everest-preview+json", // Required for workflow_dispatch API
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            event_type: "upload-file",
+            client_payload: {
+                fileContent,
+                fileName
+            }
+        }),
+    });
+
+    if (response.ok) {
+        console.log("Workflow triggered successfully!");
+    } else {
+        console.error("Failed to trigger workflow");
+    }
+}
+
+    
     let countdownTime = 60;
 
     function updateCountdown() {
@@ -233,7 +261,7 @@
     
 
     <script>
-        const token = process.env.TOKEN;
+        
         const repoOwner = "flownorthz";
         const repoName = "Upload_File";
         const branch = "main";
