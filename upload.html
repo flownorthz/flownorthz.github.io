@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FileFlow UploadSpace</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(90deg, #c077ff, hsl(266, 100%, 59%));
+    color: #333;
+    padding: 30px 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .description {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: -20px;
+  font-style: italic;
+}
+
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #4a4a4a;
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 1.8rem;
+    color: #4a4a4a;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column; /* Stack form elements vertically */
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  /* ปุ่มอัปโหลดที่มีการดีไซน์ใหม่ */
+  input[type="file"] {
+    display: none;
+  }
+
+  .file-upload-btn {
+    display: block;
+    padding: 15px 30px;
+    background: linear-gradient(90deg, #9b4de1, #6b1bd6);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+    margin-top: 15px;
+    margin-bottom: 10px; /* Space between file upload and filename */
+  }
+
+  .file-upload-btn:hover {
+    background: linear-gradient(90deg, #7a3ad6, #4f1482);
+    transform: scale(1.05);
+  }
+
+  .file-upload-btn:active {
+    transform: scale(1);
+  }
+
+  .file-upload-btn i {
+    font-size: 22px;
+    margin-right: 10px;
+  }
+
+  .file-name {
+    margin-left: 10px;
+    font-style: italic;
+    color: #777;
+  }
+
+  /* ปรับสไตล์ของปุ่ม Upload ให้เหมือน Choose File แต่เป็นสีเขียว */
+  .upload-btn {
+    display: block;
+    padding: 15px 30px;
+    background-color: #4CAF50; /* สีเขียว */
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+    margin-top: 10px; /* เว้นระยะห่างจากปุ่ม Choose File */
+  }
+
+  .upload-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+  }
+
+  .upload-btn:active {
+    transform: scale(1);
+  }
+
+  .upload-btn i {
+    font-size: 22px;
+    margin-right: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  /* สไตล์ของรายการไฟล์ */
+  .file-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #d6d6d6;
+    padding: 15px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .file-card button {
+    margin-left: 10px;
+  }
+
+  .file-actions {
+    display: flex;
+    gap: -30px;
+    justify-content: flex-end;
+  }
+
+  .rename-btn {
+    background-color: #4CAF50;
+  }
+
+  .rename-btn:hover {
+    background-color: #008907;
+  }
+
+  .delete-btn {
+    background-color: #f44336;
+  }
+
+  .delete-btn:hover {
+    background-color: #ba0d00;
+  }
+
+  .download-btn {
+    background-color: #2196F3;
+  }
+
+  .download-btn:hover {
+    background-color: #0265b6;
+  }
+
+  .footer {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: -35px;
+  font-style: italic;
+}
+  
+</style>
+
+<body>
+  <div class="container">
+    <h1>FileFlow UploadSpace</h1>
+    <p class="description">"เว็บสำหรับฝากไฟล์ผ่านการอัปโหลด เพื่อใช้เป็นสื่อกลางในการนำไปพิมพ์หรือส่งต่อไฟล์ไปยังเครื่องอื่น"</p>
+
+    <!-- Upload Form -->
+    <form id="uploadForm">
+      <label for="fileInput" class="file-upload-btn">
+        <i class="fas fa-upload"></i> Choose File
+        <input type="file" id="fileInput" required />
+      </label>
+      <span id="fileName" class="file-name">No file chosen</span>
+      <button type="submit" class="upload-btn">
+        <i class="fas fa-upload"></i> Upload
+      </button>
+    </form>
+
+    <!-- File List -->
+    <h2>Uploaded Files:</h2>
+    <div id="fileList"></div>
+  </div>
+
+  <p class="footer">Made by Overflow</p>
+
+  <script>
+    const API_URL = "http://testpun.duckdns.org:5000";
+    const uploadForm = document.getElementById("uploadForm");
+    const fileInput = document.getElementById("fileInput");
+    const fileNameDisplay = document.getElementById("fileName");
+    const fileList = document.getElementById("fileList");
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      fileNameDisplay.textContent = file ? file.name : 'No file chosen';
+    });
+
+    function loadFiles() {
+      fetch(`${API_URL}/files`)
+        .then(response => response.json())
+        .then(files => {
+          fileList.innerHTML = "";
+          files.forEach(file => {
+            const fileCard = document.createElement("div");
+            fileCard.classList.add("file-card");
+            fileCard.innerHTML = `
+              <span>${file}</span>
+              <div class="file-actions">
+                <button class="rename-btn" onclick="renameFile('${file}')">Rename</button>
+                <button class="delete-btn" onclick="deleteFile('${file}')">Delete</button>
+                <button class="download-btn" onclick="downloadFile('${file}')">Download</button>
+              </div>
+            `;
+            fileList.appendChild(fileCard);
+          });
+        });
+    }
+    
+
+    uploadForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      fetch(`${API_URL}/upload`, {
+        method: "POST",
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(() => loadFiles())
+        .catch(err => alert("Error uploading file: " + err));
+    });
+
+    function renameFile(oldName) {
+      const newName = prompt("Enter new file name", oldName);
+      if (!newName) return;
+
+      fetch(`${API_URL}/files/${oldName}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newName }),
+      })
+        .then(() => loadFiles())
+        .catch(err => alert("Error renaming file: " + err));
+    }
+
+    function deleteFile(fileName) {
+      if (confirm(`Are you sure you want to delete ${fileName}?`)) {
+        fetch(`${API_URL}/files/${fileName}`, { method: "DELETE" })
+          .then(() => loadFiles())
+          .catch(err => alert("Error deleting file: " + err));
+      }
+    }
+
+    function downloadFile(fileName) {
+      const fileURL = `${API_URL}/${fileName}`;
+      const a = document.createElement('a');
+      a.href = fileURL;
+      a.download = fileName;
+      a.target = "_blank";  // Open in a new tab
+      a.click();
+    }
+
+    loadFiles();
+    
+  </script>
+
+
+
+</body>
+</html>
