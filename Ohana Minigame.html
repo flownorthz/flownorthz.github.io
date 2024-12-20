@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมมินิเกมโอฮาน่า</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+        }
+
+        .display-box {
+            margin: 20px 0;
+            padding: 20px;
+            font-size: 1.5em;
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-radius: 10px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ccc;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button#randomMinigame {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        button#randomMinigame:hover {
+            background-color: #2ecc71;
+        }
+
+        button#randomPunishment {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        button#randomPunishment:hover {
+            background-color: #d35400;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .display-box {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>เกมโอฮาน่าสุ่มมินิเกม&King</h1>
+
+        <div id="minigameDisplay" class="display-box">กดสุ่มเพื่อเริ่มมินิเกม</div>
+        <div id="punishmentDisplay" class="display-box">กดสุ่มเพื่อสุ่มสรรค์ K</div>
+
+        <button id="randomMinigame" onclick="randomMinigame()">สุ่มมินิเกม</button>
+        <button id="randomPunishment" onclick="randomPunishment()">สุ่มสรรค์ K</button>
+
+        <footer>Made by Overflow</footer>
+    </div>
+
+    <script>
+        const minigames = [
+            'คำต่อท้าย 2 พยางค์',
+            'จับฉลากทายระดับความ เศร้า',
+            'จับฉลากทายระดับความ โกรธ',
+            'จับฉลากทายระดับความ ดีใจ',
+            'จับฉลากทายระดับความ กลัว',
+            'จับฉลากทายระดับความ หิว',
+            'จับฉลากทายระดับความ ง่วง',
+            'จำคำคนข้างหน้าหมวด สัตว์',
+            'จำคำคนข้างหน้าหมวด สิ่งของในห้อง',
+            'จำคำคนข้างหน้าหมวด ผลไม้',
+            'จำคำคนข้างหน้าหมวด ห้องครัว',
+            'จำคำคนข้างหน้าหมวด ขนมไทย',
+            'จำคำคนข้างหน้าหมวด สี',
+            'จำคำคนข้างหน้าหมวด ภาษาเทพ',
+            'จำคำคนข้างหน้าหมวด คำอุทาน',
+            'จำท่ารวม Step แค่ครึ่งบน',
+            'เลขท้ายบัตรประชาชน 2 ตัว',
+            'ร้องเพลงที่มีคำว่า "เธอ"',
+            'ร้องเพลงที่มี "ตัวเลข"',
+            'ร้องเพลงที่มี "สัตว์"',
+            'คิดว่าฉันพูด จริง หรือ โกหก',
+            'จังหวัดที่ลงท้ายด้วยคำว่า "บุรี"',
+            'อายุมากสุดโดน',
+            'อายุน้อยสุดโดน',
+            'มากสุดน้อย น้อยสุดโดน',
+            'ร้องเพลงเกี่ยวกับอาชีพ',
+            'ร้องเพลงที่มีคำว่า "ตก"',
+            'ร้องเพลงที่มีคำว่า "รัก"',
+            'อย่าหันตามฉัน',
+            'เกม ABC',
+            'เกมชักมือนับเลข',
+            'ห้ามหัวเราะ',
+            'ร้องเพลงคำลงท้าย',
+            'บอกชื่อสัตว์ที่มี ปีก',
+            'ต่อจังหวัด',
+            'บอกชื่อผีไทย',
+        ];
+
+        const punishments = [
+            'ทำท่ากายบริหาร',
+            'เต้นเรื่อยๆ',
+            'ภาษาเทพ',
+            'ร้องเพลงตลอดเวลา',
+            'ใครถามให้ทำหน้าตลก',
+            'ใช้เสียงสูง',
+            'เลียนแบบเสียงสัตว์',
+            'ทำท่าซูเปอร์ฮีโร่',
+            'ยกมือไหว้ตลอดพร้อมพูดเพราะๆด้วยความเคารพ',
+            'ฝั่งขวาเป็น K แทนให้สุ่มใหม่',
+            'โยกไหล่ตลอดเวลา',
+            'เป็นบัดดี้ชั่วคราว',
+            'ทำหน้าเศร้าตลอด',
+            'ให้ตอบทุกคำถามมีตัวเลขในนั้น',
+            'ยิ้มตลอดเวลา',
+            'บิดเอว บิดตูดไปมา',
+            'เต้นท่า Gamnamstyle',
+            'เมื่อใครโดน A ให้โดนเป็นเพื่อนเขา',
+            'ทำท่าฮิปฮอป Gangster',
+        ];
+
+
+        let availableMinigames = [...minigames];
+        let availablePunishments = [...punishments];
+
+        function randomMinigame() {
+            const minigameDisplay = document.getElementById('minigameDisplay');
+
+            if (availableMinigames.length === 0) {
+                availableMinigames = [...minigames]; // รีเซ็ตรายการเมื่อสุ่มหมดแล้ว
+                alert("สุ่มมินิเกมครบหมดแล้ว กำลังเริ่มใหม่");
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableMinigames.length);
+            const randomMinigame = availableMinigames[randomIndex];
+            availableMinigames.splice(randomIndex, 1); // ลบมินิเกมที่สุ่มออกจากรายการ
+            minigameDisplay.textContent = randomMinigame;
+        }
+
+        function randomPunishment() {
+            const punishmentDisplay = document.getElementById('punishmentDisplay');
+
+            if (availablePunishments.length === 0) {
+                availablePunishments = [...punishments]; // รีเซ็ตรายการเมื่อสุ่มหมดแล้ว
+                alert("สุ่มบทลงโทษครบหมดแล้ว กำลังเริ่มใหม่");
+            }
+
+            const randomIndex = Math.floor(Math.random() * availablePunishments.length);
+            const randomPunishment = availablePunishments[randomIndex];
+            availablePunishments.splice(randomIndex, 1); // ลบบทลงโทษที่สุ่มออกจากรายการ
+            punishmentDisplay.textContent = randomPunishment;
+        }
+    </script>
+
+
+</body>
+
+</html>
