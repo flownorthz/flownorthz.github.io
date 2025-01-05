@@ -122,7 +122,7 @@
         }
 
         .highlight-today {
-            background-color: #ffb3b3;
+            background-color: #b3c0ff;
             font-weight: bold;
             color: #333;
 
@@ -208,6 +208,65 @@
         #closeModal:hover {
             background-color: #c82333;
         }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: none;
+            margin-bottom: 20px;
+        }
+
+        #freeTimeSummarySection {
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #freeTimeSummarySection h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .free-time-summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .free-time-summary {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .free-time-summary strong {
+            font-size: 1.2rem;
+            color: #444;
+        }
+
+        .free-time-summary p {
+            margin-top: 8px;
+            color: #666;
+        }
+
+        .free-time-summary .profile-list {
+            margin-top: 8px;
+            padding-left: 15px;
+        }
+
+        .free-time-summary .profile-list span {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin-right: 8px;
+        }
     </style>
 
 </head>
@@ -217,8 +276,15 @@
         <!-- Header -->
         <header>
             <h1>Find Free Time</h1>
-            <button id="addProfileBtn">Add Profile</button>
+            <div>
+                <button id="inputTextBtn">Input</button>
+                <button id="addProfileBtn">Add Profile</button>
+
+            </div>
         </header>
+
+
+
 
         <!-- Profile Section -->
         <section id="profileSection">
@@ -239,6 +305,27 @@
                 <!-- Days will be added by JavaScript -->
             </div>
         </section>
+
+        <section id="freeTimeSummarySection">
+            <h2>วันที่รวมคนได้มากที่สุดถึงน้อยที่สุด</h2>
+            <div id="freeTimeSummary">
+                <!-- ผลลัพธ์จะแสดงที่นี่ -->
+            </div>
+        </section>
+    </div>
+
+
+
+
+    <!-- Modal for input text -->
+    <div id="textModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Input Free Time</h3>
+            <textarea id="inputTextArea" rows="10" placeholder="Enter your plan..."></textarea>
+            <button id="processTextBtn">Process</button>
+            <button id="exampleTextBtn">Example</button>
+            <button id="closeTextModal">Close</button>
+        </div>
     </div>
 
     <!-- Modal for adding profile -->
@@ -266,6 +353,27 @@
         const monthTitle = document.querySelector('.month-title');
         const prevMonthBtn = document.querySelector('.prev-month');
         const nextMonthBtn = document.querySelector('.next-month');
+
+        // เพิ่มตัวเลือกตัวอย่างข้อความ
+        const exampleTextBtn = document.getElementById('exampleTextBtn');
+
+        exampleTextBtn.addEventListener('click', () => {
+            const exampleText = `ตี๋น้อย 1 2025
+ปั้น 1 3 5
+อาร์ท 2 3 4
+เกงกิ 6 7 28
+
+(หัวข้อ) (ตัวเลขเดือน) (ปี)
+(ชื่อ) (วันว่าง)
+(ชื่อ) (วันว่าง)
+(ชื่อ) (วันว่าง)
+
+
+    `;
+            inputTextArea.value = exampleText; // ใส่ข้อความลงใน textarea
+        });
+
+
 
         let profiles = [];
         let selectedProfile = null;
@@ -421,6 +529,156 @@
 
         // เริ่มต้น
         renderCalendar();
+
+        // เปิด/ปิด Modal สำหรับ Input Text
+        const inputTextBtn = document.getElementById('inputTextBtn');
+        const textModal = document.getElementById('textModal');
+        const closeTextModal = document.getElementById('closeTextModal');
+        const processTextBtn = document.getElementById('processTextBtn');
+        const inputTextArea = document.getElementById('inputTextArea');
+
+
+        inputTextBtn.addEventListener('click', () => textModal.classList.remove('hidden'));
+        closeTextModal.addEventListener('click', () => textModal.classList.add('hidden'));
+
+        // ประมวลผลข้อความ
+        processTextBtn.addEventListener('click', () => {
+            const inputText = inputTextArea.value.trim();
+            if (!inputText) {
+                alert('Please enter some text!');
+                return;
+            }
+
+            const lines = inputText.split('\n');
+            let firstLineProcessed = false;
+
+            lines.forEach((line) => {
+                const parts = line.split(' ');
+                if (parts.length === 0) return;
+
+                if (!firstLineProcessed) {
+                    // แสดงหัวข้อ
+                    const headline = parts[0];
+                    document.querySelector('#profileSection h2').textContent = `Profiles: ${headline}`;
+                    firstLineProcessed = true;
+
+                    // อัปเดตเดือนและปี
+                    const month = parseInt(parts[1], 10) - 1;
+                    const year = parseInt(parts[2], 10);
+                    if (!isNaN(month) && !isNaN(year)) {
+                        currentMonth = month;
+                        currentYear = year;
+                        renderCalendar();
+                    }
+                } else {
+                    // เพิ่มโปรไฟล์และวันว่าง
+                    const name = parts[0];
+                    const freeDays = parts.slice(1).map(Number);
+                    const color = getRandomColor();
+                    profiles.push({ name, color, freeDays });
+                    renderProfiles();
+
+                    // ไฮไลต์วันที่
+                    freeDays.forEach((day) => {
+                        const dayDivs = Array.from(calendarGrid.children).filter((div) =>
+                            div.textContent === day.toString() && !isNaN(day)
+                        );
+                        dayDivs.forEach((dayDiv) => {
+                            const colorsDiv = dayDiv.querySelector('.colors');
+                            const colorSpan = document.createElement('span');
+                            colorSpan.style.background = color;
+                            colorSpan.style.width = '10px';
+                            colorSpan.style.height = '10px';
+                            colorSpan.style.borderRadius = '50%';
+                            colorSpan.setAttribute('data-color', color);
+                            colorsDiv.appendChild(colorSpan);
+                        });
+                    });
+                }
+            });
+
+            // ประมวลผลวันว่าง
+            processFreeDays();
+
+            textModal.classList.add('hidden');
+            inputTextArea.value = '';
+        });
+
+
+        // สุ่มสี
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // สร้างฟังก์ชันเพื่อจัดการข้อมูลวันว่าง
+        let freeTimeData = {}; // เก็บข้อมูลวันที่ที่แต่ละโปรไฟล์ว่าง
+
+        function processFreeDays() {
+            // เคลียร์ข้อมูลเก่า
+            freeTimeData = {};
+
+            profiles.forEach(profile => {
+                // หาเฉพาะวันที่ที่โปรไฟล์ว่าง
+                profile.freeDays.forEach(day => {
+                    if (!freeTimeData[day]) {
+                        freeTimeData[day] = [];
+                    }
+                    freeTimeData[day].push(profile.name);
+                });
+            });
+
+            // จัดเรียงข้อมูลจากวันที่มีจำนวนโปรไฟล์ว่างมากที่สุดไปน้อยที่สุด
+            const sortedFreeDays = Object.keys(freeTimeData).sort((a, b) => freeTimeData[b].length - freeTimeData[a].length);
+
+            // แสดงผล
+            renderFreeTimeSummary(sortedFreeDays);
+        }
+
+        function renderFreeTimeSummary(sortedFreeDays) {
+            const freeTimeSummarySection = document.getElementById('freeTimeSummary');
+            freeTimeSummarySection.innerHTML = ''; // เคลียร์ผลเก่า
+
+            sortedFreeDays.forEach(day => {
+                const profilesAvailable = freeTimeData[day];
+                const date = new Date(currentYear, currentMonth, day);
+                const dayOfWeek = date.toLocaleString('default', { weekday: 'long' });
+
+                // คำนวณจำนวนคนที่สามารถมาได้และขาด
+                const totalProfiles = profiles.length;
+                const availableProfilesCount = profilesAvailable.length;
+                const missingProfiles = profiles.filter(profile => !profilesAvailable.includes(profile.name));
+
+                const summaryDiv = document.createElement('div');
+                summaryDiv.classList.add('free-time-summary');
+                summaryDiv.innerHTML = `
+            <strong>${dayOfWeek} ที่ ${day}</strong> รวมได้: ${availableProfilesCount}/${totalProfiles}
+            <p class="profile-list">
+                ${profilesAvailable.map(profile => `<span style="background-color: ${getProfileColor(profile)}">${profile}</span>`).join('')}
+            </p>
+
+            <p>ขาด: ${missingProfiles.map(profile => profile.name).join(', ')}</p>
+        `;
+                freeTimeSummarySection.appendChild(summaryDiv);
+            });
+        }
+
+        function getProfileColor(profileName) {
+            const profile = profiles.find(p => p.name === profileName);
+            return profile ? profile.color : '#7f8c8d'; // ใช้สีจากโปรไฟล์หรือสีเริ่มต้น
+        }
+
+
+
+        // เรียกฟังก์ชันนี้เมื่อโปรไฟล์หรือวันที่เปลี่ยนแปลง
+        renderCalendar();
+        processFreeDays();
+
+
     </script>
 </body>
 
