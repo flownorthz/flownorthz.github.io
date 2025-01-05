@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Free Time</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Profile Section */
+        #profileSection {
+            margin-bottom: 30px;
+        }
+
+        #profileList {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile:hover {
+            background-color: #e0e0e0;
+        }
+
+        .profile span {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+
+        /* Calendar Section */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day {
+            background-color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .day:hover {
+            background-color: #f0f0f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .highlight-today {
+            background-color: #ffb3b3;
+            font-weight: bold;
+            color: #333;
+
+        }
+
+        .colors {
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 320px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="color"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        /* Transition effects for modal */
+        .modal.hidden {
+            display: none;
+        }
+
+        /* Button Styling for Modal */
+        #saveProfile,
+        #closeModal {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #saveProfile:hover {
+            background-color: #218838;
+        }
+
+        #closeModal {
+            background-color: #dc3545;
+            margin-top: 10px;
+        }
+
+        #closeModal:hover {
+            background-color: #c82333;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Find Free Time</h1>
+            <button id="addProfileBtn">Add Profile</button>
+        </header>
+
+        <!-- Profile Section -->
+        <section id="profileSection">
+            <h2>Profiles</h2>
+            <div id="profileList">
+                <!-- Profiles will be added by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Calendar -->
+        <section id="calendarSection">
+            <div class="calendar-header">
+                <button class="prev-month">❮</button>
+                <span class="month-title">January 2025</span>
+                <button class="next-month">❯</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Days will be added by JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for adding profile -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add Profile</h3>
+            <label for="profileName">Name:</label>
+            <input type="text" id="profileName">
+            <label for="profileColor">Choose Color:</label>
+            <input type="color" id="profileColor" value="#ff6666">
+            <button id="saveProfile">Save</button>
+            <button id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script>const addProfileBtn = document.getElementById('addProfileBtn');
+        const modal = document.getElementById('modal');
+        const closeModal = document.getElementById('closeModal');
+        const saveProfile = document.getElementById('saveProfile');
+        const profileList = document.getElementById('profileList');
+        const profileNameInput = document.getElementById('profileName');
+        const profileColorInput = document.getElementById('profileColor');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const monthTitle = document.querySelector('.month-title');
+        const prevMonthBtn = document.querySelector('.prev-month');
+        const nextMonthBtn = document.querySelector('.next-month');
+
+        let profiles = [];
+        let selectedProfile = null;
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth(); // เดือนปัจจุบัน (0-11)
+        let currentYear = currentDate.getFullYear(); // ปีปัจจุบัน
+
+        // เปิด/ปิด Modal
+        addProfileBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+        // บันทึกโปรไฟล์
+        saveProfile.addEventListener('click', () => {
+            const name = profileNameInput.value;
+            const color = profileColorInput.value;
+
+            if (name && color) {
+                profiles.push({ name, color });
+                renderProfiles();
+                modal.classList.add('hidden');
+                profileNameInput.value = '';
+                profileColorInput.value = '#ff6666';
+            }
+        });
+
+        // แสดงโปรไฟล์
+        function renderProfiles() {
+            profileList.innerHTML = '';
+            profiles.forEach((profile, index) => {
+                const profileDiv = document.createElement('div');
+                profileDiv.classList.add('profile');
+                profileDiv.innerHTML = `
+              <span style="background: ${profile.color}"></span>
+              <p>${profile.name}</p>
+            `;
+                profileDiv.addEventListener('click', () => {
+                    selectedProfile = profile; // เลือกโปรไฟล์
+                    highlightSelectedProfile(profileDiv);
+                });
+                profileList.appendChild(profileDiv);
+            });
+        }
+
+        function highlightSelectedProfile(profileDiv) {
+            const allProfiles = document.querySelectorAll('.profile');
+            allProfiles.forEach(p => p.style.border = 'none'); // ลบการไฮไลต์ก่อนหน้า
+            profileDiv.style.border = '2px solid #007bff'; // เพิ่มขอบเมื่อเลือกโปรไฟล์
+        }
+
+        // แสดงวันที่ในแต่ละเดือน
+        // ฟังก์ชันสำหรับแสดงปฏิทิน
+        function renderCalendar() {
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDayOfMonth.getDate(); // จำนวนวันในเดือนนั้น
+
+            // อัปเดตชื่อเดือนและปี
+            monthTitle.textContent = `${firstDayOfMonth.toLocaleString('default', { month: 'long' })} ${currentYear}`;
+
+            // เคลียร์ปฏิทินเก่า
+            calendarGrid.innerHTML = '';
+
+            // เพิ่มแถวชื่อวัน (Sunday, Monday, Tuesday, etc.)
+            const daysOfWeek = ['วันอาทิตย์', 'วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์', 'วันเสาร์'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.classList.add('day');
+                dayHeader.textContent = day;
+                dayHeader.style.fontWeight = 'bold'; // ทำให้ตัวหนังสือหนา
+                calendarGrid.appendChild(dayHeader);
+            });
+
+            // คำนวณช่องว่างก่อนวันแรกของเดือน
+            const firstDay = firstDayOfMonth.getDay(); // วันแรกของเดือน (0-6, 0 = Sunday)
+
+            // เพิ่มช่องว่างสำหรับวันที่ก่อนวันแรกของเดือน
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.classList.add('day');
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // เพิ่มวันที่ในปฏิทิน
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('day');
+                dayDiv.textContent = i;
+
+                // ไฮไลต์วันที่วันนี้
+                if (i === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
+                    dayDiv.classList.add('highlight-today');
+                }
+
+                const colorsDiv = document.createElement('div');
+                colorsDiv.classList.add('colors');
+                dayDiv.appendChild(colorsDiv);
+
+                // คลิกเพื่อเพิ่มสีจากโปรไฟล์ที่เลือก
+                dayDiv.addEventListener('click', () => {
+                    if (selectedProfile) {
+                        const existingColor = Array.from(colorsDiv.children).find(
+                            (child) => child.getAttribute('data-color') === selectedProfile.color
+                        );
+
+                        if (existingColor) {
+                            // หากมีสีอยู่แล้ว ให้ลบออก
+                            colorsDiv.removeChild(existingColor);
+                        } else {
+                            // หากยังไม่มีสี ให้เพิ่มเข้าไป
+                            const colorSpan = document.createElement('span');
+                            colorSpan.style.background = selectedProfile.color;
+                            colorSpan.style.width = '10px';
+                            colorSpan.style.height = '10px';
+                            colorSpan.style.borderRadius = '50%';
+                            colorSpan.setAttribute('data-color', selectedProfile.color); // เก็บสีไว้ใน attribute
+                            colorsDiv.appendChild(colorSpan);
+                        }
+                    }
+                });
+
+                calendarGrid.appendChild(dayDiv);
+            }
+
+            // เพิ่มช่องว่างหลังวันสุดท้ายของเดือนเพื่อให้ครบ 7 วัน
+            const remainingDays = (7 - ((firstDay + daysInMonth) % 7)) % 7;
+            for (let i = 0; i < remainingDays; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.classList.add('day');
+                calendarGrid.appendChild(emptyDay);
+            }
+        }
+
+
+
+        // เปลี่ยนเดือน
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // เริ่มต้น
+        renderCalendar();
+    </script>
+</body>
+
+</html>
