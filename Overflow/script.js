@@ -1,6 +1,6 @@
 // ตั้งค่า Repository ของคุณ
 const repoOwner = "flownorthz"; // แทนที่ด้วยชื่อ GitHub ของคุณ
-const repoName = "my-songs"; // ชื่อ Repository
+const repoName = "Overflow"; // ชื่อ Repository
 const branch = "main"; // ชื่อ branch ที่ใช้ (ส่วนใหญ่คือ main)
 
 // โฟลเดอร์สำหรับเก็บเพลงและเนื้อเพลง
