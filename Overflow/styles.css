@@ -38,3 +38,23 @@ pre {
     border-radius: 5px;
     font-size: 1em;
 }
+
+#song-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    padding: 10px 15px;
+    font-size: 1.5em;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
