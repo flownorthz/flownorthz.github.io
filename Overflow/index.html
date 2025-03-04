@@ -10,9 +10,18 @@
     <div class="container">
         <h1>🎶 รายการเพลง 🎶</h1>
         <section id="song-list">
-            <!-- รายการเพลงจะถูกเพิ่มที่นี่ -->
+            <button id="prev-song">⬅️</button>
+            <div id="song-display">
+                <h2 id="song-title">กำลังโหลด...</h2>
+                <audio id="audio-player" controls>
+                    <source id="audio-source" src="" type="audio/mpeg">
+                </audio>
+                <pre id="lyrics">Loading lyrics...</pre>
+            </div>
+            <button id="next-song">➡️</button>
         </section>
     </div>
+    
 
     <script src="script.js"></script>
 </body>
