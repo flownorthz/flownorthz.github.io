@@ -202,15 +202,17 @@ q13_option = driver.find_element(By.XPATH, q13_choice)
 q13_option.click()
 #-------- ข้อ 14 --------
 q14_options = [
-    '//span[text()="คุณภาพของการถ่ายทอดสดที่คมชัดและเสถียร"]',
-    '//span[text()="ความสะดวกในการรับชมย้อนหลัง"]',
-    '//span[text()="การมีส่วนร่วมกับผู้ชมคนอื่นผ่านคอมเมนต์และแชทสด"]',
-    '//span[text()="ติดตามช่องหรือครีเอเตอร์ที่ถ่ายทอด"]'
+    '//*[@id="i147"]/div[3]/div',
+    '//*[@id="i150"]/div[3]/div',
+    '//*[@id="i153"]/div[3]/div',
+    '//*[@id="i156"]/div[3]/div'
 ]
 
-q14_choice = random.choice(q14_options)
-q14_option = driver.find_element(By.XPATH, q14_choice)
+# Randomly choose an XPath and click on it
+chosen_xpath = random.choice(q14_options)
+q14_option = driver.find_element(By.XPATH, chosen_xpath)
 q14_option.click()
+
 
 #----- Next -----
 next_button = driver.find_element(By.XPATH, '//span[text()="ถัดไป"]')
