@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Useless Box</title>
+  <style>
+    body {
+        background-color: rgb(241, 227, 255);
+      text-align: center;
+      margin-top: 50px;
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    img {
+      width: 200px;
+      cursor: pointer;
+    }
+
+    #arm {
+      position: absolute;
+      top: -600px; /* เริ่มอยู่ข้างบน */
+      left: 48%;
+      transform: translateX(-50%);
+      width: 300px;
+      transition: top 0.5s ease;
+      z-index: 10;
+    }
+
+    #arm.show {
+      top: -200px; /* ตำแหน่งที่ต้องการให้แขนโผล่มา */
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Useless Box</h1>
+  <img id="switch" src="switch_off.png" alt="Switch">
+  <img id="arm" src="arm.png" alt="Arm">
+
+  <!-- เสียง -->
+  <audio id="switchSound" src="switch.mp3"></audio>
+
+  <script>
+    const switchImg = document.getElementById('switch');
+    const switchSound = document.getElementById('switchSound');
+    const armImg = document.getElementById('arm');
+  
+    let isOn = false;
+    let armTimeout = null;
+    let idleTimeout = null;
+  
+    function showArm() {
+      armImg.classList.add('show');
+  
+      // ปิดสวิตช์หลังแขนโผล่
+      setTimeout(() => {
+        switchImg.src = 'switch_off.png';
+        isOn = false;
+        switchSound.currentTime = 0;
+        switchSound.play();
+  
+        // ซ่อนแขน
+        setTimeout(() => {
+          armImg.classList.remove('show');
+        }, 50);
+      }, 400);
+    }
+  
+    switchImg.addEventListener('click', () => {
+      // ยกเลิก timeout เดิมทุกครั้งที่กด
+      clearTimeout(armTimeout);
+      clearTimeout(idleTimeout);
+  
+      // toggle สถานะ
+      if (!isOn) {
+        switchImg.src = 'switch_on.png';
+        isOn = true;
+        switchSound.currentTime = 0;
+        switchSound.play();
+  
+        // ตั้งเวลารอ 3 วิเพื่อให้แขนออก (หากไม่ถูกปิดก่อน)
+        idleTimeout = setTimeout(() => {
+          if (isOn) {
+            showArm();
+          }
+        }, 1000);
+      } else {
+        switchImg.src = 'switch_off.png';
+        isOn = false;
+        switchSound.currentTime = 0;
+        switchSound.play();
+      }
+    });
+  </script>
+  
+  
+</body>
+</html>
