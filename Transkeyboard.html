@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แปลงข้อความลืมเปลี่ยนภาษา</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fceabb, #ff559f);
+      padding: 30px;
+      color: #333;
+    }
+
+    .container {
+      background-color: #fffdf5;
+      max-width: 700px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #444;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      font-size: 1.1rem;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .button-group {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #ff3d77;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 25px;
+      margin: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+
+    button:hover {
+      background-color: #de225a;
+      transform: scale(1.03);
+    }
+
+    #modeLabel {
+      font-weight: bold;
+      color: #333;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>แปลงข้อความที่ลืมเปลี่ยนภาษา</h2>
+    <p style="text-align: center; font-size: 0.9rem; color: #777;">Made by Overflow</p>
+
+    <label for="inputText">ข้อความที่พิมพ์โดยลืมเปลี่ยนภาษา:</label>
+    <textarea id="inputText" placeholder="ใส่ข้อความตรงนี้"></textarea>
+
+    <div class="button-group">
+      <button onclick="toggleMode()">โหมด: <span id="modeLabel">Eng → ไทย</span></button>
+      <button onclick="convertText()">แปลงข้อความ</button>
+    </div>
+
+    <label for="outputText">ผลลัพธ์ที่แปลงแล้ว:</label>
+    <textarea id="outputText" readonly placeholder="ผลลัพธ์จะปรากฏที่นี่..."></textarea>
+  </div>
+
+  <script>
+    const engToThai = {
+      'a': 'ฟ', 'b': 'ิ', 'c': 'แ', 'd': 'ก', 'e': 'ำ', 'f': 'ด',
+      'g': 'เ', 'h': '้', 'i': 'ร', 'j': '่', 'k': 'า', 'l': 'ส',
+      'm': 'ท', 'n': 'ื', 'o': 'น', 'p': 'ย', 'q': 'ๆ', 'r': 'พ',
+      's': 'ห', 't': 'ะ', 'u': 'ร', 'v': 'อ', 'w': 'ไ', 'x': 'ป',
+      'y': 'ั', 'z': 'ผ',
+      'A': 'ฤ', 'B': 'ฺ', 'C': 'ฉ', 'D': 'ฏ', 'E': 'ฎ', 'F': 'โ',
+      'G': 'ฌ', 'H': '็', 'I': 'ณ', 'J': '๋', 'K': 'ษ', 'L': 'ศ',
+      'M': '?', 'N': '์', 'O': 'ฯ', 'P': 'ญ', 'Q': '๐', 'R': 'ฑ',
+      'S': 'ฆ', 'T': 'ธ', 'U': '๊', 'V': 'ฮ', 'W': '"', 'X': ')',
+      'Y': 'ํํํ', 'Z': '(',
+      '`': '_', '1': 'ๅ', '2': '/', '3': '-', '4': 'ภ', '5': 'ถ',
+      '6': 'ุ', '7': 'ึ', '8': 'ค', '9': 'ต', '0': 'จ', '-': 'ข',
+      '=': 'ช', '[': 'บ', ']': 'ล', ';': 'ว', "'": 'ง', ',': 'ม',
+      '.': 'ใ', '/': 'ฝ',
+      '!': '+', '@': '๑', '#': '๒', '$': '๓', '%': '๔', '^': 'ู',
+      '&': '฿', '*': '๕', '(': '๖', ')': '๗', '_': '๘', '+': '๙',
+    };
+
+    const thaiToEng = {};
+    for (let key in engToThai) {
+      thaiToEng[engToThai[key]] = key;
+    }
+
+    let currentMode = 'engToThai';
+
+    function toggleMode() {
+      currentMode = currentMode === 'engToThai' ? 'thaiToEng' : 'engToThai';
+      document.getElementById("modeLabel").innerText =
+        currentMode === 'engToThai' ? 'Eng → ไทย' : 'ไทย → Eng';
+    }
+
+    function convertText() {
+      const input = document.getElementById("inputText").value;
+      let output = '';
+      const map = currentMode === 'engToThai' ? engToThai : thaiToEng;
+
+      for (let char of input) {
+        output += map[char] || char;
+      }
+
+      document.getElementById("outputText").value = output;
+    }
+  </script>
+
+</body>
+</html>
