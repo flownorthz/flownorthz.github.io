@@ -171,10 +171,11 @@
     if (index >= tables.length) {
       // แสดงผลรวมเมื่อจบ
       const sum = selectedNumbers.reduce((a, b) => a + b, 0);
-      container.innerHTML = '<p style="font-size:22px; text-align:center; color:#154360;">จบการเลือกทั้งหมด </p>';
+      container.innerHTML = '<p style="font-size:22px; text-align:center; color:#154360;">วันเกิดคุณคือวันที่ ' + sum + '</p>';
+
       yesBtn.disabled = true;
       noBtn.disabled = true;
-      resultDiv.textContent = 'วันเกิดคุณคือวันที่ ' + sum;
+      resultDiv.textContent = ' ';
       return;
     }
 
