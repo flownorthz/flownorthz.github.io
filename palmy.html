@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>จดหมายถึงดอกไม้</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fdeff9, #f7d9e3);
+            height: 100vh;
+            font-family: 'Sriracha', cursive;
+        }
+
+        .mydiv {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+        }
+
+        .mail {
+            width: 320px;
+            height: 200px;
+            background: #ff8789;
+            position: relative;
+            transform-style: preserve-3d;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* ซองจดหมายหน้า */
+        .mail:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid #ff393c;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid #ff393c;
+            z-index: 10;
+            /* ให้อยู่บนสุด */
+            border-bottom-right-radius: 10px;
+        }
+
+        /* ซองจดหมายหลัง */
+        .mail:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 160px solid #ff5355;
+            border-right: 160px solid transparent;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid #ff5355;
+            z-index: 9;
+            /* อยู่ใต้ :before */
+            border-bottom-left-radius: 10px;
+        }
+
+        /* ฝาปิดจดหมาย */
+        .cover:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 100px solid #ff8789;
+            border-bottom: 100px solid transparent;
+            z-index: 4;
+            /* ต่ำกว่า .text */
+            transform-origin: top;
+            transform: rotateX(0deg);
+            transition: all 1s 1s ease;
+        }
+
+        /* เนื้อความในจดหมาย */
+        .text {
+            position: absolute;
+            z-index: 3;
+            top: 0;
+            left: 10px;
+            background-color: #fffefc;
+            width: 300px;
+            height: 180px;
+            border-radius: 20px;
+            transition: all 1s ease;
+            padding: 15px;
+            overflow-y: auto;
+            color: #333;
+            font-size: 10px;
+            line-height: 1.6;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transform-origin: top center;
+            transform: translateY(0) scale(1);
+        }
+
+        /* เมื่อ hover */
+        .mail:hover .cover:before {
+            transform: rotateX(180deg);
+            transition: all 1s ease;
+        }
+
+        .mail:hover .text {
+            transform: translateY(-300px) scale(2.2);
+            transition: all 1s 1s ease;
+            z-index: 20;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mydiv">
+        <div class="mail">
+            <div class="cover"></div>
+            <div class="text">
+                ถึงปาล์มมี่...<br /><br />
+                มีหนังสือเล่มนึง ชื่อว่าปาล์มมี่<br />
+                ในเล่มนั้นมีผู้หญิง น่ารัก เรียบง่าย คนหนึ่ง<br />
+                เธอรักธรรมชาติ ดอกไม้ และความสงบ<br />
+                การแต่งตัวสบาย ๆ กับ ผมสีแดงของเธอ <br />
+                ทำให้เธอดูสดใสเหมือนดอกไม้ที่ผลิบานเสมอ<br />
+                มักได้เห็นเธอถ่ายรูปลงไอจีอยู่บ่อย ๆ<br /><br />
+                ผู้ชายคนหนึ่ง เคยเห็นดอกไม้นี้มาก่อน<br />
+                แต่กลับเผลอทำให้มันหุบลงไปโดยไม่ตั้งใจ<br />
+                วันนี้ เขาแค่อยากขอเป็นเพียง “คนลดน้ำ”<br />
+                ที่จะค่อยๆ ดูแล และเฝ้าชื่นชมดอกไม้นี้ในทุก ๆ วัน<br />
+                เป็นการขอเริ่ม "ต้น" ใหม่ กับบัวลดน้ำที่พร้อมใส่ใจ<br />
+                ดอกไม้ต้นนี้ ตลอดไป หากเธอยินดี...
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    </script>
+
+</body>
+
+</html>
