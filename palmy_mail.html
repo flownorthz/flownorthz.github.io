@@ -34,6 +34,8 @@
             border-bottom-left-radius: 20px;
             border-bottom-right-radius: 20px;
             cursor: pointer;
+            overflow: visible;
+            /* ให้เห็นภาพเลื่อนออกมา */
         }
 
         /* ซองจดหมายหน้า */
@@ -102,16 +104,17 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transform-origin: top center;
             transform: translateY(0) scale(1);
-
         }
 
-        /* เมื่อ hover */
-        .mail:hover .cover:before {
+        /* เมื่อ hover หรือ มีคลาส .open */
+        .mail:hover .cover:before,
+        .mail.open .cover:before {
             transform: rotateX(180deg);
             transition: all 1s ease;
         }
 
-        .mail:hover .text {
+        .mail:hover .text,
+        .mail.open .text {
             transform: translateY(-300px) scale(2.3);
             transition: all 1s 1s ease;
             z-index: 20;
@@ -133,7 +136,69 @@
             text-align: center;
             font-size: 14px;
             color: #666;
+        }
 
+        .tilt {
+            display: inline-block;
+            transform: rotate(-10deg);
+            /* เอียงซ้าย 10 องศา */
+            color: #a33;
+            /* จะใส่สีให้เด่นก็ได้ */
+        }
+
+        /* --- ส่วนของ image slider --- */
+        /* ลบ position: absolute ออก */
+        .image-slider {
+            position: static;
+            /* หรือไม่กำหนดเลยก็ได้ */
+            margin: 20px auto 0 auto;
+            /* จัดให้อยู่กึ่งกลางแนวนอน + มี margin ด้านบน */
+            width: 250px;
+            height: 170px;
+            background: #fffefc;
+            border-radius: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            z-index: 30;
+            user-select: none;
+        }
+
+
+        .slider-image {
+            width: 190px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .arrow {
+            background-color: #ff5355;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .arrow:hover {
+            background-color: #ff2a2d;
+        }
+
+        #music-player {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 12px;
+            background: #ff5355;
+            padding: 10px;
         }
     </style>
 </head>
@@ -141,30 +206,79 @@
 <body>
     <div class="mydiv">
         <div class="message">"กดที่ซองจดหมาย"</div>
-        <div class="mail">
+        <div class="mail" id="mail">
             <div class="cover"></div>
             <div class="text">
                 🌺ถึงปาล์มมี่...<br /><br />
-                มีหนังสือเล่มนึง ชื่อว่าปาล์มมี่<br />
+                มีหนังสือเล่มนึง ชื่อว่า "ปาล์มมี่"<br />
                 ในเล่มนั้นมีผู้หญิง น่ารัก เรียบง่าย คนหนึ่ง<br />
                 เธอรักธรรมชาติ ดอกไม้ และความสงบ<br />
                 การแต่งตัวสบาย ๆ กับ ผมสีแดงของเธอ <br />
                 ทำให้เธอดูสดใสเหมือนดอกไม้ที่ผลิบานเสมอ<br />
-                มักได้เห็นเธอถ่ายรูปลงไอจีอยู่บ่อย ๆ<br /><br />
+                มักได้เห็นเธอถ่ายรูปลงไอจีอยู่บ่อย ๆ <span class="tilt"> (มีต่อด้านล่าง)</span> <br><br>
                 ผู้ชายคนหนึ่ง เคยเห็นดอกไม้นี้มาก่อน<br />
                 แต่กลับเผลอทำให้มันหุบลงไปโดยไม่ตั้งใจ<br />
                 วันนี้ เขาแค่อยากขอเป็นเพียง “คนลดน้ำ”<br />
                 ที่จะค่อยๆ ดูแล และเฝ้าชื่นชมดอกไม้นี้ในทุก ๆ วัน<br />
                 เป็นการขอเริ่ม "ต้น" ใหม่ กับบัวลดน้ำที่พร้อมใส่ใจ<br />
                 ดอกไม้ต้นนี้ ตลอดไป หากเธอยินดี💕...
+
+                <div class="music-bar"> <audio controls id="music-player">
+                        <source src="palmy/song.mp3" type="audio/mpeg"> Your browser does not support the audio element.
+                    </audio> </div>
+
+                <!-- ส่วน slider รูปภาพ -->
+                <div class="image-slider">
+                    <button class="arrow left-arrow" aria-label="Previous image">&#9664;</button>
+                    <img src="palmy/1.jpg" alt="Image 1" class="slider-image" />
+
+                    <button class="arrow right-arrow" aria-label="Next image">&#9654;</button>
+                </div>
             </div>
         </div>
         <div class="credit">สร้างโดย ปั้น</div>
-    </div>
 
-    <script>
+        <script>
+            const mail = document.getElementById('mail');
+            mail.addEventListener('click', () => {
+                mail.classList.toggle('open');
+            });
+            // ตั้งเสียง mp3 ที่ 50%
+            const musicPlayer = document.getElementById('music-player');
+            musicPlayer.volume = 0.5;
 
-    </script>
+            // Image slider code
+            const images = [
+                'palmy/1.jpg',
+                'palmy/2.jpg',
+                'palmy/3.jpg',
+                'palmy/4.jpg',
+                'palmy/5.jpg',
+                'palmy/6.jpg'
+            ];
+            const sliderImage = document.querySelector('.slider-image');
+            const leftArrow = document.querySelector('.left-arrow');
+            const rightArrow = document.querySelector('.right-arrow');
+
+            let currentIndex = 0;
+
+            leftArrow.addEventListener('click', (e) => {
+                e.stopPropagation(); // ป้องกันไม่ให้ event click ซองจดหมายทำงาน
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                sliderImage.src = images[currentIndex];
+            });
+
+            rightArrow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex + 1) % images.length;
+                sliderImage.src = images[currentIndex];
+            });
+            // Auto slide every 3 seconds
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % images.length;
+                sliderImage.src = images[currentIndex];
+            }, 2000);
+        </script>
 </body>
 
 </html>
