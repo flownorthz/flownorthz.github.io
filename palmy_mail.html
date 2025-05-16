@@ -82,7 +82,7 @@
             /* ต่ำกว่า .text */
             transform-origin: top;
             transform: rotateX(0deg);
-            transition: all 1s 1s ease;
+            transition: all 1s 0.1s ease;
         }
 
         /* เนื้อความในจดหมาย */
@@ -113,10 +113,10 @@
             transition: all 1s ease;
         }
 
-        .mail:hover .text,
+
         .mail.open .text {
             transform: translateY(-300px) scale(2.3);
-            transition: all 1s 1s ease;
+            transition: all 1s 0.3s ease;
             z-index: 20;
         }
 
