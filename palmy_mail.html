@@ -240,12 +240,18 @@
 
         <script>
             const mail = document.getElementById('mail');
-            mail.addEventListener('click', () => {
-                mail.classList.toggle('open');
-            });
-            // ตั้งเสียง mp3 ที่ 50%
             const musicPlayer = document.getElementById('music-player');
             musicPlayer.volume = 0.5;
+
+            mail.addEventListener('click', () => {
+                mail.classList.toggle('open');
+                musicPlayer.play().catch(e => {
+                    console.log("Cannot autoplay until user interaction:", e);
+                });
+            });
+
+
+
 
             // Image slider code
             const images = [
