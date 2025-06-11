@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เลือกสูตรคำนวณ</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>สูตรวิชาการแปลงกาย</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            background-image: url('pic.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+
         .container {
-            background-color: white;
+            background-color: rgb(255, 246, 225);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 400px;
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         label {
             display: block;
             margin-top: 15px;
             color: #555;
         }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
+
+        input,
         select {
             width: 100%;
             padding: 10px;
@@ -44,6 +46,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
         }
+
         button {
             width: 100%;
             padding: 12px;
@@ -55,123 +58,301 @@
             cursor: pointer;
             font-size: 16px;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         .result {
             margin-top: 20px;
             text-align: center;
             font-size: 18px;
             color: #333;
+            white-space: pre-line;
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>เลือกสูตรคำนวณ</h1>
+    <div class="container">
+        <h1>สูตรวิชาการแปลงกาย</h1>
+        <p style="text-align: center; color: #777; margin-top: 5px; font-style: italic;">
+            Made By. Rowell Ken Devine [ Slytherin ]
+        </p>
 
-    <label for="formula">เลือกสูตร:</label>
-    <select id="formula" onchange="handleFormulaChange()">
-        <option value="1">t = [(w x c) ÷ (v x a)] x z</option>
-        <option value="2">T = [(W x F) ÷ (g x S)] x 10² [สูตรค่าในการเปลี่ยนรูป]</option>
-    </select>
+        <label for="formula">เลือกสูตร:</label>
+        <select id="formula" onchange="handleFormulaChange()">
+            <option value="1">t = [(w x c) ÷ (v x a)] x z [ สูตรโบราณ (ไม่ใช้แล้ว) ]</option>
+            <option value="2">T = [(W x F) ÷ (g x S)] x 10² [ สูตรการคำค่าในการเปลี่ยนรูป ]</option>
+            <option value="3">W² = [(a² + b²) / L] - f [ สูตรการคำนวณค่าสัมประสิทธิ์ไม้กายสิทธิ์ ]</option>
+        </select>
 
-    <div id="input-fields">
-        <!-- ช่องกรอกสำหรับสูตรที่ 1 -->
-        <div id="formula1-inputs">
-            <label for="w">ไม้กายสิทธิ์ (w):</label>
-            <input type="number" id="w">
+        <div id="input-fields">
+            <!-- สูตรที่ 1 -->
+            <div id="formula1-inputs">
+                <label for="w">ไม้กายสิทธิ์ (w):</label>
+                <input type="number" id="w" />
 
-            <label for="c">สมาธิ (c):</label>
-            <input type="number" id="c">
+                <label for="c">สมาธิ (c):</label>
+                <input type="number" id="c" />
 
-            <label for="v">ภาวะไร้ระเบียบ (v):</label>
-            <input type="number" id="v">
+                <label for="v">ภาวะไร้ระเบียบ (v):</label>
+                <input type="number" id="v" />
 
-            <label for="a">มวลสาร (a):</label>
-            <input type="number" id="a">
+                <label for="a">มวลสาร (a):</label>
+                <input type="number" id="a" />
 
-            <label for="z">ตัวแปรที่ไม่รู้จัก (z):</label>
-            <input type="number" id="z">
+                <label for="z">ตัวแปรที่ไม่รู้จัก (z):</label>
+                <input type="number" id="z" />
+
+                <label for="t">ผลลัพธ์ (t):</label>
+                <input type="number" id="t" />
+            </div>
+
+            <!-- สูตรที่ 2 -->
+            <div id="formula2-inputs" style="display: none;">
+                <label for="W">ค่าสัมประสิทธิ์ไม้กายสิทธิ์ (W):</label>
+                <input type="number" id="W" />
+
+                <label for="F">แรงในการร่าย (F):</label>
+                <input type="number" id="F" />
+
+                <label for="g">มวลของสสาร (g):</label>
+                <input type="number" id="g" />
+
+                <label for="S">ค่าสถานะทางสาร (S):</label>
+                <input type="number" id="S" />
+
+                <label for="T">ผลลัพธ์ (T):</label>
+                <input type="number" id="T" />
+            </div>
+
+            <!-- สูตรที่ 3 -->
+            <div id="formula3-inputs" style="display: none;">
+                <label for="W3">ค่าสัมประสิทธิ์ไม้กายสิทธิ์ (W):</label>
+                <input type="number" id="W3" />
+
+                <label for="a3">ค่าสัมประสิทธิ์วัสดุไม้กายสิทธิ์ (a):</label>
+                <input type="number" id="a3" />
+
+                <label for="b3">ค่าสัมประสิทธิ์แกนกลางไม้กายสิทธิ์ (b):</label>
+                <input type="number" id="b3" />
+
+                <label for="L3">ความยาวไม้กายสิทธิ์ (L):</label>
+                <input type="number" id="L3" />
+
+                <label for="f3">ค่าสัมประสิทธิ์ความยืดหยุ่น (f):</label>
+                <input type="number" id="f3" />
+            </div>
         </div>
 
-        <!-- ช่องกรอกสำหรับสูตรที่ 2 -->
-        <div id="formula2-inputs" style="display: none;">
-            <label for="W">ค่าสัมประสิทธิ์ไม้กายสิทธิ์ (W):</label>
-            <input type="number" id="W">
+        <button onclick="calculate()">คำนวณ</button>
 
-            <label for="F">แรงในการร่าย (F):</label>
-            <input type="number" id="F">
-
-            <label for="g">มวลของสสาร (g):</label>
-            <input type="number" id="g">
-
-            <label for="S">ค่าสถานะทางสาร (S):</label>
-            <input type="number" id="S">
-        </div>
+        <div class="result" id="result"></div>
     </div>
 
-    <button onclick="calculate()">คำนวณ</button>
-
-    <div class="result" id="result"></div>
-</div>
-
-<script>
-    function handleFormulaChange() {
-        const formula = document.getElementById('formula').value;
-
-        // สลับ input ตามสูตรที่เลือก
-        document.getElementById('formula1-inputs').style.display = formula === '1' ? 'block' : 'none';
-        document.getElementById('formula2-inputs').style.display = formula === '2' ? 'block' : 'none';
-
-        // ล้างผลลัพธ์
-        document.getElementById('result').innerText = '';
-    }
-
-    function calculate() {
-        const formula = document.getElementById('formula').value;
-
-        if (formula === '1') {
-            const w = parseFloat(document.getElementById('w').value);
-            const c = parseFloat(document.getElementById('c').value);
-            const v = parseFloat(document.getElementById('v').value);
-            const a = parseFloat(document.getElementById('a').value);
-            const z = parseFloat(document.getElementById('z').value);
-
-            if (isNaN(w) || isNaN(c) || isNaN(v) || isNaN(a) || isNaN(z)) {
-                document.getElementById('result').innerText = 'กรุณากรอกค่าทั้งหมดให้ครบถ้วน';
-                return;
-            }
-
-            if (v * a === 0) {
-                document.getElementById('result').innerText = 'ไม่สามารถหารด้วยศูนย์ได้';
-                return;
-            }
-
-            const t = ((w * c) / (v * a)) * z;
-            document.getElementById('result').innerText = 'ผลลัพธ์ t = ' + t.toFixed(2);
-        } else if (formula === '2') {
-            const W = parseFloat(document.getElementById('W').value);
-            const F = parseFloat(document.getElementById('F').value);
-            const g = parseFloat(document.getElementById('g').value);
-            const S = parseFloat(document.getElementById('S').value);
-
-            if (isNaN(W) || isNaN(F) || isNaN(g) || isNaN(S)) {
-                document.getElementById('result').innerText = 'กรุณากรอกค่าทั้งหมดให้ครบถ้วน';
-                return;
-            }
-
-            if (g * S === 0) {
-                document.getElementById('result').innerText = 'ไม่สามารถหารด้วยศูนย์ได้';
-                return;
-            }
-
-            const T = ((W * F) / (g * S)) * Math.pow(10, 2);
-            document.getElementById('result').innerText = 'ผลลัพธ์ T = ' + T.toFixed(2);
+    <script>
+        function handleFormulaChange() {
+            const formula = document.getElementById('formula').value;
+            document.getElementById('formula1-inputs').style.display = formula === '1' ? 'block' : 'none';
+            document.getElementById('formula2-inputs').style.display = formula === '2' ? 'block' : 'none';
+            document.getElementById('formula3-inputs').style.display = formula === '3' ? 'block' : 'none';
+            document.getElementById('result').innerText = '';
         }
-    }
-</script>
+
+        function calculate() {
+            const formula = document.getElementById('formula').value;
+            const resultDiv = document.getElementById('result');
+
+            if (formula === '1') {
+                const inputs = {
+                    w: document.getElementById('w').value,
+                    c: document.getElementById('c').value,
+                    v: document.getElementById('v').value,
+                    a: document.getElementById('a').value,
+                    z: document.getElementById('z').value,
+                    t: document.getElementById('t').value
+                };
+                const empty = Object.entries(inputs).filter(([_, v]) => v === "");
+
+                if (empty.length > 1) {
+                    resultDiv.innerText = 'กรุณากรอกค่าให้ครบ ยกเว้นตัวที่ต้องการหาเพียง 1 ตัว';
+                    return;
+                }
+
+                const x = Object.fromEntries(Object.entries(inputs).map(([k, v]) => [k, parseFloat(v)]));
+                let result = 0;
+
+                try {
+                    if (empty.length === 0) {
+                        if (x.v * x.a === 0) throw "หารด้วยศูนย์";
+                        result = ((x.w * x.c) / (x.v * x.a)) * x.z;
+                        resultDiv.innerText = `ผลลัพธ์ t = ${result.toFixed(2)}`;
+                    } else {
+                        const missing = empty[0][0];
+                        switch (missing) {
+                            case 't':
+                                if (x.v * x.a === 0) throw "หารด้วยศูนย์";
+                                result = ((x.w * x.c) / (x.v * x.a)) * x.z;
+                                break;
+                            case 'w':
+                                result = (x.t * x.v * x.a) / (x.c * x.z);
+                                break;
+                            case 'c':
+                                result = (x.t * x.v * x.a) / (x.w * x.z);
+                                break;
+                            case 'v':
+                                if (x.a * x.z * x.t === 0) throw "หารด้วยศูนย์";
+                                result = (x.w * x.c) / (x.a * x.z * x.t);
+                                break;
+                            case 'a':
+                                if (x.v * x.z * x.t === 0) throw "หารด้วยศูนย์";
+                                result = (x.w * x.c) / (x.v * x.z * x.t);
+                                break;
+                            case 'z':
+                                if (x.w * x.c === 0) throw "หารด้วยศูนย์";
+                                result = (x.t * x.v * x.a) / (x.w * x.c);
+                                break;
+                            default:
+                                throw "ไม่สามารถหาค่านี้ได้";
+                        }
+                        resultDiv.innerText = `ผลลัพธ์ ${missing} = ${result.toFixed(2)}`;
+                    }
+                } catch (e) {
+                    resultDiv.innerText = 'ข้อมูลไม่ถูกต้อง หรือหารด้วยศูนย์';
+                }
+            } else if (formula === '2') {
+                const inputs = {
+                    W: document.getElementById('W').value,
+                    F: document.getElementById('F').value,
+                    g: document.getElementById('g').value,
+                    S: document.getElementById('S').value,
+                    T: document.getElementById('T').value
+                };
+                const empty = Object.entries(inputs).filter(([_, v]) => v === "");
+
+                if (empty.length > 1) {
+                    resultDiv.innerText = 'กรุณากรอกค่าให้ครบ ยกเว้นตัวที่ต้องการหาเพียง 1 ตัว';
+                    return;
+                }
+
+                const x = Object.fromEntries(Object.entries(inputs).map(([k, v]) => [k, parseFloat(v)]));
+                let result = 0;
+
+                try {
+                    if (empty.length === 0) {
+                        if (x.g * x.S === 0) throw "หารด้วยศูนย์";
+                        result = ((x.W * x.F) / (x.g * x.S)) * 100;
+                        resultDiv.innerText = `ผลลัพธ์ T = ${result.toFixed(2)}`;
+                    } else {
+                        const missing = empty[0][0];
+                        switch (missing) {
+                            case 'T':
+                                if (x.g * x.S === 0) throw "หารด้วยศูนย์";
+                                result = ((x.W * x.F) / (x.g * x.S)) * 100;
+                                break;
+                            case 'W':
+                                if (x.F === 0) throw "หารด้วยศูนย์";
+                                result = (x.T * x.g * x.S) / (x.F * 100);
+                                break;
+                            case 'F':
+                                if (x.W === 0) throw "หารด้วยศูนย์";
+                                result = (x.T * x.g * x.S) / (x.W * 100);
+                                break;
+                            case 'g':
+                                if (x.S * x.T === 0) throw "หารด้วยศูนย์";
+                                result = (x.W * x.F) / (x.S * x.T / 100);
+                                break;
+                            case 'S':
+                                if (x.g * x.T === 0) throw "หารด้วยศูนย์";
+                                result = (x.W * x.F) / (x.g * x.T / 100);
+                                break;
+                            default:
+                                throw "ไม่สามารถหาค่านี้ได้";
+                        }
+                        resultDiv.innerText = `ผลลัพธ์ ${missing} = ${result.toFixed(2)}`;
+                    }
+                } catch (e) {
+                    resultDiv.innerText = 'ข้อมูลไม่ถูกต้อง หรือหารด้วยศูนย์';
+                }
+            } else if (formula === '3') {
+                // W² = [(a² + b²) / L] - f
+                // ถ้าว่างช่องไหน ให้หาค่านั้น
+
+                const W = document.getElementById('W3').value;
+                const a = document.getElementById('a3').value;
+                const b = document.getElementById('b3').value;
+                const L = document.getElementById('L3').value;
+                const f = document.getElementById('f3').value;
+
+                const inputs = { W, a, b, L, f };
+                const empty = Object.entries(inputs).filter(([_, v]) => v === "");
+
+                if (empty.length !== 1) {
+                    resultDiv.innerText = "กรุณากรอกค่าให้ครบ ยกเว้นตัวที่ต้องการหาเพียง 1 ตัว";
+                    return;
+                }
+
+                const Wn = W !== "" ? parseFloat(W) : null;
+                const an = a !== "" ? parseFloat(a) : null;
+                const bn = b !== "" ? parseFloat(b) : null;
+                const Ln = L !== "" ? parseFloat(L) : null;
+                const fn = f !== "" ? parseFloat(f) : null;
+
+                try {
+                    let resultVal = null;
+                    let missing = empty[0][0];
+
+                    switch (missing) {
+                        case "W":
+                            if (an === null || bn === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
+                            if (Ln === 0) throw "หารด้วยศูนย์";
+                            resultVal = Math.sqrt(((an ** 2 + bn ** 2) / Ln) - fn);
+                            break;
+
+                        case "a":
+                            if (Wn === null || bn === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
+                            if (Ln === 0) throw "หารด้วยศูนย์";
+                            let val_a = (Wn ** 2 + fn) * Ln - bn ** 2;
+                            if (val_a < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
+                            resultVal = Math.sqrt(val_a);
+                            break;
+
+                        case "b":
+                            if (Wn === null || an === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
+                            if (Ln === 0) throw "หารด้วยศูนย์";
+                            let val_b = (Wn ** 2 + fn) * Ln - an ** 2;
+                            if (val_b < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
+                            resultVal = Math.sqrt(val_b);
+                            break;
+
+                        case "L":
+                            if (Wn === null || an === null || bn === null || fn === null) throw "ข้อมูลไม่ครบ";
+                            let denom = Wn ** 2 + fn;
+                            if (denom === 0) throw "หารด้วยศูนย์";
+                            resultVal = (an ** 2 + bn ** 2) / denom;
+                            break;
+
+                        case "f":
+                            if (Wn === null || an === null || bn === null || Ln === null) throw "ข้อมูลไม่ครบ";
+                            resultVal = ((an ** 2 + bn ** 2) / Ln) - (Wn ** 2);
+                            break;
+
+                        default:
+                            throw "ไม่สามารถหาค่านี้ได้";
+                    }
+
+                    if (resultVal === null || isNaN(resultVal)) throw "คำนวณไม่ได้";
+
+                    resultDiv.innerText = `ผลลัพธ์ ${missing} = ${resultVal.toFixed(4)}`;
+                } catch (e) {
+                    resultDiv.innerText = `ข้อมูลไม่ถูกต้อง หรือ ${e}`;
+                }
+            }
+        }
+    </script>
 
 </body>
+
 </html>
