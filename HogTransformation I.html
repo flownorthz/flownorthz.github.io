@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เลือกสูตรคำนวณ</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>เลือกสูตรคำนวณ</h1>
+
+    <label for="formula">เลือกสูตร:</label>
+    <select id="formula" onchange="handleFormulaChange()">
+        <option value="1">t = [(w x c) ÷ (v x a)] x z</option>
+        <option value="2">T = [(W x F) ÷ (g x S)] x 10² [สูตรค่าในการเปลี่ยนรูป]</option>
+    </select>
+
+    <div id="input-fields">
+        <!-- ช่องกรอกสำหรับสูตรที่ 1 -->
+        <div id="formula1-inputs">
+            <label for="w">ไม้กายสิทธิ์ (w):</label>
+            <input type="number" id="w">
+
+            <label for="c">สมาธิ (c):</label>
+            <input type="number" id="c">
+
+            <label for="v">ภาวะไร้ระเบียบ (v):</label>
+            <input type="number" id="v">
+
+            <label for="a">มวลสาร (a):</label>
+            <input type="number" id="a">
+
+            <label for="z">ตัวแปรที่ไม่รู้จัก (z):</label>
+            <input type="number" id="z">
+        </div>
+
+        <!-- ช่องกรอกสำหรับสูตรที่ 2 -->
+        <div id="formula2-inputs" style="display: none;">
+            <label for="W">ค่าสัมประสิทธิ์ไม้กายสิทธิ์ (W):</label>
+            <input type="number" id="W">
+
+            <label for="F">แรงในการร่าย (F):</label>
+            <input type="number" id="F">
+
+            <label for="g">มวลของสสาร (g):</label>
+            <input type="number" id="g">
+
+            <label for="S">ค่าสถานะทางสาร (S):</label>
+            <input type="number" id="S">
+        </div>
+    </div>
+
+    <button onclick="calculate()">คำนวณ</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function handleFormulaChange() {
+        const formula = document.getElementById('formula').value;
+
+        // สลับ input ตามสูตรที่เลือก
+        document.getElementById('formula1-inputs').style.display = formula === '1' ? 'block' : 'none';
+        document.getElementById('formula2-inputs').style.display = formula === '2' ? 'block' : 'none';
+
+        // ล้างผลลัพธ์
+        document.getElementById('result').innerText = '';
+    }
+
+    function calculate() {
+        const formula = document.getElementById('formula').value;
+
+        if (formula === '1') {
+            const w = parseFloat(document.getElementById('w').value);
+            const c = parseFloat(document.getElementById('c').value);
+            const v = parseFloat(document.getElementById('v').value);
+            const a = parseFloat(document.getElementById('a').value);
+            const z = parseFloat(document.getElementById('z').value);
+
+            if (isNaN(w) || isNaN(c) || isNaN(v) || isNaN(a) || isNaN(z)) {
+                document.getElementById('result').innerText = 'กรุณากรอกค่าทั้งหมดให้ครบถ้วน';
+                return;
+            }
+
+            if (v * a === 0) {
+                document.getElementById('result').innerText = 'ไม่สามารถหารด้วยศูนย์ได้';
+                return;
+            }
+
+            const t = ((w * c) / (v * a)) * z;
+            document.getElementById('result').innerText = 'ผลลัพธ์ t = ' + t.toFixed(2);
+        } else if (formula === '2') {
+            const W = parseFloat(document.getElementById('W').value);
+            const F = parseFloat(document.getElementById('F').value);
+            const g = parseFloat(document.getElementById('g').value);
+            const S = parseFloat(document.getElementById('S').value);
+
+            if (isNaN(W) || isNaN(F) || isNaN(g) || isNaN(S)) {
+                document.getElementById('result').innerText = 'กรุณากรอกค่าทั้งหมดให้ครบถ้วน';
+                return;
+            }
+
+            if (g * S === 0) {
+                document.getElementById('result').innerText = 'ไม่สามารถหารด้วยศูนย์ได้';
+                return;
+            }
+
+            const T = ((W * F) / (g * S)) * Math.pow(10, 2);
+            document.getElementById('result').innerText = 'ผลลัพธ์ T = ' + T.toFixed(2);
+        }
+    }
+</script>
+
+</body>
+</html>
