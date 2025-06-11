@@ -18,64 +18,49 @@
             height: 100vh;
             margin: 0;
             font-size: 14px;
-            /* ลดขนาดฟอนต์จากปกติ */
         }
 
         .container {
             background-color: rgb(255, 246, 225);
             padding: 20px;
-            /* ลด padding จาก 30px */
             border-radius: 16px;
-            /* เล็กลงจาก 20px */
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             width: 320px;
-            /* ลดความกว้างจาก 400px */
         }
 
         h1 {
             text-align: center;
             color: #333;
             font-size: 20px;
-            /* ลดขนาดหัวข้อ */
         }
 
         label {
             display: block;
             margin-top: 12px;
-            /* ลด margin-top จาก 15px */
             color: #555;
             font-size: 13px;
-            /* ลดขนาดตัวอักษร */
         }
 
         input,
         select {
             width: 100%;
             padding: 7px;
-            /* ลด padding จาก 10px */
             margin-top: 4px;
-            /* ลด margin-top จาก 5px */
             border: 1px solid #ccc;
             border-radius: 6px;
-            /* ลด border-radius จาก 8px */
             font-size: 14px;
-            /* เล็กลงนิดหน่อย */
         }
 
         button {
             width: 100%;
             padding: 10px;
-            /* ลด padding จาก 12px */
             margin-top: 15px;
-            /* ลด margin-top จาก 20px */
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 6px;
-            /* ลด border-radius */
             cursor: pointer;
             font-size: 14px;
-            /* ลดขนาดฟอนต์ */
         }
 
         button:hover {
@@ -84,17 +69,14 @@
 
         .result {
             margin-top: 15px;
-            /* ลด margin-top */
             text-align: center;
             font-size: 15px;
-            /* ลดขนาดฟอนต์ */
             color: #333;
             white-space: pre-line;
         }
 
         p {
             font-size: 12px;
-            /* ลดขนาดฟอนต์ย่อหน้าด้านล่างหัวข้อ */
         }
     </style>
 
@@ -111,7 +93,7 @@
         <label for="formula">เลือกสูตร:</label>
         <select id="formula" onchange="handleFormulaChange()">
             <option value="1">t = [(w x c) ÷ (v x a)] x z [ สูตรโบราณ (ไม่ใช้แล้ว) ]</option>
-            <option value="2">T = [(W x F) ÷ (g x S)] x 10² [ สูตรการคำนวณค่าในการเปลี่ยนรูป ]</option>
+            <option value="2">T = [(W x F) ÷ (g x S)] x 10² [ สูตรการคำค่าในการเปลี่ยนรูป ]</option>
             <option value="3">W² = [(a² + b²) / L] - f [ สูตรการคำนวณค่าสัมประสิทธิ์ไม้กายสิทธิ์ ]</option>
         </select>
 
@@ -304,8 +286,6 @@
                     resultDiv.innerText = 'ข้อมูลไม่ถูกต้อง หรือหารด้วยศูนย์';
                 }
             } else if (formula === '3') {
-                // W² = [(a² + b²) / L] - f
-                // ถ้าว่างช่องไหน ให้หาค่านั้น
 
                 const W = document.getElementById('W3').value;
                 const a = document.getElementById('a3').value;
