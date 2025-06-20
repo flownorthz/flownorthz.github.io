@@ -1,299 +1,177 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8" />
-
   <title>Clockgital</title>
-
   <style>
-
     body {
-
       background: #111;
-
       color: #fff;
-
       display: flex;
-
       justify-content: center;
-
       align-items: center;
-
       height: 100vh;
-
       margin: 0;
-
       font-family: monospace, monospace;
-
     }
-
-
 
     .clock {
-
       position: relative;
-
       width: 300px;
-
       height: 300px;
-
-      border: 10px solid #111;
-
+      border: 10px solid rgb(97, 0, 0);
       border-radius: 50%;
-
     }
 
-
-
-    .digital-bg {
-
+    .number {
       position: absolute;
-
-      top: 50%;
-
-      left: 50%;
-
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
       transform: translate(-50%, -50%);
-
-      font-size: 300px;
-
-      font-weight: 900;
-
-      color: rgba(255, 255, 255, 0.5);
-
       user-select: none;
-
-      pointer-events: none;
-
-      letter-spacing: 0.1em;
-
-      z-index: 3;
-
     }
 
+    .num-12 { top: -40px; left: 50%; }
+    .num-3 { top: 48%; left: 340px; }
+    .num-6 { top: 330px; left: 50%; }
+    .num-9 { top: 48%; left: -35px; }
 
+    .tick {
+      position: absolute;
+      width: 4px;
+      height: 12px;
+      background: rgb(255, 0, 0);
+      top: 115%;
+      left: 50%;
+      transform-origin: 50% -200px;
+    }
+
+    .tick.small {
+      width: 2px;
+      height: 8px;
+      background: gray;
+      transform-origin: 50% -200px;
+    }
 
     .made-by-bg {
-
       position: absolute;
-
       top: calc(50% + 180px); 
-
       left: 50%;
-
       transform: translateX(-50%);
-
       font-size: 40px;
-
       font-weight: 700;
-
       color: rgba(255, 255, 255, 0.1); 
-
       user-select: none;
-
       pointer-events: none;
-
       letter-spacing: 0.1em;
-
       z-index: 0; 
-
       font-family: monospace, monospace;
-
       white-space: nowrap;
-
     }
-
-
 
     .hand {
-
       position: absolute;
-
       width: 50%;
-
       height: 20px;
-
       top: 50%;
-
       left: 50%;
-
       transform-origin: 0% 50%;
-
       display: flex;
-
       gap: 4px;
-
       align-items: center;
-
     }
-
-
 
     .hand .num {
-
       font-size: 16px;
-
       background: #333;
-
       padding: 2px 6px;
-
       border-radius: 4px;
-
       user-select: none;
-
     }
-
-
 
     .hour { z-index: 5; }
-
     .minute { z-index: 4; }
-
     .second { z-index: 2; }
 
-
-
     .center-dot {
-
       position: absolute;
-
       width: 40px;
-
       height: 40px;
-
       background: #fff;
-
       border-radius: 50%;
-
       top: 53%;
-
       left: 50%;
-
       transform: translate(-50%, -50%);
-
       z-index: 6;
-
     }
-
   </style>
-
 </head>
-
 <body>
-
-  <div class="clock">
-
-    <div class="digital-bg" id="digital-bg">00:00</div>
+  <div class="clock" id="clock">
+    <!-- ตัวเลขรอบนาฬิกา -->
+    <div class="number num-12">12</div>
+    <div class="number num-3">3</div>
+    <div class="number num-6">6</div>
+    <div class="number num-9">9</div>
 
     <div class="made-by-bg">Made by Overflow</div>
 
-
-
     <div class="hand hour" id="hour-hand"></div>
-
     <div class="hand minute" id="minute-hand"></div>
-
     <div class="hand second" id="second-hand"></div>
-
     <div class="center-dot"></div>
-
   </div>
 
-
-
   <script>
-
+    const clock = document.getElementById("clock");
     const hourHand = document.getElementById("hour-hand");
-
     const minuteHand = document.getElementById("minute-hand");
-
     const secondHand = document.getElementById("second-hand");
 
-    const digitalBg = document.getElementById("digital-bg");
+    // สร้างขีดรอบนาฬิกา
+    function createTicks() {
+      for (let i = 0; i < 60; i++) {
+        const tick = document.createElement("div");
+        tick.className = (i % 5 === 0) ? "tick" : "tick small";
+        tick.style.transform = `rotate(${i * 6}deg)`;
+        clock.appendChild(tick);
+      }
+    }
 
-
+    createTicks();
 
     function createNumbers(hand, value, count = 4) {
-
       hand.innerHTML = '';
-
       for (let i = 0; i < count; i++) {
-
         const num = document.createElement("div");
-
         num.className = "num";
-
         num.textContent = value.toString().padStart(2, '0');
-
         hand.appendChild(num);
-
       }
-
     }
-
-
 
     function updateClock() {
-
       const now = new Date();
-
       const hour = now.getHours() % 12;
-
       const minute = now.getMinutes();
-
       const second = now.getSeconds();
 
-
-
-
-
-      const displayHour = now.getHours().toString().padStart(2, '0');
-
-      const displayMinute = minute.toString().padStart(2, '0');
-
-      digitalBg.textContent = `${displayHour}:${displayMinute}`;
-
-
-
-
-
       const hourDeg = (hour + minute / 60) * 30 - 90;
-
       const minuteDeg = (minute + second / 60) * 6 - 90;
-
       const secondDeg = second * 6 - 90;
 
-
-
-
-
       createNumbers(hourHand, now.getHours());
-
       createNumbers(minuteHand, minute, 8);
-
       createNumbers(secondHand, second, 10);
 
-
-
       hourHand.style.transform = `rotate(${hourDeg}deg) translateX(20%)`;
-
       minuteHand.style.transform = `rotate(${minuteDeg}deg) translateX(20%)`;
-
       secondHand.style.transform = `rotate(${secondDeg}deg) translateX(20%)`;
-
     }
 
-
-
     setInterval(updateClock, 1000);
-
     updateClock();
-
   </script>
-
 </body>
-
 </html>
