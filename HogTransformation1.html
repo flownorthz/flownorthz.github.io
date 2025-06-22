@@ -75,6 +75,19 @@
             white-space: pre-line;
         }
 
+        .working {
+            margin-top: 10px;
+            background-color: #fffbe8;
+            border: 1px dashed #aaa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: pre-line;
+            color: #444;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
         p {
             font-size: 12px;
         }
@@ -93,7 +106,7 @@
         <label for="formula">เลือกสูตร:</label>
         <select id="formula" onchange="handleFormulaChange()">
             <option value="1">t = [(w x c) ÷ (v x a)] x z [ สูตรโบราณ (ไม่ใช้แล้ว) ]</option>
-            <option value="2">T = [(W x F) ÷ (g x S)] x 10² [ สูตรการคำนวณค่าในการเปลี่ยนรูป ]</option>
+            <option value="2">T = [(W x F) ÷ (g x S)] x 10² [ สูตรการคำค่าในการเปลี่ยนรูป ]</option>
             <option value="3">W² = [(a² + b²) / L] - f [ สูตรการคำนวณค่าสัมประสิทธิ์ไม้กายสิทธิ์ ]</option>
         </select>
 
@@ -159,6 +172,7 @@
         <button onclick="calculate()">คำนวณ</button>
 
         <div class="result" id="result"></div>
+        <div class="working" id="working"></div>
     </div>
 
     <script>
@@ -168,11 +182,15 @@
             document.getElementById('formula2-inputs').style.display = formula === '2' ? 'block' : 'none';
             document.getElementById('formula3-inputs').style.display = formula === '3' ? 'block' : 'none';
             document.getElementById('result').innerText = '';
+            document.getElementById('working').innerText = '';
         }
 
         function calculate() {
             const formula = document.getElementById('formula').value;
             const resultDiv = document.getElementById('result');
+            const workingDiv = document.getElementById('working');
+            workingDiv.innerText = '';
+            resultDiv.innerText = '';
 
             if (formula === '1') {
                 const inputs = {
@@ -198,38 +216,84 @@
                         if (x.v * x.a === 0) throw "หารด้วยศูนย์";
                         result = ((x.w * x.c) / (x.v * x.a)) * x.z;
                         resultDiv.innerText = `ผลลัพธ์ t = ${result.toFixed(2)}`;
+                        workingDiv.innerText =
+                            `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                            ` t = [(${x.w} × ${x.c}) ÷ (${x.v} × ${x.a})] × ${x.z}\n` +
+                            ` t = (${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.a).toFixed(2)}) × ${x.z}\n` +
+                            `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                     } else {
                         const missing = empty[0][0];
                         switch (missing) {
                             case 't':
                                 if (x.v * x.a === 0) throw "หารด้วยศูนย์";
                                 result = ((x.w * x.c) / (x.v * x.a)) * x.z;
+                                resultDiv.innerText = `ผลลัพธ์ t = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` t = [(${x.w} × ${x.c}) ÷ (${x.v} × ${x.a})] × ${x.z}\n` +
+                                    ` t = (${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.a).toFixed(2)}) × ${x.z}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             case 'w':
                                 result = (x.t * x.v * x.a) / (x.c * x.z);
+                                resultDiv.innerText = `ผลลัพธ์ w = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` w = (t × v × a) ÷ (c × z)\n` +
+                                    ` w = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.c} × ${x.z})\n` +
+                                    ` w = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.c * x.z).toFixed(2)}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             case 'c':
                                 result = (x.t * x.v * x.a) / (x.w * x.z);
+                                resultDiv.innerText = `ผลลัพธ์ c = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` c = (t × v × a) ÷ (w × z)\n` +
+                                    ` c = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.w} × ${x.z})\n` +
+                                    ` c = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.w * x.z).toFixed(2)}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             case 'v':
                                 if (x.a * x.z * x.t === 0) throw "หารด้วยศูนย์";
                                 result = (x.w * x.c) / (x.a * x.z * x.t);
+                                resultDiv.innerText = `ผลลัพธ์ v = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` v = (w × c) ÷ (a × z × t)\n` +
+                                    ` v = (${x.w} × ${x.c}) ÷ (${x.a} × ${x.z} × ${x.t})\n` +
+                                    ` v = ${(x.w * x.c).toFixed(2)} ÷ ${(x.a * x.z * x.t).toFixed(2)}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             case 'a':
                                 if (x.v * x.z * x.t === 0) throw "หารด้วยศูนย์";
                                 result = (x.w * x.c) / (x.v * x.z * x.t);
+                                resultDiv.innerText = `ผลลัพธ์ a = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` a = (w × c) ÷ (v × z × t)\n` +
+                                    ` a = (${x.w} × ${x.c}) ÷ (${x.v} × ${x.z} × ${x.t})\n` +
+                                    ` a = ${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.z * x.t).toFixed(2)}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             case 'z':
                                 if (x.w * x.c === 0) throw "หารด้วยศูนย์";
                                 result = (x.t * x.v * x.a) / (x.w * x.c);
+                                resultDiv.innerText = `ผลลัพธ์ z = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
+                                    ` z = (t × v × a) ÷ (w × c)\n` +
+                                    ` z = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.w} × ${x.c})\n` +
+                                    ` z = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.w * x.c).toFixed(2)}\n` +
+                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
                                 break;
                             default:
                                 throw "ไม่สามารถหาค่านี้ได้";
                         }
-                        resultDiv.innerText = `ผลลัพธ์ ${missing} = ${result.toFixed(2)}`;
                     }
                 } catch (e) {
                     resultDiv.innerText = 'ข้อมูลไม่ถูกต้อง หรือหารด้วยศูนย์';
+                    workingDiv.innerText = '';
                 }
             } else if (formula === '2') {
                 const inputs = {
@@ -254,36 +318,75 @@
                         if (x.g * x.S === 0) throw "หารด้วยศูนย์";
                         result = ((x.W * x.F) / (x.g * x.S)) * 100;
                         resultDiv.innerText = `ผลลัพธ์ T = ${result.toFixed(2)}`;
+                        workingDiv.innerText =
+                            `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                            ` T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
+                            ` T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
+                            ` ${result.toFixed(2)}`;
                     } else {
                         const missing = empty[0][0];
                         switch (missing) {
                             case 'T':
                                 if (x.g * x.S === 0) throw "หารด้วยศูนย์";
                                 result = ((x.W * x.F) / (x.g * x.S)) * 100;
+                                resultDiv.innerText = `ผลลัพธ์ T = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                                    `แทนค่า: T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
+                                    `คำนวณ: T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
+                                    ` ${result.toFixed(2)}`;
                                 break;
                             case 'W':
                                 if (x.F === 0) throw "หารด้วยศูนย์";
                                 result = (x.T * x.g * x.S) / (x.F * 100);
+                                resultDiv.innerText = `ผลลัพธ์ W = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                                    `แก้สมการหา W: W = (T × g × S) ÷ (F × 100)\n` +
+                                    `แทนค่า: W = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.F} × 100)\n` +
+                                    `คำนวณ: W = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.F * 100).toFixed(2)}\n` +
+                                    ` ${result.toFixed(2)}`;
                                 break;
                             case 'F':
                                 if (x.W === 0) throw "หารด้วยศูนย์";
                                 result = (x.T * x.g * x.S) / (x.W * 100);
+                                resultDiv.innerText = `ผลลัพธ์ F = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                                    ` F = (T × g × S) ÷ (W × 100)\n` +
+                                    ` F = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.W} × 100)\n` +
+                                    ` F = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.W * 100).toFixed(2)}\n` +
+                                    ` ${result.toFixed(2)}`;
                                 break;
                             case 'g':
                                 if (x.S * x.T === 0) throw "หารด้วยศูนย์";
                                 result = (x.W * x.F) / (x.S * x.T / 100);
+                                resultDiv.innerText = `ผลลัพธ์ g = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                                    ` g = (W × F) ÷ (S × T/100)\n` +
+                                    ` g = (${x.W} × ${x.F}) ÷ (${x.S} × ${x.T}/100)\n` +
+                                    ` g = ${(x.W * x.F).toFixed(2)} ÷ ${(x.S * x.T / 100).toFixed(2)}\n` +
+                                    ` ${result.toFixed(2)}`;
                                 break;
                             case 'S':
                                 if (x.g * x.T === 0) throw "หารด้วยศูนย์";
                                 result = (x.W * x.F) / (x.g * x.T / 100);
+                                resultDiv.innerText = `ผลลัพธ์ S = ${result.toFixed(2)}`;
+                                workingDiv.innerText =
+                                    `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
+                                    ` S = (W × F) ÷ (g × T/100)\n` +
+                                    ` S = (${x.W} × ${x.F}) ÷ (${x.g} × ${x.T}/100)\n` +
+                                    ` S = ${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.T / 100).toFixed(2)}\n` +
+                                    ` ${result.toFixed(2)}`;
                                 break;
                             default:
                                 throw "ไม่สามารถหาค่านี้ได้";
                         }
-                        resultDiv.innerText = `ผลลัพธ์ ${missing} = ${result.toFixed(2)}`;
                     }
                 } catch (e) {
                     resultDiv.innerText = 'ข้อมูลไม่ถูกต้อง หรือหารด้วยศูนย์';
+                    workingDiv.innerText = '';
                 }
             } else if (formula === '3') {
 
@@ -315,35 +418,78 @@
                         case "W":
                             if (an === null || bn === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
                             if (Ln === 0) throw "หารด้วยศูนย์";
-                            resultVal = Math.sqrt(((an ** 2 + bn ** 2) / Ln) - fn);
+                            const valW = ((an ** 2 + bn ** 2) / Ln) - fn;
+                            if (valW < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
+                            resultVal = Math.sqrt(valW);
+                            resultDiv.innerText = `ผลลัพธ์ W = ${resultVal.toFixed(4)}`;
+                            workingDiv.innerText =
+                                `สูตร: W² = [(a² + b²) / L] - f\n` +
+                                ` W² = [(${an}² + ${bn}²) / ${Ln}] - ${fn}\n` +
+                                ` W² = (${(an ** 2).toFixed(4)} + ${(bn ** 2).toFixed(4)}) / ${Ln} - ${fn}\n` +
+                                `       = ${(valW).toFixed(4)}\n` +
+                                ` W = √${(valW).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "a":
                             if (Wn === null || bn === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
                             if (Ln === 0) throw "หารด้วยศูนย์";
-                            let val_a = (Wn ** 2 + fn) * Ln - bn ** 2;
-                            if (val_a < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
-                            resultVal = Math.sqrt(val_a);
+                            // a² = (W² + f)*L - b²
+                            const valA = (Wn ** 2 + fn) * Ln - (bn ** 2);
+                            if (valA < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
+                            resultVal = Math.sqrt(valA);
+                            resultDiv.innerText = `ผลลัพธ์ a = ${resultVal.toFixed(4)}`;
+                            workingDiv.innerText =
+                                `สูตร: W² = [(a² + b²) / L] - f\n` +
+                                ` a² = (W² + f) × L - b²\n` +
+                                ` a² = (${Wn}² + ${fn}) × ${Ln} - ${bn}²\n` +
+                                ` a² = (${(Wn ** 2).toFixed(4)} + ${fn}) × ${Ln} - ${(bn ** 2).toFixed(4)}\n` +
+                                `       = ${(valA).toFixed(4)}\n` +
+                                ` a = √${(valA).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "b":
                             if (Wn === null || an === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
                             if (Ln === 0) throw "หารด้วยศูนย์";
-                            let val_b = (Wn ** 2 + fn) * Ln - an ** 2;
-                            if (val_b < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
-                            resultVal = Math.sqrt(val_b);
+                            // b² = (W² + f)*L - a²
+                            const valB = (Wn ** 2 + fn) * Ln - (an ** 2);
+                            if (valB < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
+                            resultVal = Math.sqrt(valB);
+                            resultDiv.innerText = `ผลลัพธ์ b = ${resultVal.toFixed(4)}`;
+                            workingDiv.innerText =
+                                `สูตร: W² = [(a² + b²) / L] - f\n` +
+                                ` b: b² = (W² + f) × L - a²\n` +
+                                ` b² = (${Wn}² + ${fn}) × ${Ln} - ${an}²\n` +
+                                ` b² = (${(Wn ** 2).toFixed(4)} + ${fn}) × ${Ln} - ${(an ** 2).toFixed(4)}\n` +
+                                `       = ${(valB).toFixed(4)}\n` +
+                                ` b = √${(valB).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "L":
                             if (Wn === null || an === null || bn === null || fn === null) throw "ข้อมูลไม่ครบ";
-                            let denom = Wn ** 2 + fn;
+                            // L = (a² + b²) / (W² + f)
+                            const denom = Wn ** 2 + fn;
                             if (denom === 0) throw "หารด้วยศูนย์";
                             resultVal = (an ** 2 + bn ** 2) / denom;
+                            resultDiv.innerText = `ผลลัพธ์ L = ${resultVal.toFixed(4)}`;
+                            workingDiv.innerText =
+                                `สูตร: W² = [(a² + b²) / L] - f\n` +
+                                ` L: L = (a² + b²) ÷ (W² + f)\n` +
+                                ` L = (${an}² + ${bn}²) ÷ (${Wn}² + ${fn})\n` +
+                                ` L = (${(an ** 2).toFixed(4)} + ${(bn ** 2).toFixed(4)}) ÷ ${(denom).toFixed(4)}\n` +
+                                ` ${resultVal.toFixed(4)}`;
                             break;
 
                         case "f":
                             if (Wn === null || an === null || bn === null || Ln === null) throw "ข้อมูลไม่ครบ";
+                            // f = (a² + b²)/L - W²
                             resultVal = ((an ** 2 + bn ** 2) / Ln) - (Wn ** 2);
+                            resultDiv.innerText = `ผลลัพธ์ f = ${resultVal.toFixed(4)}`;
+                            workingDiv.innerText =
+                                `สูตร: W² = [(a² + b²) / L] - f\n` +
+                                ` f = (a² + b²) ÷ L - W²\n` +
+                                ` f = (${an}² + ${bn}²) ÷ ${Ln} - ${Wn}²\n` +
+                                ` f = (${(an ** 2).toFixed(4)} + ${(bn ** 2).toFixed(4)}) ÷ ${Ln} - ${(Wn ** 2).toFixed(4)}\n` +
+                                ` ${resultVal.toFixed(4)}`;
                             break;
 
                         default:
@@ -352,9 +498,9 @@
 
                     if (resultVal === null || isNaN(resultVal)) throw "คำนวณไม่ได้";
 
-                    resultDiv.innerText = `ผลลัพธ์ ${missing} = ${resultVal.toFixed(4)}`;
                 } catch (e) {
                     resultDiv.innerText = `ข้อมูลไม่ถูกต้อง หรือ ${e}`;
+                    workingDiv.innerText = '';
                 }
             }
         }
