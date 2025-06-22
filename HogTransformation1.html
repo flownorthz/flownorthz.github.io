@@ -332,8 +332,8 @@
                                 resultDiv.innerText = `ผลลัพธ์ T = ${result.toFixed(2)}`;
                                 workingDiv.innerText =
                                     `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
-                                    `แทนค่า: T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
-                                    `คำนวณ: T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
+                                    ` T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
+                                    ` T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
                                     ` ${result.toFixed(2)}`;
                                 break;
                             case 'W':
@@ -342,9 +342,9 @@
                                 resultDiv.innerText = `ผลลัพธ์ W = ${result.toFixed(2)}`;
                                 workingDiv.innerText =
                                     `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
-                                    `แก้สมการหา W: W = (T × g × S) ÷ (F × 100)\n` +
-                                    `แทนค่า: W = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.F} × 100)\n` +
-                                    `คำนวณ: W = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.F * 100).toFixed(2)}\n` +
+                                    ` W = (T × g × S) ÷ (F × 100)\n` +
+                                    ` W = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.F} × 100)\n` +
+                                    ` W = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.F * 100).toFixed(2)}\n` +
                                     ` ${result.toFixed(2)}`;
                                 break;
                             case 'F':
