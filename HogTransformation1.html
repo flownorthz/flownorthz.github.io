@@ -91,6 +91,26 @@
         p {
             font-size: 12px;
         }
+
+        /* New styles for choice buttons */
+        .choice-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .choice-buttons button {
+            flex: 1;
+            padding: 5px;
+            margin: 0;
+            background-color: #777;
+            font-size: 12px;
+        }
+
+        .choice-buttons button:hover {
+            background-color: #555;
+        }
     </style>
 
 </head>
@@ -152,35 +172,32 @@
                 <label for="W3">ค่าสัมประสิทธิ์ไม้กายสิทธิ์ (W):</label>
                 <input type="number" id="W3" />
 
-                <label for="selectA">ว่างสัมประสิทธิ์วัสดุไม้กายสิทธิ์ (a):</label>
-                <select id="selectA" onchange="document.getElementById('a3').value = this.value">
-                    <option value="">- ว่าง a -</option>
-                    <option value="2.9">2.9 (ไม้เนื้ออ่อน)</option>
-                    <option value="3.6">3.6 (ไม้เนื้อแข็ง)</option>
-                </select>
+                <label for="a3">ค่าสัมประสิทธิ์วัสดุไม้กายสิทธิ์ (a):</label>
                 <input type="number" id="a3" />
+                <div class="choice-buttons">
+                    <button onclick="setInputValue('a3', 2.9)">2.9 (ไม้เนื้ออ่อน)</button>
+                    <button onclick="setInputValue('a3', 3.6)">3.6 (ไม้เนื้อแข็ง)</button>
+                </div>
 
-                <label for="selectB">ว่างสัมประสิทธิ์แกนกลางไม้กายสิทธิ์ (b):</label>
-                <select id="selectB" onchange="document.getElementById('b3').value = this.value">
-                    <option value="">- ว่าง b -</option>
-                    <option value="4.5">4.5 ([เล็ก]ทำให้ร้าย/ตาย)</option>
-                    <option value="5.8">5.8 ([เล็ก]ทำให้ร้าย/ตาย)</option>
-                    <option value="6.1">6.1 ([เล็ก]ยินยอม/เก็บเกี่ยว)</option>
-                    <option value="4.7">4.7 ([ใหญ่]ยินยอม/เก็บเกี่ยว)</option>
-                </select>
+                <label for="b3">ค่าสัมประสิทธิ์แกนกลางไม้กายสิทธิ์ (b):</label>
                 <input type="number" id="b3" />
+                <div class="choice-buttons">
+                    <button onclick="setInputValue('b3', 4.5)">4.5 ([เล็ก]ทำให้ร้าย/ตาย)</button>
+                    <button onclick="setInputValue('b3', 5.8)">5.8 ([เล็ก]ทำให้ร้าย/ตาย)</button>
+                    <button onclick="setInputValue('b3', 6.1)">6.1 ([เล็ก]ยินยอม/เก็บเกี่ยว)</button>
+                    <button onclick="setInputValue('b3', 4.7)">4.7 ([ใหญ่]ยินยอม/เก็บเกี่ยว)</button>
+                </div>
 
                 <label for="L3">ความยาวไม้กายสิทธิ์ (L):</label>
                 <input type="number" id="L3" />
 
-                <label for="selectF">ว่างสัมประสิทธิ์ความยืดหยุ่น (f):</label>
-                <select id="selectF" onchange="document.getElementById('f3').value = this.value">
-                    <option value="">- ว่าง f -</option>
-                    <option value="0.10">0.10 (ยืดหยุ่นมาก)</option>
-                    <option value="0.05">0.05 (ยืดยุ่นพอประมาณ)</option>
-                    <option value="0">0 (ไม่ยืดหยุ่น)</option>
-                </select>
+                <label for="f3">ค่าสัมประสิทธิ์ความยืดหยุ่น (f):</label>
                 <input type="number" id="f3" />
+                <div class="choice-buttons">
+                    <button onclick="setInputValue('f3', 0.10)">0.10 (ยืดหยุ่นมาก)</button>
+                    <button onclick="setInputValue('f3', 0.05)">0.05 (ยืดยุ่นพอประมาณ)</button>
+                    <button onclick="setInputValue('f3', 0)">0 (ไม่ยืดหยุ่น)</button>
+                </div>
             </div>
         </div>
 
@@ -198,6 +215,11 @@
             document.getElementById('formula3-inputs').style.display = formula === '3' ? 'block' : 'none';
             document.getElementById('result').innerText = '';
             document.getElementById('working').innerText = '';
+        }
+
+        // New function to set input value
+        function setInputValue(id, value) {
+            document.getElementById(id).value = value;
         }
 
         function calculate() {
@@ -406,11 +428,10 @@
             } else if (formula === '3') {
 
                 const W = document.getElementById('W3').value;
-                // Get values from either select or input
-                const a = document.getElementById('selectA').value || document.getElementById('a3').value;
-                const b = document.getElementById('selectB').value || document.getElementById('b3').value;
+                const a = document.getElementById('a3').value;
+                const b = document.getElementById('b3').value;
                 const L = document.getElementById('L3').value;
-                const f = document.getElementById('selectF').value || document.getElementById('f3').value;
+                const f = document.getElementById('f3').value;
 
                 const inputs = { W, a, b, L, f };
                 const empty = Object.entries(inputs).filter(([_, v]) => v === "");
@@ -435,7 +456,7 @@
                             if (an === null || bn === null || Ln === null || fn === null) throw "ข้อมูลไม่ครบ";
                             if (Ln === 0) throw "หารด้วยศูนย์";
                             const valW = ((an ** 2 + bn ** 2) / Ln) - fn;
-                            if (valW < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ (Wand Coefficient)";
+                            if (valW < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
                             resultVal = Math.sqrt(valW);
                             resultDiv.innerText = `ผลลัพธ์ W = ${resultVal.toFixed(4)}`;
                             workingDiv.innerText =
@@ -451,7 +472,7 @@
                             if (Ln === 0) throw "หารด้วยศูนย์";
                             // a² = (W² + f)*L - b²
                             const valA = (Wn ** 2 + fn) * Ln - (bn ** 2);
-                            if (valA < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ (Wand Material Coefficient)";
+                            if (valA < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
                             resultVal = Math.sqrt(valA);
                             resultDiv.innerText = `ผลลัพธ์ a = ${resultVal.toFixed(4)}`;
                             workingDiv.innerText =
@@ -468,7 +489,7 @@
                             if (Ln === 0) throw "หารด้วยศูนย์";
                             // b² = (W² + f)*L - a²
                             const valB = (Wn ** 2 + fn) * Ln - (an ** 2);
-                            if (valB < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ (Wand Core Coefficient)";
+                            if (valB < 0) throw "ค่าผลลัพธ์เป็นจำนวนลบ";
                             resultVal = Math.sqrt(valB);
                             resultDiv.innerText = `ผลลัพธ์ b = ${resultVal.toFixed(4)}`;
                             workingDiv.innerText =
