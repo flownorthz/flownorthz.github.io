@@ -111,6 +111,24 @@
         .choice-buttons button:hover {
             background-color: #555;
         }
+
+        .input-group {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .input-group input {
+            flex-grow: 1;
+        }
+
+        .input-group button {
+            width: auto;
+            padding: 7px 10px;
+            margin-top: 4px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
     </style>
 
 </head>
@@ -159,10 +177,23 @@
                 <input type="number" id="F" />
 
                 <label for="g">มวลของสสาร (g):</label>
-                <input type="number" id="g" />
+                <div class="input-group">
+                    <input type="number" id="g" />
+                    <input type="number" id="g-kg" placeholder="กิโลกรัม" style="width: 80px;" oninput="convertKgToG()" />
+                    <button onclick="convertKgToG()">แปลง kg -> g</button>
+                </div>
 
-                <label for="S">ค่าสถานะทางสาร (S):</label>
+
+                <label for="S">ค่าสถานะทางสาร (S): (ดูที่ปลายของผลลัพธ์)</label>
                 <input type="number" id="S" />
+                <div class="choice-buttons">
+                    <button onclick="setInputValue('S', 17.5)">17.5 (ผสม)</button>
+                    <button onclick="setInputValue('S', 12.5)">12.5 (ของแข็ง โลหะ/อัญมณี)</button>
+                    <button onclick="setInputValue('S', 8.5)">8.5 (ของแข็ง)</button>
+                    <button onclick="setInputValue('S', 5.5)">5.5 (ของเหลว)</button>
+                    <button onclick="setInputValue('S', 4)">4 (ก๊าส)</button>
+                </div>
+
 
                 <label for="T">ผลลัพธ์ (T):</label>
                 <input type="number" id="T" />
@@ -217,9 +248,21 @@
             document.getElementById('working').innerText = '';
         }
 
-        // New function to set input value
+
         function setInputValue(id, value) {
             document.getElementById(id).value = value;
+        }
+
+        function convertKgToG() {
+            const kgInput = document.getElementById('g-kg');
+            const gInput = document.getElementById('g');
+            const kgValue = parseFloat(kgInput.value);
+
+            if (!isNaN(kgValue)) {
+                gInput.value = (kgValue * 1000).toFixed(2); // 1 kg = 1000 g
+            } else {
+                gInput.value = '';
+            }
         }
 
         function calculate() {
@@ -257,7 +300,7 @@
                             `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
                             ` t = [(${x.w} × ${x.c}) ÷ (${x.v} × ${x.a})] × ${x.z}\n` +
                             ` t = (${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.a).toFixed(2)}) × ${x.z}\n` +
-                            `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                            ` t = ${result.toFixed(2)}`;
                     } else {
                         const missing = empty[0][0];
                         switch (missing) {
@@ -269,7 +312,7 @@
                                     `สูตร: t = [(w × c) ÷ (v × a)] × z\n` +
                                     ` t = [(${x.w} × ${x.c}) ÷ (${x.v} × ${x.a})] × ${x.z}\n` +
                                     ` t = (${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.a).toFixed(2)}) × ${x.z}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` t = ${result.toFixed(2)}`;
                                 break;
                             case 'w':
                                 result = (x.t * x.v * x.a) / (x.c * x.z);
@@ -279,7 +322,7 @@
                                     ` w = (t × v × a) ÷ (c × z)\n` +
                                     ` w = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.c} × ${x.z})\n` +
                                     ` w = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.c * x.z).toFixed(2)}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` w = ${result.toFixed(2)}`;
                                 break;
                             case 'c':
                                 result = (x.t * x.v * x.a) / (x.w * x.z);
@@ -289,7 +332,7 @@
                                     ` c = (t × v × a) ÷ (w × z)\n` +
                                     ` c = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.w} × ${x.z})\n` +
                                     ` c = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.w * x.z).toFixed(2)}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` c = ${result.toFixed(2)}`;
                                 break;
                             case 'v':
                                 if (x.a * x.z * x.t === 0) throw "หารด้วยศูนย์";
@@ -300,7 +343,7 @@
                                     ` v = (w × c) ÷ (a × z × t)\n` +
                                     ` v = (${x.w} × ${x.c}) ÷ (${x.a} × ${x.z} × ${x.t})\n` +
                                     ` v = ${(x.w * x.c).toFixed(2)} ÷ ${(x.a * x.z * x.t).toFixed(2)}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` v = ${result.toFixed(2)}`;
                                 break;
                             case 'a':
                                 if (x.v * x.z * x.t === 0) throw "หารด้วยศูนย์";
@@ -311,7 +354,7 @@
                                     ` a = (w × c) ÷ (v × z × t)\n` +
                                     ` a = (${x.w} × ${x.c}) ÷ (${x.v} × ${x.z} × ${x.t})\n` +
                                     ` a = ${(x.w * x.c).toFixed(2)} ÷ ${(x.v * x.z * x.t).toFixed(2)}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` a = ${result.toFixed(2)}`;
                                 break;
                             case 'z':
                                 if (x.w * x.c === 0) throw "หารด้วยศูนย์";
@@ -322,7 +365,7 @@
                                     ` z = (t × v × a) ÷ (w × c)\n` +
                                     ` z = (${x.t} × ${x.v} × ${x.a}) ÷ (${x.w} × ${x.c})\n` +
                                     ` z = ${(x.t * x.v * x.a).toFixed(2)} ÷ ${(x.w * x.c).toFixed(2)}\n` +
-                                    `ผลลัพธ์สุดท้าย: ${result.toFixed(2)}`;
+                                    ` z = ${result.toFixed(2)}`;
                                 break;
                             default:
                                 throw "ไม่สามารถหาค่านี้ได้";
@@ -359,7 +402,7 @@
                             `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
                             ` T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
                             ` T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
-                            ` ${result.toFixed(2)}`;
+                            ` T = ${result.toFixed(2)}`;
                     } else {
                         const missing = empty[0][0];
                         switch (missing) {
@@ -371,7 +414,7 @@
                                     `สูตร: T = [(W × F) ÷ (g × S)] × 10²\n` +
                                     ` T = [(${x.W} × ${x.F}) ÷ (${x.g} × ${x.S})] × 100\n` +
                                     ` T = (${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.S).toFixed(2)}) × 100\n` +
-                                    ` ${result.toFixed(2)}`;
+                                    ` T = ${result.toFixed(2)}`;
                                 break;
                             case 'W':
                                 if (x.F === 0) throw "หารด้วยศูนย์";
@@ -382,7 +425,7 @@
                                     ` W = (T × g × S) ÷ (F × 100)\n` +
                                     ` W = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.F} × 100)\n` +
                                     ` W = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.F * 100).toFixed(2)}\n` +
-                                    ` ${result.toFixed(2)}`;
+                                    ` W = ${result.toFixed(2)}`;
                                 break;
                             case 'F':
                                 if (x.W === 0) throw "หารด้วยศูนย์";
@@ -393,7 +436,7 @@
                                     ` F = (T × g × S) ÷ (W × 100)\n` +
                                     ` F = (${x.T} × ${x.g} × ${x.S}) ÷ (${x.W} × 100)\n` +
                                     ` F = ${(x.T * x.g * x.S).toFixed(2)} ÷ ${(x.W * 100).toFixed(2)}\n` +
-                                    ` ${result.toFixed(2)}`;
+                                    ` F = ${result.toFixed(2)}`;
                                 break;
                             case 'g':
                                 if (x.S * x.T === 0) throw "หารด้วยศูนย์";
@@ -404,7 +447,7 @@
                                     ` g = (W × F) ÷ (S × T/100)\n` +
                                     ` g = (${x.W} × ${x.F}) ÷ (${x.S} × ${x.T}/100)\n` +
                                     ` g = ${(x.W * x.F).toFixed(2)} ÷ ${(x.S * x.T / 100).toFixed(2)}\n` +
-                                    ` ${result.toFixed(2)}`;
+                                    ` g = ${result.toFixed(2)}`;
                                 break;
                             case 'S':
                                 if (x.g * x.T === 0) throw "หารด้วยศูนย์";
@@ -415,7 +458,7 @@
                                     ` S = (W × F) ÷ (g × T/100)\n` +
                                     ` S = (${x.W} × ${x.F}) ÷ (${x.g} × ${x.T}/100)\n` +
                                     ` S = ${(x.W * x.F).toFixed(2)} ÷ ${(x.g * x.T / 100).toFixed(2)}\n` +
-                                    ` ${result.toFixed(2)}`;
+                                    ` S = ${result.toFixed(2)}`;
                                 break;
                             default:
                                 throw "ไม่สามารถหาค่านี้ได้";
@@ -464,7 +507,7 @@
                                 ` W² = [(${an}² + ${bn}²) / ${Ln}] - ${fn}\n` +
                                 ` W² = (${(an ** 2).toFixed(4)} + ${(bn ** 2).toFixed(4)}) / ${Ln} - ${fn}\n` +
                                 ` W² = ${(valW).toFixed(4)}\n` +
-                                ` W  = √${(valW).toFixed(4)} = ${resultVal.toFixed(4)}`;
+                                ` W  = √${(valW).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "a":
@@ -481,7 +524,7 @@
                                 ` a² = (${Wn}² + ${fn}) × ${Ln} - ${bn}²\n` +
                                 ` a² = (${(Wn ** 2).toFixed(4)} + ${fn}) × ${Ln} - ${(bn ** 2).toFixed(4)}\n` +
                                 ` a² = ${(valA).toFixed(4)}\n` +
-                                ` a  = √${(valA).toFixed(4)} = ${resultVal.toFixed(4)}`;
+                                ` a  = √${(valA).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "b":
@@ -498,7 +541,7 @@
                                 ` b² = (${Wn}² + ${fn}) × ${Ln} - ${an}²\n` +
                                 ` b² = (${(Wn ** 2).toFixed(4)} + ${fn}) × ${Ln} - ${(an ** 2).toFixed(4)}\n` +
                                 ` b² = ${(valB).toFixed(4)}\n` +
-                                ` b  = √${(valB).toFixed(4)} = ${resultVal.toFixed(4)}`;
+                                ` b  = √${(valB).toFixed(4)} = ${resultVal.toFixed(4)}`;
                             break;
 
                         case "L":
