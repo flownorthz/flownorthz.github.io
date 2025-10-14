@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio — Suranan Chiraporn</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1d0f24;
+      --card: #3f1949;
+      --muted: #9aa6bf;
+      --accent1: #726ee7;
+      --accent2: #e560fa;
+      --glass: rgba(255, 255, 255, 0.04);
+      --radius: 14px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 500px at 10% 10%, rgba(96, 165, 250, 0.06), transparent),
+        radial-gradient(900px 400px at 90% 90%, rgba(110, 231, 183, 0.05), transparent),
+        var(--bg);
+      color: #e6eef8;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.4;
+      padding: 32px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 24px;
+      position: relative;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, var(--card), rgba(11, 18, 32, 0.7));
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 6px 20px rgba(2, 6, 23, 0.6);
+      position: sticky;
+      top: 32px;
+      height: fit-content;
+      min-height: 300px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 28px;
+      color: #04263b;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.2px
+    }
+
+    p.lead {
+      color: var(--muted);
+      margin: 10px 0 16px;
+      font-size: 13px
+    }
+
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .skill {
+      background: var(--glass);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.02)
+    }
+
+    .contact {
+      margin-top: 18px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      font-weight: 600
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 18px
+    }
+
+    .hero {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+      padding: 20px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.03)
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .greeting {
+      display: flex;
+      gap: 12px;
+      align-items: center
+    }
+
+    .eyebadge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      color: #04263b;
+      font-weight: 700
+    }
+
+    .headline {
+      font-size: 20px;
+      margin: 0
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 13px
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      transition: transform .28s ease, box-shadow .28s ease
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(2, 6, 23, 0.6)
+    }
+
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .card .tags {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted)
+    }
+
+    .contact-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent)
+    }
+
+    @media (max-width:880px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .projects {
+        grid-template-columns: 1fr
+      }
+
+      body {
+        padding: 20px
+      }
+
+      .sidebar {
+        position: relative
+      }
+    }
+
+    .glow {
+      position: absolute;
+      left: -200px;
+      top: -120px;
+      width: 600px;
+      height: 600px;
+      filter: blur(80px);
+      opacity: 0.14;
+      pointer-events: none
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px
+    }
+
+    .modal.open {
+      display: flex
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 880px;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.04)
+    }
+
+    .modal-close {
+      float: right;
+      cursor: pointer
+    }
+
+    /* Popup Glassmorphism */
+    #popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-weight: 600;
+      color: #e6eef8;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      transition: all 0.5s ease-out;
+      z-index: 1000;
+    }
+
+    #popup.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glow">
+    <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#60a5fa" stop-opacity="0.9" />
+          <stop offset="1" stop-color="#6ee7b7" stop-opacity="0.9" />
+        </linearGradient>
+      </defs>
+      <circle cx="220" cy="200" r="180" fill="url(#g1)" />
+    </svg>
+  </div>
+
+  <div class="container">
+    <aside class="sidebar" aria-labelledby="profile-section">
+      <div class="avatar" role="img" aria-label="avatar">
+        <img src="profile.png" alt="Suranan Chiraporn"
+          style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+      </div>
+
+      <h1 id="profile-section">• Suranan Chiraporn</h1>
+      <p class="lead">
+        • นายสุรนันท์ จิราภรณ์ • ชื่อเล่น ปั้น
+        <br>• วันเกิด 13 กุมภาพันธ์ 2548 • อายุ 20 ปี
+        <br>• โทร 093-779-9903
+        <br>• Facebook: <a href="https://www.facebook.com/OnceSuranan" target="_blank" style="color: var(--accent1); text-decoration: none;">Once Suranan</a>
+        <br>• Instragram: <a href="https://www.instagram.com/_pxnsrn_/" target="_blank" style="color: var(--accent1); text-decoration: none;">_pxnsrn_</a>
+        <br>• Mail: <span class="mail" style="color: var(--accent1); cursor: pointer;" onclick="copyMail()">flownorthz@gmail.com</span>
+        <br><br>• ที่อยู่ ----------------
+        <br>107 ซ.งามวงศ์วาน 23 แยก15/1
+        <br>ต.บางกระสอ อ.เมืองนนทบุรี จ.นนทบุรี
+      </p>
+
+      <h1>• Skill</h1>
+
+      <p class="lead">• Editor ----------------</p>
+      <div class="skill-list">
+        <div class="skill">Photoshop</div>
+        <div class="skill">Premiere pro</div>
+        <div class="skill">After effect</div>
+        <div class="skill">Illustrator</div>
+        <div class="skill">Animate</div>
+      </div>
+
+      <p class="lead">• Music ----------------</p>
+      <div class="skill-list">
+        <div class="skill">Song Writer</div>
+        <div class="skill">Producer</div>
+        <div class="skill">Guitar</div>
+        <div class="skill">Keyboard</div>
+        <div class="skill">Vocal</div>
+        <div class="skill">Chorus</div>
+      </div>
+
+      <p class="lead">• Code ----------------</p>
+      <div class="skill-list">
+        <div class="skill">HTML</div>
+        <div class="skill">CSS</div>
+        <div class="skill">Python</div>
+        <div class="skill">JavaScript</div>
+      </div>
+
+      <div class="contact">
+        <a class="btn" href="#projects">📁 Projects</a>
+      </div>
+      <div style="margin-top:16px;color:var(--muted);font-size:13px">
+        <div class="mono">Based in Bangkok • Available for freelance</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="hero" aria-labelledby="intro">
+        <div class="hero-top">
+          <div class="greeting">
+            <div class="eyebadge">Hope You Enjoy!</div>
+            <div>
+              <h2 class="headline">Hi, I'm <strong>Pun👋</strong></h2>
+              <div class="sub">
+                ยินดีต้อนรับสู่ Portfolio ของเรา
+                <br>เว็บนี้เป็นเว็บที่เราสร้างขึ้นเพื่อนำเสนอถึงผลงานเรา หวังว่าจะชอบกันนะ
+              </div>
+            </div>
+          </div>
+          <div class="mono">Last updated: Oct 14, 2025</div>
+        </div>
+      </section>
+
+      <section id="projects">
+        <h3 style="margin:6px 0 12px 0">Selected Projects</h3>
+        <div class="projects">
+          <article class="card" tabindex="0" data-title="Realtime Dashboard"
+            data-desc="แดชบอร์ดเวลาจริง โชว์ข้อมูลแบบเรียลไทม์ พร้อม animation เล็กๆ" data-tags="React,Socket,Chart">
+            <h3>My Projects</h3>
+            <p class="muted">ผลงานต่างๆของเรา ไม่ว่าจะเป็น...</p>
+            <div class="tags">
+              <div class="tag">tag</div>
+              <div class="tag">tag</div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Micro-Animations"
+            data-desc="ชุด micro-interactions ที่ปรับเพื่อ performance บนมือถือ" data-tags="CSS,Performance">
+            <h3>รอใส่</h3>
+            <p class="muted">รอใส่...</p>
+            <div class="tags">
+              <div class="tag">tag</div>
+              <div class="tag">tag</div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" data-title="Static Site Generator"
+            data-desc="เว็บสแตติกที่ส่งมอบเร็วใน 10ms ผ่าน CDN" data-tags="Jamstack,Node">
+            <h3>รอใส่</h3>
+            <p class="muted">รอใส่...</p>
+            <div class="tags">
+              <div class="tag">tag</div>
+              <div class="tag">tag</div>
+            </div>
+          </article>
+
+          <article class="card" tabindex="0" onclick="window.location.href='relationship_book/relationship.html'">
+            <h3>Relationship Book</h3>
+            <p class="muted">หนังสือรวมความสัมพันธ์ในชีวิต</p>
+            <div class="tags">
+              <div class="tag">Family</div>
+              <div class="tag">Friends</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="contact-bar">
+        <div>
+          <div style="font-weight:700">Let's build something together</div>
+          <div class="mono">Available for freelance & full‑time</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a class="btn" href="mailto:flownorthz@gmail.com">Email me</a>
+          <a class="btn" href="#" onclick="downloadResume()">Download CV</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3 id="modal-title">Project</h3>
+      <p id="modal-desc" style="color:var(--muted)"></p>
+      <div style="margin-top:12px;display:flex;gap:8px"><span class="tag">Tech</span><span class="tag">Role</span></div>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup" class="popup">📧 Email copied to clipboard!</div>
+
+  <script>
+    // Modal interactions
+    document.querySelectorAll('.card').forEach(c => {
+      c.addEventListener('click', () => openModal(c));
+      c.addEventListener('keypress', (e) => { if (e.key === 'Enter') openModal(c); });
+    });
+    function openModal(el) {
+      const title = el.dataset.title || 'Project';
+      const desc = el.dataset.desc || '';
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = desc;
+      document.getElementById('modal').classList.add('open');
+    }
+    function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+    // Copy email with popup
+    function copyMail() {
+      navigator.clipboard?.writeText('flownorthz@gmail.com').then(() => {
+        const popup = document.getElementById('popup');
+        popup.classList.add('show');
+        setTimeout(() => { popup.classList.remove('show'); }, 2200);
+      }).catch(() => {
+        alert('Please copy manually: flownorthz@gmail.com');
+      });
+    }
+
+    // Download resume
+    function downloadResume() {
+      const text = `Suranan Chiraporn\nFrontend / Music Portfolio\nEmail: flownorthz@gmail.com\n\nSkills:\n- Editor, Music, Coding\n- Projects in React, CSS, Node, Design`;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'resume.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  </script>
+</body>
+
+</html>
