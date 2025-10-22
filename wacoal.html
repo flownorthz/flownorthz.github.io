@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wacoal Downloads</title>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Wacoal_logo.svg/512px-Wacoal_logo.svg.png" type="image/png">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -26,18 +27,23 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
             max-width: 500px;
+            width: 90%;
         }
         h1 {
             color: #d81b60;
             margin-bottom: 20px;
+            font-size: 2em;
         }
         p {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 16px;
             line-height: 1.5;
         }
-        a.download-btn {
-            display: inline-block;
+        a {
+            text-decoration: none;
+        }
+        .download-btn {
+            display: block;
             text-decoration: none;
             color: white;
             background-color: #a21bd8;
@@ -45,25 +51,53 @@
             border-radius: 50px;
             font-weight: bold;
             transition: all 0.3s ease;
+            margin: 10px auto;
+            width: fit-content;
         }
-        a.download-btn:hover {
+        .download-btn:hover {
             background-color: #4f14ad;
             transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         footer {
             margin-top: 30px;
             font-size: 14px;
             color: #555;
         }
+
+        /* Responsive for small devices */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            p {
+                font-size: 15px;
+            }
+            .download-btn {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Wacoal Downloads</h1>
-        <p>https://drive.google.com/drive/folders/1cAmStAPx4E4F7cuyCYQhcMIHsEDx7lQ5</p>
-        <a href="https://www.mediafire.com/folder/6lcjfck2omx7x/Wacoal" target="_blank" class="download-btn">เปิดโฟลเดอร์</a>
+        <p>เลือกแหล่งดาวน์โหลดที่ต้องการ:</p>
+
+        <a href="https://drive.google.com/drive/folders/1cAmStAPx4E4F7cuyCYQhcMIHsEDx7lQ5" target="_blank" class="download-btn">
+            เปิดโฟลเดอร์ Google Drive
+        </a>
+
+        <a href="https://www.mediafire.com/folder/6lcjfck2omx7x/Wacoal" target="_blank" class="download-btn" style="background-color:#d81b60;">
+            เปิดโฟลเดอร์ MediaFire
+        </a>
+
         <footer>© 2025 Wacoal Download Portal</footer>
     </div>
 </body>
-</html>
-
+</html
