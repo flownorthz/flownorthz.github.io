@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TextBoard</title>
+  <style>
+    :root {--bg:#0b0b0b;--fg:#ffffff;--accent:#9a1eff;--font:'Segoe UI',Roboto,Arial,sans-serif;}
+    html,body{height:100%;margin:0;font-family:var(--font);background:var(--bg);color:var(--fg);}
+    .app{display:flex;flex-direction:column;height:100%;}
+    header{display:flex;gap:10px;align-items:center;padding:10px;background:linear-gradient(90deg,rgba(255,255,255,0.03),transparent);}
+    header h1{font-size:16px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center;margin-left:auto}
+    button{appearance:none;border:0;padding:8px 12px;border-radius:8px;background:#222;color:var(--fg);cursor:pointer}
+    button.primary{background:var(--accent);color:#fff}
+    .small{padding:6px 8px;font-size:13px}
+    main{flex:1;display:flex}
+    .sidebar{width:380px;max-width:40vw;padding:16px;box-sizing:border-box}
+    .control-row{margin-bottom:12px}
+    label{display:block;font-size:13px;margin-bottom:6px}
+    input[type=range]{width:100%}
+    input[type=color]{height:36px;width:48px;padding:0;border-radius:6px;border:1px solid #222;background:#111}
+    textarea{width:100%;box-sizing:border-box;padding:8px;border-radius:6px;border:1px solid #222;background:#0f0f0f;color:var(--fg);}
+    .preview{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    #bigText{padding:40px;max-width:100%;text-align:center;word-break:break-word;line-height:1.05;font-size:120px;}
+    footer{padding:10px;text-align:center;font-size:13px;background:linear-gradient(0deg,rgba(255,255,255,0.02),transparent)}
+    .status{font-size:13px;margin-left:10px}
+    @media (max-width:800px){.sidebar{display:none}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>TextBoard — พูดหรือพิมพ์ให้ขึ้นจอใหญ่</h1>
+      <div class="controls">
+        <button id="micBtn" class="primary">🎤 เริ่มพูด</button>
+        <button id="fsBtn" class="small">⛶ เต็มจอ</button>
+        <button id="clearBtn" class="small">🧹 ล้าง</button>
+        <span class="status" id="status">สถานะ: พร้อม</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <div class="control-row">
+          <label>ข้อความ (พูดหรือพิมพ์เพิ่มเติมได้)</label>
+          <textarea id="manual" rows="6" placeholder="พิมพ์ข้อความเพิ่มเติมที่นี่"></textarea>
+        </div>
+        <div class="control-row">
+          <label>ขนาดตัวอักษร</label>
+          <input id="fontRange" type="range" min="12" max="220" value="120" />
+        </div>
+        <div class="control-row">
+          <label>สีตัวอักษร / พื้นหลัง</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="fgColor" type="color" value="#ffffff" />
+            <input id="bgColor" type="color" value="#0b0b0b" />
+            <button id="invert" class="small">สลับ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview" id="preview">
+        <div id="bigText">กรุณากดปุ่มเริ่มพูดหรือพิมพ์ข้อความที่นี่</div>
+      </div>
+    </main>
+
+    <footer>Made By Overflow</footer>
+  </div>
+
+  <script>
+    const micBtn=document.getElementById('micBtn');
+    const fsBtn=document.getElementById('fsBtn');
+    const clearBtn=document.getElementById('clearBtn');
+    const status=document.getElementById('status');
+    const bigText=document.getElementById('bigText');
+    const fontRange=document.getElementById('fontRange');
+    const fgColor=document.getElementById('fgColor');
+    const bgColor=document.getElementById('bgColor');
+    const invertBtn=document.getElementById('invert');
+    const manual=document.getElementById('manual');
+    const preview=document.getElementById('preview');
+
+    // fullscreen
+    fsBtn.addEventListener('click',()=>{!document.fullscreenElement?preview.requestFullscreen():document.exitFullscreen()});
+
+    // apply styles
+    function applyStyles(){
+      document.body.style.background=bgColor.value;
+      bigText.style.color=fgColor.value;
+      bigText.style.fontSize=fontRange.value+'px';
+    }
+    fgColor.addEventListener('input',applyStyles);
+    bgColor.addEventListener('input',applyStyles);
+    fontRange.addEventListener('input',applyStyles);
+    invertBtn.addEventListener('click',()=>{
+      const a=fgColor.value,b=bgColor.value; fgColor.value=b; bgColor.value=a; applyStyles();
+    });
+    applyStyles();
+
+    // manual input
+    manual.addEventListener('input',()=>{updateBigText();});
+
+    // clear button
+    clearBtn.addEventListener('click',()=>{
+      bigText.textContent='';
+      manual.value='';
+      finalTranscript='';
+    });
+
+    // Speech recognition
+    let recognition=null;
+    let listening=false;
+    let finalTranscript='';
+
+    function setupRecognition(){
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+      if(!SR)return null;
+      const r=new SR();
+      r.continuous=true;
+      r.interimResults=true;
+      r.lang='th-TH';
+
+      r.onstart=()=>{listening=true;micBtn.textContent='⏺️ กำลังฟัง...';status.textContent='ฟังอยู่';}
+      r.onerror=e=>{status.textContent='ผิดพลาด: '+e.error;}
+      r.onend=()=>{listening=false;micBtn.textContent='🎤 เริ่มพูด';status.textContent='หยุดฟัง';}
+      r.onresult=e=>{
+        let interim='';
+        for(let i=e.resultIndex;i<e.results.length;i++){
+          const res=e.results[i];
+          if(res.isFinal) finalTranscript+=res[0].transcript+' ';
+          else interim+=res[0].transcript;
+        }
+        updateBigText(interim);
+      };
+      return r;
+    }
+
+    function updateBigText(interim=''){
+      const combined=(finalTranscript+' '+manual.value+' '+interim).trim();
+      bigText.textContent=combined||' ';
+      bigText.scrollIntoView({behavior:'smooth', block:'end'});
+      autoFitText();
+    }
+
+    micBtn.addEventListener('click',()=>{
+      if(!recognition){recognition=setupRecognition();if(!recognition){alert('เบราว์เซอร์ของคุณไม่รองรับไมค์ (Web Speech API)');return;}}
+      if(!listening){recognition.start();}
+      else{recognition.stop();}
+    });
+
+    // auto-fit font size if text too long
+    function autoFitText(){
+      let size=parseInt(fontRange.value);
+      bigText.style.fontSize=size+'px';
+      while(bigText.scrollHeight>preview.clientHeight && size>20){
+        size-=5;
+        bigText.style.fontSize=size+'px';
+      }
+    }
+
+    fontRange.addEventListener('input',()=>{applyStyles();autoFitText();});
+
+    // keyboard shortcuts: space = start/stop mic, esc = clear
+    document.addEventListener('keydown', e=>{
+      if(e.code==='Space'){ e.preventDefault(); micBtn.click(); }
+      if(e.code==='Escape'){ clearBtn.click(); }
+    });
+
+    // auto-start mic on load (optional)
+    // window.addEventListener('load', ()=>{ setTimeout(()=>micBtn.click(),500); });
+
+    if(!(window.SpeechRecognition||window.webkitSpeechRecognition)){
+      status.textContent='เบราว์เซอร์ไม่รองรับไมค์ (Web Speech API)';
+    } else {
+      status.textContent='พร้อม';
+    }
+  </script>
+</body>
+</html>
