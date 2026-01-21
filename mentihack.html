@@ -53,25 +53,29 @@ h1 {
   color: var(--muted);
 }
 
-textarea {
+/* input */
+input, textarea {
   width: 100%;
-  min-height: 200px;
   background: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 14px;
-  padding: 14px;
+  padding: 12px 14px;
   font-size: 0.95rem;
+}
+
+textarea {
+  min-height: 200px;
   resize: vertical;
 }
 
-textarea:focus {
+input:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
 }
 
 .actions {
-  margin-top: 14px;
+  margin-top: 12px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -94,17 +98,14 @@ button.secondary {
   border: 1px solid var(--border);
 }
 
-button:hover {
-  opacity: 0.9;
-}
+button:hover { opacity: 0.9; }
 
 .status {
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: 0.9rem;
   min-height: 1.2em;
   color: var(--muted);
 }
-
 .status.success { color: var(--success); }
 .status.error { color: var(--error); }
 
@@ -141,7 +142,6 @@ button:hover {
   padding: 24px;
 }
 
-/* เครดิต */
 .footer {
   margin-top: 24px;
   text-align: center;
@@ -159,10 +159,23 @@ button:hover {
   <div class="card">
     <h1>Mentimeter Question Extractor</h1>
     <div class="subtitle">
-      ดึงคำถามและตัวเลือก แยกข้อ + คัดลอกได้
+      โปรแกรมตรวจหาคำถาม
     </div>
 
-    <textarea id="inputText" placeholder="วางข้อมูล Mentimeter ยาว ๆ ที่นี่..."></textarea>
+    <!-- 🔑 ช่องใส่รหัส -->
+    <input id="mentiCode" placeholder="ใส่รหัส Mentimeter เช่น al7wzn821t35">
+
+    <div class="actions">
+      <button onclick="makeViewSource()">สร้างลิงก์ View-Source</button>
+      <button class="secondary" onclick="copyViewSource()">คัดลอกลิงก์</button>
+    </div>
+
+    <div id="linkStatus" class="status"></div>
+
+    <hr style="border:1px solid var(--border); margin:18px 0">
+
+    <!-- 📄 ข้อมูล source -->
+    <textarea id="inputText" placeholder="วาง view-source ทั้งหมดจาก Mentimeter ที่นี่..."></textarea>
 
     <div class="actions">
       <button onclick="extract()">Extract</button>
@@ -177,17 +190,49 @@ button:hover {
       </div>
     </div>
 
-    <!-- เครดิตผู้จัดทำ -->
     <div class="footer">
       ทำโดย <strong>Overflow สุรนันท์ จิราภรณ์</strong> · 2410611112059
     </div>
-
   </div>
 </div>
 
 <script>
 let structuredData = [];
 
+/* ---------- view-source ---------- */
+function makeViewSource() {
+  const code = document.getElementById("mentiCode").value.trim();
+  const status = document.getElementById("linkStatus");
+
+  if (!code) {
+    status.textContent = "กรุณาใส่รหัส Mentimeter";
+    status.className = "status error";
+    return;
+  }
+
+  const url = "view-source:https://www.menti.com/" + code;
+  status.textContent = url;
+  status.className = "status success";
+}
+
+function copyViewSource() {
+  const status = document.getElementById("linkStatus");
+  const code = document.getElementById("mentiCode").value.trim();
+
+  if (!code) {
+    status.textContent = "ยังไม่มีรหัสให้คัดลอก";
+    status.className = "status error";
+    return;
+  }
+
+  const url = "view-source:https://www.menti.com/" + code;
+  navigator.clipboard.writeText(url).then(() => {
+    status.textContent = "คัดลอกลิงก์ View-Source แล้ว ✓";
+    status.className = "status success";
+  });
+}
+
+/* ---------- extract ---------- */
 function extract() {
   const text = document.getElementById("inputText").value;
   const output = document.getElementById("output");
@@ -202,10 +247,7 @@ function extract() {
     "How to create a Q&A",
     "How to Create a Survey in Minutes",
     "How to create a word cloud",
-    "Open Ended",
-    "Poll",
-    "Quiz",
-    "Word cloud",
+    "Open Ended","Poll","Quiz","Word cloud",
     "Gather reflections in class",
     "Get quick input from students",
     "Check student understanding",
@@ -221,7 +263,7 @@ function extract() {
     if (!blacklist.includes(t)) titles.push(t);
   }
 
-  if (titles.length === 0) {
+  if (!titles.length) {
     output.innerHTML = '<div class="empty">ไม่พบข้อมูล</div>';
     return;
   }
@@ -243,7 +285,6 @@ function extract() {
 
       while (i < titles.length && titles[i] !== titles[i + 1]) {
         answers.push(titles[i]);
-
         const ans = document.createElement("div");
         ans.className = "answer";
         ans.textContent = "– " + titles[i];
@@ -262,7 +303,7 @@ function extract() {
 function copyResult() {
   const status = document.getElementById("status");
 
-  if (structuredData.length === 0) {
+  if (!structuredData.length) {
     status.textContent = "ยังไม่มีผลลัพธ์ให้คัดลอก";
     status.className = "status error";
     return;
@@ -271,9 +312,7 @@ function copyResult() {
   let text = "";
   structuredData.forEach(q => {
     text += q.question + "\n";
-    q.answers.forEach(a => {
-      text += "- " + a + "\n";
-    });
+    q.answers.forEach(a => text += "- " + a + "\n");
     text += "\n";
   });
 
