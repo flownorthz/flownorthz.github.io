@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>PopClick Ultimate</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  overflow:hidden;
+  cursor:pointer;
+  font-family:Arial;
+}
+
+#bg {
+  width:100vw;
+  height:100vh;
+  object-fit:cover;
+  transition:transform 0.08s ease;
+}
+
+.pop { transform:scale(1.05); }
+
+#counter {
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:48px;
+  color:white;
+  text-shadow:0 0 10px rgba(0,0,0,0.7);
+  font-weight:bold;
+}
+
+.comboText {
+  position:fixed;
+  left:50%;
+  top:120px;
+  transform:translateX(-50%);
+  font-size:36px;
+  color:yellow;
+  font-weight:bold;
+  animation:floatUp 0.6s forwards;
+}
+
+@keyframes floatUp {
+  0% { opacity:0; transform:translate(-50%,20px) scale(0.8);}
+  50% { opacity:1; transform:translate(-50%,0) scale(1.3);}
+  100% { opacity:0; transform:translate(-50%,-40px);}
+}
+
+.navBtn {
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:40px;
+  color:white;
+  background:rgba(0,0,0,0.4);
+  border:none;
+  padding:10px 20px;
+  cursor:pointer;
+}
+#prev{left:20px;}
+#next{right:20px;}
+</style>
+</head>
+
+<body>
+
+<div id="counter">0</div>
+<img id="bg" src="poppic/Li1.jpg">
+
+<button id="prev" class="navBtn">&lt;</button>
+<button id="next" class="navBtn">&gt;</button>
+
+<audio id="popSound" src="poppic/slap.mp3"></audio>
+
+<script>
+const imageSets = [
+ ["poppic/Li1.jpg","poppic/Li2.jpg"],
+ ["poppic/Rew1.jpg","poppic/Rew2.jpg"]
+];
+
+let setIndex=0;
+let count=0;
+
+// tap combo
+let tapCombo=0;
+let lastTap=0;
+
+// hold combo
+let holdCombo=0;
+
+// state
+let holdTimer=null;
+let isHolding=false;
+let holdStartTime=0;
+
+const holdDelay=150;
+const comboWindow=400;
+
+const bg=document.getElementById("bg");
+const counter=document.getElementById("counter");
+const sound=document.getElementById("popSound");
+
+function playSound(){
+  const s=sound.cloneNode();
+  s.play();
+}
+
+function setImage(i){
+  bg.src=imageSets[setIndex][i];
+}
+
+function popEffect(){
+  bg.classList.add("pop");
+  setTimeout(()=>bg.classList.remove("pop"),80);
+}
+
+function showText(text){
+  const el=document.createElement("div");
+  el.className="comboText";
+  el.textContent=text;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),600);
+}
+
+// 👆 TAP
+function tapAction(){
+  const now=Date.now();
+
+  if(now-lastTap<comboWindow){
+    tapCombo++;
+  }else{
+    tapCombo=1;
+  }
+  lastTap=now;
+
+  let multi=1;
+  if(tapCombo>=6) multi=3;
+  else if(tapCombo>=3) multi=2;
+
+  setImage(1);
+  popEffect();
+
+  setTimeout(()=>setImage(0),80);
+
+  count+=multi;
+  counter.textContent=count;
+
+  if(multi>1) showText("TAP x"+multi);
+
+  playSound();
+}
+
+// ✊ HOLD START
+function holdStart(){
+  isHolding=true;
+  holdStartTime=Date.now();
+
+  setImage(1);
+  popEffect();
+  playSound();
+}
+
+// 🖐️ HOLD END
+function holdEnd(){
+  if(!isHolding) return;
+
+  const duration=Date.now()-holdStartTime;
+
+  // charge
+  let charge=1;
+  if(duration>800) charge=3;
+  else if(duration>400) charge=2;
+
+  holdCombo++;
+
+  let bonus=1;
+  if(holdCombo>=4) bonus=2;
+
+  const total=charge*bonus;
+
+  count+=total;
+  counter.textContent=count;
+
+  showText("HOLD x"+total);
+
+  setImage(0);
+  isHolding=false;
+}
+
+// 👇 EVENTS
+document.addEventListener("pointerdown",(e)=>{
+  if(e.target.classList.contains("navBtn")) return;
+
+  holdTimer=setTimeout(holdStart,holdDelay);
+});
+
+document.addEventListener("pointerup",(e)=>{
+  if(e.target.classList.contains("navBtn")) return;
+
+  if(holdTimer){
+    clearTimeout(holdTimer);
+    holdTimer=null;
+
+    if(!isHolding){
+      tapAction();
+    }
+  }
+
+  holdEnd();
+});
+
+// 🔁 เปลี่ยนชุด
+function changeSet(dir){
+  setIndex+=dir;
+
+  if(setIndex<0) setIndex=imageSets.length-1;
+  if(setIndex>=imageSets.length) setIndex=0;
+
+  setImage(0);
+}
+
+document.getElementById("prev").onclick=(e)=>{
+  e.stopPropagation();
+  changeSet(-1);
+};
+document.getElementById("next").onclick=(e)=>{
+  e.stopPropagation();
+  changeSet(1);
+};
+
+</script>
+</body>
+</html>
