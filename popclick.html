@@ -2,15 +2,22 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+
+<!-- ✅ กัน zoom มือถือ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
 <title>PopClick</title>
 
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
-body {
+html, body {
   overflow:hidden;
-  cursor:pointer;
   font-family:Arial;
+
+  /* ✅ กัน gesture / ซูม / เด้ง */
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 #bg {
@@ -69,7 +76,7 @@ body {
 <body>
 
 <div id="counter">0</div>
-<img id="bg" src="poppic/Li1.jpg">
+<img id="bg" src="poppic/Rew1.jpg">
 
 <button id="prev" class="navBtn">&lt;</button>
 <button id="next" class="navBtn">&gt;</button>
@@ -78,20 +85,17 @@ body {
 
 <script>
 const imageSets = [
- ["poppic/Li1.jpg","poppic/Li2.jpg"],
- ["poppic/Rew1.jpg","poppic/Rew2.jpg"]
+ ["poppic/Rew1.jpg","poppic/Rew2.jpg"],
+ ["poppic/Li1.jpg","poppic/Li2.jpg"]
 ];
 
 let setIndex=0;
 let count=0;
 
-
 let tapCombo=0;
 let lastTap=0;
 
-
 let holdCombo=0;
-
 
 let holdTimer=null;
 let isHolding=false;
@@ -126,7 +130,6 @@ function showText(text){
   setTimeout(()=>el.remove(),600);
 }
 
-
 function tapAction(){
   const now=Date.now();
 
@@ -154,7 +157,6 @@ function tapAction(){
   playSound();
 }
 
-
 function holdStart(){
   isHolding=true;
   holdStartTime=Date.now();
@@ -164,13 +166,11 @@ function holdStart(){
   playSound();
 }
 
-
 function holdEnd(){
   if(!isHolding) return;
 
   const duration=Date.now()-holdStartTime;
 
-  // charge
   let charge=1;
   if(duration>800) charge=3;
   else if(duration>400) charge=2;
@@ -191,10 +191,8 @@ function holdEnd(){
   isHolding=false;
 }
 
-
 document.addEventListener("pointerdown",(e)=>{
   if(e.target.classList.contains("navBtn")) return;
-
   holdTimer=setTimeout(holdStart,holdDelay);
 });
 
@@ -213,6 +211,10 @@ document.addEventListener("pointerup",(e)=>{
   holdEnd();
 });
 
+/* ✅ กัน double tap zoom เพิ่ม */
+document.addEventListener('dblclick', e => {
+  e.preventDefault();
+}, { passive: false });
 
 function changeSet(dir){
   setIndex+=dir;
@@ -231,7 +233,7 @@ document.getElementById("next").onclick=(e)=>{
   e.stopPropagation();
   changeSet(1);
 };
-
 </script>
+
 </body>
 </html>
