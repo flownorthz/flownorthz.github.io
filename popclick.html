@@ -85,14 +85,14 @@ const imageSets = [
 let setIndex=0;
 let count=0;
 
-// tap combo
+
 let tapCombo=0;
 let lastTap=0;
 
-// hold combo
+
 let holdCombo=0;
 
-// state
+
 let holdTimer=null;
 let isHolding=false;
 let holdStartTime=0;
@@ -126,7 +126,7 @@ function showText(text){
   setTimeout(()=>el.remove(),600);
 }
 
-// 👆 TAP
+
 function tapAction(){
   const now=Date.now();
 
@@ -154,7 +154,7 @@ function tapAction(){
   playSound();
 }
 
-// ✊ HOLD START
+
 function holdStart(){
   isHolding=true;
   holdStartTime=Date.now();
@@ -164,7 +164,7 @@ function holdStart(){
   playSound();
 }
 
-// 🖐️ HOLD END
+
 function holdEnd(){
   if(!isHolding) return;
 
@@ -191,7 +191,7 @@ function holdEnd(){
   isHolding=false;
 }
 
-// 👇 EVENTS
+
 document.addEventListener("pointerdown",(e)=>{
   if(e.target.classList.contains("navBtn")) return;
 
@@ -213,7 +213,7 @@ document.addEventListener("pointerup",(e)=>{
   holdEnd();
 });
 
-// 🔁 เปลี่ยนชุด
+
 function changeSet(dir){
   setIndex+=dir;
 
