@@ -1,152 +1,348 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หนังสือเพื่อนแท้</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #88ff8c;
-        }
-        h1 {
-            color: #ffffff;
-            font-size: 36px;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-        }
-        .book {
-            width: 300px;
-            height: 200px;
-            background-color: #4CAF50;
-            margin: 20px auto;
-            border: 3px solid #227e25;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform-origin: left;
-            transform: perspective(1000px);
-            transition: transform 1s ease;
-        }
-        .book.open {
-            transform: perspective(1000px) rotateY(-120deg);
-        }
-        .button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .book-content {
-            font-size: 18px;
-            color: #000000;  /* เปลี่ยนสีข้อความที่เหลือเป็นสีดำ */
-            padding: 20px;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หนังสือเพื่อนแท้</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Mitr:wght@400;500;600&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1b1330;
+    --bg-deep2:#2e1b3d;
+    --cover:#82179c;
+    --cover-dark:#4a0c16;
+    --gold:#d4af37;
+    --gold-soft:#e8cd76;
+    --parchment:#f3e5c8;
+    --parchment-dark:#e3d2ac;
+    --ink:#3b2a1e;
+    --ink-soft:#6b5544;
+    --stamp:#a8323a;
+  }
 
-        #book-content {
-            color: #ffffff;  /* เปลี่ยนสีเฉพาะข้อความ "หนังสือเพื่อนแท้" เป็นสีขาว */
-        }
+  *{box-sizing:border-box;}
 
-        .book2 {
-            width: 300px;
-            height: 200px;
-            background-color: #cfffd0;
-            margin: -285px auto;
-            border: 3px solid #227e25;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .text-explain {
-        margin: 0;
-        font-size: 1.2rem;
-        text-align: center;
-        padding: 10px;
-        }
-        
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 18%, rgba(255,180,84,0.10), transparent 60%),
+      radial-gradient(ellipse 1200px 900px at 50% 100%, var(--bg-deep2), var(--bg-deep));
+    background-attachment:fixed;
+    font-family:'Sarabun',sans-serif;
+    color:var(--parchment);
+    overflow-x:hidden;
+  }
 
-    </style>
+  .dust{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .dust span{
+    position:absolute; width:3px; height:3px;
+    background:var(--gold-soft); border-radius:50%;
+    opacity:.5; animation:drift 9s ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translateY(0) scale(1); opacity:.25; }
+    50%{ transform:translateY(-22px) scale(1.4); opacity:.7; }
+  }
+
+  .stage{
+    position:relative; z-index:1;
+    max-width:560px; margin:0 auto;
+    padding:48px 24px 80px; text-align:center;
+  }
+
+  .eyebrow{
+    font-family:'Mitr',sans-serif; font-size:12px;
+    letter-spacing:.35em; color:var(--gold-soft);
+    text-transform:uppercase; opacity:.8; margin-bottom:10px;
+  }
+
+  h1{
+    font-family:'Charm',cursive; font-weight:700; font-size:54px;
+    margin:0 0 6px; color:var(--gold-soft);
+    text-shadow:0 0 24px rgba(212,175,55,.35), 0 2px 0 rgba(0,0,0,.3);
+    line-height:1.15;
+  }
+
+  .subtitle{
+    font-size:15.5px; color:#d8c9e8; line-height:1.7;
+    max-width:420px; margin:0 auto 40px;
+  }
+  .subtitle b{ color:var(--gold-soft); font-weight:600; }
+
+  .altar{ position:relative; display:flex; justify-content:center; margin-bottom:8px; }
+  .glow{
+    position:absolute; width:340px; height:340px; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(255,180,84,.22), transparent 65%);
+    filter:blur(6px); animation:flicker 3.2s ease-in-out infinite; pointer-events:none;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:.7; transform:translate(-50%,-50%) scale(1); }
+    50%{ opacity:1; transform:translate(-50%,-50%) scale(1.06); }
+  }
+
+  .book-wrap{ position:relative; width:300px; height:210px; perspective:1400px; }
+
+  .tassel{
+    position:absolute; right:-10px; top:-6px; width:10px; height:60px;
+    background:linear-gradient(180deg, var(--gold), var(--stamp));
+    border-radius:2px; transform-origin:top center;
+    animation:sway 4s ease-in-out infinite; z-index:6;
+  }
+  .tassel::after{
+    content:''; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; background:var(--gold); border-radius:50%;
+    box-shadow:0 0 8px rgba(212,175,55,.6);
+  }
+  @keyframes sway{ 0%,100%{ transform:rotate(-3deg); } 50%{ transform:rotate(3deg); } }
+
+  .page2{
+    position:absolute; inset:0;
+    border:2px solid var(--parchment-dark);
+    border-radius:8px;
+    z-index:2;
+    overflow:hidden;
+  }
+
+  .leaf{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,.5), transparent 40%),
+      var(--parchment);
+    display:flex; align-items:center; justify-content:center;
+    padding:22px;
+    backface-visibility:hidden;
+  }
+  .leaf::before{
+    content:''; position:absolute; inset:10px;
+    border:1px solid rgba(107,18,32,.18); border-radius:4px; pointer-events:none;
+  }
+  .leaf.back{ z-index:1; }
+  .leaf.front{
+    z-index:2;
+    transform-origin:left center;
+    transform:rotateY(0deg);
+    transition:transform .65s cubic-bezier(.45,.05,.4,1), box-shadow .65s ease;
+    box-shadow:0 0 0 rgba(0,0,0,0);
+  }
+  .leaf.front.flipping{
+    transform:rotateY(-178deg);
+    box-shadow:-18px 0 30px rgba(0,0,0,.25);
+  }
+  .leaf.front.no-anim{ transition:none !important; }
+
+  .leaf-content{
+    font-family:'Mitr',sans-serif; font-weight:600; font-size:19px;
+    color:var(--ink); line-height:1.55; text-align:center;
+  }
+
+  .cover{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.08), transparent 40%),
+      linear-gradient(155deg, var(--cover), var(--cover-dark));
+    border:3px solid var(--gold); border-radius:8px;
+    box-shadow:0 18px 40px rgba(0,0,0,.45), inset 0 0 0 6px rgba(212,175,55,.12);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    transform-origin:left center;
+    transform:perspective(1400px) rotateY(0deg);
+    transition:transform 1s cubic-bezier(.6,.05,.2,1);
+    z-index:4; cursor:pointer;
+  }
+  .cover.open{ transform:perspective(1400px) rotateY(-150deg); pointer-events:none; }
+  .cover-seal{
+    width:54px; height:54px; border-radius:50%; border:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center; margin-bottom:10px;
+    background:radial-gradient(circle, rgba(212,175,55,.12), transparent 70%);
+  }
+  .cover-seal svg{ width:26px; height:26px; }
+  .cover-title{
+    font-family:'Charm',cursive; font-weight:700; font-size:24px;
+    color:var(--gold-soft); text-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .cover-sub{
+    font-family:'Sarabun',sans-serif; font-size:11.5px;
+    letter-spacing:.18em; color:rgba(232,205,118,.7); margin-top:4px;
+  }
+
+  .edge{
+    position:absolute; right:-4px; top:6px; bottom:6px; width:8px;
+    background:repeating-linear-gradient(180deg, var(--parchment-dark) 0 2px, var(--parchment) 2px 4px);
+    border-radius:0 4px 4px 0; z-index:1;
+  }
+
+  .page-count{
+    margin-top:14px; font-size:12px; letter-spacing:.1em;
+    color:#a896bd; opacity:0; transition:opacity .3s ease;
+  }
+  .page-count.show{ opacity:1; }
+
+  .cta{
+    margin-top:24px; padding:14px 38px;
+    background:linear-gradient(135deg, var(--gold), #b8902a);
+    color:#2a1c08; border:none; border-radius:999px;
+    font-family:'Mitr',sans-serif; font-weight:600; font-size:15.5px;
+    letter-spacing:.02em; cursor:pointer;
+    box-shadow:0 10px 24px rgba(212,175,55,.25);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cta:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(212,175,55,.35); }
+  .cta:active{ transform:translateY(0); }
+  .cta:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+  @media (max-width:380px){ h1{ font-size:42px; } .book-wrap{ width:260px; height:182px; } }
+</style>
 </head>
 <body>
-    <h1>มา!เดี๋ยวช่วยตัดสินใจ</h1>
-    <div class="text-explain">เพียงตั้งคำถามที่คุณตัดสินใจไม่ได้แล้วกดที่ปุ่ม ทางเราจะช่วยให้คำตอบคุณเอง </div>
-    <div class="text-explain">เช่น "วันนี้กินกระเพราดีมั้ย" "ขอคนที่ชอบเป็นแฟนเลยดีหรือป่าว"</div>
 
-    <div class="book">
-        <div class="book-content" id="book-content">
-            หนังสือเพื่อนแท้
+<div class="dust" id="dust"></div>
+
+<div class="stage">
+  <div class="eyebrow">Made By Overflow</div>
+  <h1>หนังสือเพื่อนแท้</h1>
+  <p class="subtitle">
+    ตัดสินใจอะไรไม่ได้ ก็ให้พูดคำถามออกมาแล้วเปิดหนังสือ<br>
+    แนะให้ใช้คำภามปลายเปิด ที่ลงท้ายด้วย "ดีมั้ย?"
+  </p>
+
+  <div class="altar">
+    <div class="glow"></div>
+    <div class="book-wrap">
+      <div class="edge"></div>
+      <div class="page2">
+        <div class="leaf back" id="leafBack">
+          <div class="leaf-content" id="backText"></div>
         </div>
+        <div class="leaf front" id="leafFront">
+          <div class="leaf-content" id="frontText"></div>
+        </div>
+      </div>
+      <div class="cover" id="cover">
+        <div class="tassel"></div>
+        <div class="cover-seal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e8cd76" stroke-width="1.4">
+            <path d="M12 2 L14.5 8.5 L21 9 L16 13.3 L17.6 20 L12 16.3 L6.4 20 L8 13.3 L3 9 L9.5 8.5 Z"/>
+          </svg>
+        </div>
+        <div class="cover-title">เพื่อนแท้</div>
+        <div class="cover-sub">แตะเพื่อเปิด</div>
+      </div>
     </div>
+  </div>
 
-    <button class="button" onclick="openBook()">เปิด</button>
+  <div class="page-count" id="pageCount"></div>
+  <button class="cta" id="ctaBtn">เปิดหนังสือ</button>
+</div>
 
-    <script>
-        const messages = [
-            "ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!", 
-            "เจ๋งว่ะเอาสิ", "ชอบนะน่าลองดู", "เอาดิ", "คิดได้ไงเนี่ย? ทำเลย", "จัด", "เฉยๆว่ะ", 
-            "คิดอีกทีดิ้", "จางๆว่ะ", "คิดใหม่ๆ", "หาตัวเลือกอื่นมาดิ้", "กดอีกรอบ", "กดอีก!", 
-            "แย่มากไม่ดี", "ไม่เอาๆ", "ไม่ผ่าน", "เป็นความคิดที่ห่วย", "ไม่น่าทำจัดหาใหม่", 
-            "แอ๊ดๆ", "โนเว เลิกคิดเดี๋ยวนี้", "Error", "ถามงี้ ไปนอนแทนเถอะ", "น้ำขึ้นให้รีบตัก", 
-            "ดูหนังน่าสนุกนะ", "นั่นสิ ทำดีมั้ย?", "หนีห่าว", "ก็น่าสนใจดีนะ", "เลือกเองเลย", 
-            "ตอบไม่ได้ว่ะ", "ไม่รู้เหมือนกัน", "ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆกับเรา", 
-            "รักนะ", "ลองดูยัง?ก่อนถาม", "ไม่อะ", "ใช่เลย", "มีล้มก็มีลุก งั้นก็ไปกันต่อ", "ทำไรก็คิดดีๆ"
-            , "ก็น่าสนนะ แต่ยังไม่ใช่ตอนนี้ว่ะๆ", "ลองคิดอย่างอื่นก่อน", "ทำใจดีกว่า ถามงี้", "หรือจะลองไปนั่งสมาธิ?"
-            , "กลับบ้านเถอะ ถ้าอยู่บ้านก็นอนเลย", "เออคำถามนี้ก็น่านใจดีแฮะ", "ไม่รู้ลองถามคนใกล้ๆดู", "งี้ก็ไปกันต่อ"
-            , "ชาวบ้านบางระจันยังไม่ย้อท้อเลย ก็ลุยเลยดิ", "ค่อนข้างแย่นะ55 ไม่เอาละกัน", "คิดว่าไม่ควรนะ", "อย่าเลย"
-            , "ไม่อ่ะ รีบเปลี่ยนความคิดเลย", "มีเงินก็เก็บๆไว้บ้างนะ", "ชีวิตมีครั้งเดียว เอาสิวะ", "ลุยย","Let's Go ชวยเธอมาขยับครับ In my zone!"
-            , "จัดไปน้องชาย", "มาม่าก็น่ากินนะ"
-        ];
+<script>
+  const messages = [
+    "ลุยโลดเลย", "ทำมันเลย รอไรอยู่ล่ะ", "จัดไป", "เริ่มเลย", "เป็นความคิดที่ดีนะ", "เห็นด้วย!",
+    "เจ๋งว่ะ เอาสิ", "ชอบนะ น่าลองดู", "เอาดิ", "คิดได้ไงเนี่ย ทำเลย", "จัด", "เฉยๆ ว่ะ",
+    "คิดอีกทีดิ", "จางๆ ว่ะ", "คิดใหม่ๆ", "หาตัวเลือกอื่นมาดิ", "ถามใหม่อีกที", "ลองอีกครั้งนะ",
+    "แย่มาก ไม่ดี", "ไม่เอาๆ", "ไม่ผ่าน", "เป็นความคิดที่ห่วย", "ไม่น่าทำ จัดหาใหม่",
+    "แอ๊ดๆ", "โนเว เลิกคิดเดี๋ยวนี้", "ขัดข้อง ลองใหม่อีกที", "ถามงี้ ไปนอนแทนเถอะ", "น้ำขึ้นให้รีบตัก",
+    "ดูหนังน่าจะสนุกกว่านะ", "นั่นสิ ทำดีมั้ย?", "หนีห่างๆ ไว้ก่อน", "ก็น่าสนใจดีนะ", "เลือกเองเลยดีกว่า",
+    "ตอบไม่ได้ว่ะ", "ไม่รู้เหมือนกัน", "ถ้าวิ่งมันเหนื่อย งั้นมาเดินเรื่อยๆ กับเรา",
+    "ใจเย็นๆ นะ", "ลองดูยังก่อนถาม", "ไม่อะ", "ใช่เลย", "มีล้มก็มีลุก งั้นก็ไปกันต่อ", "ทำไรก็คิดดีๆ นะ",
+    "ก็น่าสนนะ แต่ยังไม่ใช่ตอนนี้ว่ะ", "ลองคิดอย่างอื่นก่อน", "ทำใจดีกว่า เรื่องนี้", "หรือจะลองนั่งสมาธิดู?",
+    "กลับบ้านเถอะ ถ้าอยู่บ้านก็นอนเลย", "คำถามนี้น่าสนใจดีแฮะ", "ลองถามคนใกล้ตัวดูนะ", "งั้นก็ไปกันต่อ",
+    "ชาวบ้านบางระจันยังไม่ย่อท้อเลย ลุยเลยดิ", "ค่อนข้างแย่นะ 555 ไม่เอาดีกว่า", "คิดว่าไม่ควรนะ", "อย่าเลยนะ",
+    "รีบเปลี่ยนความคิดเลย", "มีเงินก็เก็บไว้บ้างนะ", "ชีวิตมีครั้งเดียว เอาสิวะ", "ลุยเลย!", "ในโซนของเธอ ลุยเลย!",
+    "จัดไปน้องชาย", "มาม่าก็น่ากินนะ"
+  ];
 
-        let firstClick = true;  // Flag to check if it's the first click
+  const cover = document.getElementById('cover');
+  const leafFront = document.getElementById('leafFront');
+  const frontText = document.getElementById('frontText');
+  const backText = document.getElementById('backText');
+  const ctaBtn = document.getElementById('ctaBtn');
+  const pageCount = document.getElementById('pageCount');
 
-        function openBook() {
-            if (firstClick) {
-                // สุ่มข้อความจากลิสต์
-                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  let busy = false;
+  let opened = false;
+  let page = 0;
+  let lastMsg = null;
 
-                // เปลี่ยนข้อความใน .book และเปิดการหมุนของมัน
-                document.querySelector('.book').classList.add('open');
-                document.getElementById('book-content').textContent = "";
+  function randomMessage(){
+    let m;
+    do { m = messages[Math.floor(Math.random() * messages.length)]; }
+    while (messages.length > 1 && m === lastMsg);
+    lastMsg = m;
+    return m;
+  }
 
-                // สร้าง .book2 ใหม่ที่จะแสดงข้อความสุ่ม
-                const book2 = document.createElement('div');
-                book2.classList.add('book2');
-                const bookContent2 = document.createElement('div');
-                bookContent2.classList.add('book-content');
-                bookContent2.textContent = randomMessage;
-                book2.appendChild(bookContent2);
+  function updateCount(){
 
-                // เพิ่ม .book2 ไปยังหน้า
-                document.body.appendChild(book2);
+    pageCount.classList.add('show');
+  }
 
-                firstClick = false;  // Set the flag to false after the first click
-            } else {
-                // ลบข้อความจาก .book และสุ่มข้อความใหม่เมื่อกดเปิดครั้งที่ 2
-                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  function openBook(){
+    cover.classList.add('open');
+    opened = true;
+    ctaBtn.textContent = 'เปิดหนังสือ';
 
-                const book2 = document.querySelector('.book2');
-                if (book2) {
-                    const bookContent2 = book2.querySelector('.book-content');
-                    bookContent2.textContent = randomMessage;
-                }
-            }
-        }
-    </script>
+    page = 1;
+    frontText.textContent = randomMessage();
+    backText.textContent = randomMessage();
+    updateCount();
+    busy = false;
+  }
+
+  function flipPage(){
+    if(busy) return;
+    busy = true;
+
+    leafFront.classList.add('flipping');
+
+    leafFront.addEventListener('transitionend', function handler(){
+      leafFront.removeEventListener('transitionend', handler);
+
+      // snap back instantly with no animation, content now matches the back leaf
+      leafFront.classList.add('no-anim');
+      leafFront.classList.remove('flipping');
+      frontText.textContent = backText.textContent;
+      void leafFront.offsetWidth; // force reflow before re-enabling transition
+      leafFront.classList.remove('no-anim');
+
+      // prepare a fresh page underneath for next flip
+      backText.textContent = randomMessage();
+      page += 1;
+      updateCount();
+      busy = false;
+    }, { once:true });
+  }
+
+  ctaBtn.addEventListener('click', () => {
+    if(busy) return;
+    if(!opened){
+      busy = true;
+      openBook();
+    } else {
+      flipPage();
+    }
+  });
+
+  cover.addEventListener('click', () => {
+    if(!opened && !busy){ busy = true; openBook(); }
+  });
+
+  leafFront.addEventListener('click', () => {
+    if(opened) flipPage();
+  });
+
+  const dustEl = document.getElementById('dust');
+  for(let i=0;i<22;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.top = Math.random()*100 + 'vh';
+    s.style.animationDelay = (Math.random()*9) + 's';
+    s.style.animationDuration = (6 + Math.random()*6) + 's';
+    dustEl.appendChild(s);
+  }
+</script>
 </body>
 </html>
