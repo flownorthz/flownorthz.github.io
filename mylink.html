@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyLink!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // ตั้งธีมก่อนหน้าจะวาด เพื่อไม่ให้จอกระพริบ
+  (function(){
+    var saved = localStorage.getItem('mylink-theme');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<style>
+  :root{
+    --paper:#EAE6DA;
+    --paper-deep:#DFDACB;
+    --ink:#21283B;
+    --ink-soft:#5B6072;
+    --line:#C9C2AE;
+    --teal:#2F6F62;
+    --unlocked-text:#234F45;
+    --gold:#10cc3f;
+    --red:#B5423A;
+    --dot-color:rgba(33,40,59,0.06);
+    --card-shadow:rgba(33,40,59,0.35);
+    --card-shadow-hover:rgba(33,40,59,0.42);
+  }
+  :root[data-theme="dark"]{
+    --paper:#12151f;
+    --paper-deep:#1B2030;
+    --ink:#EDEAE0;
+    --ink-soft:#8B90A3;
+    --line:#333B52;
+    --teal:#834ade;
+    --unlocked-text:#834ade;
+    --gold:#834ade;
+    --red:#E2665C;
+    --dot-color:rgba(237,234,224,0.05);
+    --card-shadow:rgba(0,0,0,0.55);
+    --card-shadow-hover:rgba(0,0,0,0.65);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, var(--dot-color) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:64px 20px 40px;
+    transition:background-color 0.35s ease, color 0.35s ease;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  .masthead{
+    text-align:center;
+    margin-bottom:56px;
+  }
+  .masthead .eyebrow{
+    font-size:12px;
+    letter-spacing:0.14em;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+    transition:color 0.35s ease;
+  }
+  .masthead h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(32px,5vw,48px);
+    margin:0;
+    color:var(--ink);
+    transition:color 0.35s ease;
+  }
+  .masthead .rule{
+    width:64px;
+    height:2px;
+    background:var(--teal);
+    margin:18px auto 0;
+    transition:background-color 0.35s ease;
+  }
+
+  /* --- theme toggle: styled to echo the badge "punch" hole --- */
+  .theme-toggle{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    margin:22px auto 0;
+    padding:6px 10px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--paper-deep);
+    cursor:pointer;
+    user-select:none;
+    transition:background-color 0.35s ease, border-color 0.35s ease;
+  }
+  .theme-toggle:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:2px;
+  }
+  .theme-toggle .label{
+    font-size:10px;
+    letter-spacing:0.1em;
+    color:var(--ink-soft);
+    transition:color 0.2s ease;
+  }
+  .theme-toggle .label.active{color:var(--ink);}
+  .toggle-track{
+    position:relative;
+    width:40px;
+    height:20px;
+    border-radius:999px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    transition:background-color 0.35s ease, border-color 0.35s ease;
+  }
+  .toggle-knob{
+    position:absolute;
+    top:2px;
+    left:2px;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:var(--ink);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,0.25);
+    transition:transform 0.3s cubic-bezier(.3,.7,.3,1), background-color 0.35s ease;
+  }
+  :root[data-theme="dark"] .toggle-knob{
+    transform:translateX(20px);
+    background:var(--gold);
+  }
+
+  .rack{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:28px;
+    max-width:960px;
+    width:100%;
+  }
+
+  .badge{
+    --delay:0s;
+    position:relative;
+    width:260px;
+    background:var(--paper-deep);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:34px 24px 26px;
+    box-shadow:0 14px 30px -18px var(--card-shadow);
+    opacity:0;
+    transform:translateY(18px);
+    animation:settle 0.6s cubic-bezier(.2,.7,.3,1) forwards;
+    animation-delay:var(--delay);
+    cursor:pointer;
+    transition:box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease, background-color 0.35s ease;
+  }
+  .badge:hover{
+    box-shadow:0 18px 34px -16px var(--card-shadow-hover);
+    transform:translateY(-2px);
+  }
+  .badge.unlocked{cursor:default;}
+  .badge.unlocked:hover{transform:none;}
+
+  @keyframes settle{
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .punch{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1px solid var(--line);
+    margin:0 auto 20px;
+    box-shadow:inset 0 2px 3px rgba(0,0,0,0.25);
+    transition:background-color 0.35s ease, border-color 0.35s ease;
+  }
+
+  .badge .name{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:26px;
+    text-align:center;
+    margin:0;
+  }
+  .badge .role{
+    text-align:center;
+    font-size:11px;
+    letter-spacing:0.1em;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+
+  .divider{
+    border:none;
+    border-top:1px dashed var(--line);
+    margin:22px 0 18px;
+    transition:border-color 0.35s ease;
+  }
+
+  .status-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    min-height:16px;
+  }
+  .status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--ink-soft);
+    transition:background-color 0.35s ease;
+  }
+  .badge.unlocked .status-dot{background:var(--gold);}
+  .badge.unlocked .status-row{color:var(--unlocked-text);}
+
+  .pin-zone{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.35s ease;
+  }
+  .badge.entering .pin-zone{max-height:120px;}
+
+  .pin-input{
+    width:100%;
+    margin-top:14px;
+    padding:10px 12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    letter-spacing:0.5em;
+    text-align:center;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--paper);
+    color:var(--ink);
+    outline:none;
+    transition:background-color 0.35s ease, color 0.35s ease, border-color 0.2s ease;
+  }
+  .pin-input:focus{border-color:var(--teal);}
+  .badge.shake .pin-input{
+    border-color:var(--red);
+    animation:shake 0.4s;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-6px);}
+    40%{transform:translateX(6px);}
+    60%{transform:translateX(-4px);}
+    80%{transform:translateX(4px);}
+  }
+  .hint{
+    text-align:center;
+    font-size:10px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    letter-spacing:0.04em;
+  }
+
+  .links-zone{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.4s ease;
+  }
+  .badge.unlocked .links-zone{max-height:200px;}
+
+  .link-btn{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    margin-top:10px;
+    padding:12px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    text-decoration:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.02em;
+    opacity:0;
+    transform:translateY(6px);
+    transition:border-color 0.2s ease, background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+  }
+  .badge.unlocked .link-btn{
+    animation:riseIn 0.4s ease forwards;
+  }
+  .badge.unlocked .link-btn:nth-of-type(1){animation-delay:0.05s;}
+  .badge.unlocked .link-btn:nth-of-type(2){animation-delay:0.15s;}
+  @keyframes riseIn{
+    to{opacity:1; transform:translateY(0);}
+  }
+  .link-btn:hover{
+    background:var(--teal);
+    border-color:var(--teal);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+  .link-btn .arrow{transition:transform 0.2s ease;}
+  .link-btn:hover .arrow{transform:translateX(3px);}
+
+  .lock-again{
+    display:block;
+    margin:16px auto 0;
+    background:none;
+    border:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    letter-spacing:0.08em;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+
+  footer{
+    margin-top:64px;
+    font-size:11px;
+    letter-spacing:0.1em;
+    color:var(--ink-soft);
+    text-align:center;
+    max-width:480px;
+  }
+  footer .maker{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-size:14px;
+    color:var(--ink);
+    margin-top:4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="eyebrow">Loytasac · PRIVATE ACCESS</div>
+  <h1>MyLink!</h1>
+  <div class="rule"></div>
+
+  <div class="theme-toggle" id="themeToggle" role="button" tabindex="0" aria-label="สลับธีมมืด/สว่าง">
+    <span class="label" data-mode="light">Light</span>
+    <span class="toggle-track"><span class="toggle-knob"></span></span>
+    <span class="label" data-mode="dark">Dark</span>
+  </div>
+</div>
+
+<div class="rack" id="rack"></div>
+
+<footer>
+  <div>"เว็บนี้ไว้ใส่สำหรับการฝากไฟล์หรือลิ้งเปิดไว้ไปเปิดในที่สาธารณะ"</div>
+    <div>"ไม่ควรใส่อะไรที่เป็นข้อมูลสำคัญ"</div>
+  <div class="maker">Made By Overflow</div>
+</footer>
+
+<script>
+  // ---- แก้ไขข้อมูลตรงนี้ได้เลย: เพิ่ม/ลบคน, เปลี่ยนรหัส, เปลี่ยนลิงก์ ----
+  const members = [
+    {
+      name: "Pun",
+      pin: "7410",
+      drive: "https://drive.google.com/drive/folders/1xBziUz_NVHjgaOyrvZqUl1fV3r3nPuRK?usp=drive_link",
+      canva: "https://canva.link/7p5pt63t7pt2mjk"
+    },
+    {
+      name: "New",
+      pin: "1111",
+      drive: "https://drive.google.com/drive/folders/REPLACE_NEW",
+      canva: "https://www.canva.com/design/REPLACE_NEW"
+    },
+    {
+      name: "Blue",
+      pin: "1234",
+      drive: "https://drive.google.com/drive/folders/1EDnL9kuO4k8YkIXoS-iWPPhQPtzT2EZb?usp=sharing",
+      canva: "https://canva.link/c6zo2cipj1vraop"
+    },
+    {
+      name: "Pek",
+      pin: "5555",
+      drive: "https://drive.google.com/drive/folders/1_KFH5wG-P6oUG4kMme62sQWF4_RKaQnf?usp=sharing",
+      canva: "https://canva.link/jrpve72bqsbmunc"
+    },
+    {
+      name: "Rew",
+      pin: "1111",
+      drive: "https://drive.google.com/drive/folders/REPLACE_NEW",
+      canva: "https://www.canva.com/design/REPLACE_NEW"
+    },
+    {
+      name: "Pream",
+      pin: "1111",
+      drive: "https://drive.google.com/drive/folders/REPLACE_NEW",
+      canva: "https://www.canva.com/design/REPLACE_NEW"
+    }
+  ];
+  // -------------------------------------------------------------------
+
+  const rack = document.getElementById('rack');
+
+  members.forEach((m, i) => {
+    const card = document.createElement('div');
+    card.className = 'badge';
+    card.style.setProperty('--delay', (i * 0.08) + 's');
+
+    card.innerHTML = `
+      <div class="punch"></div>
+      <p class="name">${m.name}</p>
+      <div class="role">Folder</div>
+      <hr class="divider">
+      <div class="status-row"><span class="status-dot"></span><span class="status-text">LOCKED</span></div>
+
+      <div class="pin-zone">
+        <input class="pin-input" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+        <div class="hint">ใส่รหัส 4 หลักแล้วกด Enter</div>
+      </div>
+
+      <div class="links-zone">
+        <a class="link-btn" target="_blank" rel="noopener">
+          <span>Google Drive</span><span class="arrow">↗</span>
+        </a>
+        <a class="link-btn" target="_blank" rel="noopener">
+          <span>Canva Link</span><span class="arrow">↗</span>
+        </a>
+        <button class="lock-again">CLOSE</button>
+      </div>
+    `;
+
+    const statusText = card.querySelector('.status-text');
+    const pinInput = card.querySelector('.pin-input');
+    const links = card.querySelectorAll('.link-btn');
+    links[0].href = m.drive;
+    links[1].href = m.canva;
+    const lockBtn = card.querySelector('.lock-again');
+
+    function openEntry(){
+      if(card.classList.contains('unlocked')) return;
+      document.querySelectorAll('.badge.entering').forEach(c => {
+        if(c !== card) c.classList.remove('entering');
+      });
+      card.classList.add('entering');
+      setTimeout(() => pinInput.focus(), 200);
+    }
+
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.pin-zone') || e.target.closest('.links-zone')) return;
+      openEntry();
+    });
+
+    function tryUnlock(){
+      if(pinInput.value === m.pin){
+        card.classList.remove('entering','shake');
+        card.classList.add('unlocked');
+        statusText.textContent = 'UNLOCKED';
+        pinInput.value = '';
+      } else {
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        pinInput.value = '';
+        setTimeout(() => card.classList.remove('shake'), 400);
+      }
+    }
+
+    pinInput.addEventListener('input', () => {
+      if(pinInput.value.length === 4) tryUnlock();
+    });
+    pinInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') tryUnlock();
+    });
+    pinInput.addEventListener('click', (e) => e.stopPropagation());
+
+    lockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.remove('unlocked');
+      statusText.textContent = 'LOCKED';
+    });
+
+    rack.appendChild(card);
+  });
+
+  // ---- theme toggle ----
+  const themeToggle = document.getElementById('themeToggle');
+  function applyLabels(theme){
+    document.querySelectorAll('.theme-toggle .label').forEach(l => {
+      l.classList.toggle('active', l.dataset.mode === theme);
+    });
+  }
+  function setTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('mylink-theme', theme);
+    applyLabels(theme);
+  }
+  applyLabels(document.documentElement.getAttribute('data-theme') || 'light');
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+  themeToggle.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      themeToggle.click();
+    }
+  });
+</script>
+
+</body>
+</html>
