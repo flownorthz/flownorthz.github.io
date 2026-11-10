@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sandwich Maker Studio</title>
+<title>Sandwich Mystery | Made by Overflow</title>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
@@ -44,8 +44,8 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Kanit',system-ui,sa
 <div class="max-w-4xl mx-auto px-4 py-5">
   <header class="flex items-center justify-between gap-3 mb-4">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-semibold">🥪 Sandwich Maker Studio</h1>
-      <p class="text-sm" style="color:var(--mute)">เดาลำดับไส้ให้ถูก ไม่มีสูตรบอก</p>
+      <h1 class="text-2xl sm:text-3xl font-semibold">🥪 แซนวิชที่คิดหนัก</h1>
+      <p class="text-sm" style="color:var(--mute)">เดาลำดับไส้ให้ถูก |Mystery Cook| Made By Overflow</p>
     </div>
     <div class="flex items-center gap-2">
       <span id="roundLbl" class="text-sm px-3 py-1 rounded-full" style="background:var(--zone)">รอบที่ 1</span>
@@ -75,6 +75,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Kanit',system-ui,sa
           <button id="checkBtn" class="btn btn-main">ตรวจคำตอบ</button>
           <button id="clearBtn" class="btn btn-soft">ล้างทั้งหมด</button>
           <button id="newBtn" class="btn btn-soft">เริ่มใหม่</button>
+          <button id="giveBtn" class="btn btn-soft">🏳️ จบเกม ยอมแพ้</button>
         </div>
         <p id="msg" class="font-medium min-h-[28px]"></p>
         <div id="hist" class="flex flex-col gap-1 mt-2 max-h-48 overflow-y-auto"></div>
@@ -86,11 +87,39 @@ html,body{background:var(--bg);color:var(--ink);font-family:'Kanit',system-ui,sa
   <div class="card text-center px-8 py-6" style="box-shadow:0 20px 50px rgba(0,0,0,.25)">
     <div id="ovIcon" style="font-size:72px;line-height:1">🔒</div>
     <div id="ovTitle" class="text-2xl sm:text-3xl font-semibold mt-2"></div>
+    <div id="ovNote" class="text-sm mt-1" style="color:var(--mute)"></div>
     <div id="ovTime" class="text-6xl sm:text-7xl font-semibold tabular-nums my-2"></div>
     <div id="ovBtns" class="flex flex-col gap-3 mt-3">
       <button id="ovStream" class="btn btn-main" style="font-size:24px;padding:16px 40px">🔒 StreamPlay Mode</button>
       <button id="ovPlay" class="btn btn-soft" style="font-size:24px;padding:16px 40px">▶ เล่น</button>
-      <p class="text-xs" style="color:var(--mute)">StreamPlay: มีช่วงล็อกสลับกับช่วงขยับได้ · เล่น: ไม่มีล็อก</p>
+      <button id="ovCustom" class="btn btn-soft" style="font-size:24px;padding:16px 40px">✏️ Custom Mode</button>
+      <button id="ovRandom" class="text-sm underline" style="display:none;color:var(--mute)">🎲 กลับไปโหมดสุ่มสูตร</button>
+      <p class="text-xs" style="color:var(--mute)">Made By Overflow</p>
+    </div>
+  </div>
+</div>
+<div id="cm" class="fixed inset-0 z-50 hidden items-center justify-center p-4 overflow-y-auto" style="background:rgba(40,25,30,.45)">
+  <div class="card p-5 max-w-md w-full my-auto">
+    <h2 class="text-xl font-semibold">✏️ Custom Mode</h2>
+    <p class="text-sm mb-3" style="color:var(--mute)">เรียงสูตรลับจากบนลงล่าง แล้วแชร์ลิงก์ให้เพื่อนมาเดา</p>
+    <div id="edList" class="flex flex-col gap-1 mb-2"></div>
+    <button id="edShuffle" class="btn btn-soft mb-3" style="padding:8px 16px">🎲 สุ่มลำดับ</button>
+    <label class="text-sm block mb-1" for="edHint">คำใบ้ให้เพื่อน (ไม่บังคับ ไม่เกิน 40 ตัวอักษร)</label>
+    <input id="edHint" maxlength="40" class="w-full rounded-xl px-3 py-2 mb-3" style="border:2px solid var(--line);background:var(--zone);color:var(--ink);font-family:inherit" placeholder="เช่น ผักกาดอยู่ติดขนมปังบน">
+    <label class="text-sm block mb-1" for="edCode">ลิงก์ / โค้ดของสูตรนี้</label>
+    <div class="flex gap-2 mb-3">
+      <input id="edCode" readonly class="flex-1 min-w-0 rounded-xl px-3 py-2 text-sm" style="border:2px solid var(--line);background:var(--zone);color:var(--ink);font-family:inherit">
+      <button id="edCopy" class="btn btn-soft" style="padding:8px 16px">📋 คัดลอก</button>
+    </div>
+    <label class="text-sm block mb-1" for="edImport">มีโค้ดจากเพื่อน?</label>
+    <div class="flex gap-2">
+      <input id="edImport" class="flex-1 min-w-0 rounded-xl px-3 py-2 text-sm" style="border:2px solid var(--line);background:var(--zone);color:var(--ink);font-family:inherit" placeholder="วางลิงก์หรือโค้ด">
+      <button id="edUse" class="btn btn-soft" style="padding:8px 16px">ใช้โค้ด</button>
+    </div>
+    <p id="edMsg" class="text-sm mt-2 min-h-[20px]"></p>
+    <div class="flex gap-2 justify-center mt-3">
+      <button id="edPlay" class="btn btn-main">▶ ใช้สูตรนี้</button>
+      <button id="edClose" class="btn btn-soft">ปิด</button>
     </div>
   </div>
 </div>
@@ -129,10 +158,10 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 function newRound(){
   const n=ING.length;
   const prev=recipe.join();
-  do{recipe=shuffle(ING.map(i=>i.id)).slice(0,n)}while(recipe.join()===prev);
+  if(customRecipe){recipe=customRecipe.slice()}else{do{recipe=shuffle(ING.map(i=>i.id)).slice(0,n)}while(recipe.join()===prev)}
   stack=[];tries=0;history=[];clearInterval(tick);phase='ready';
   $('#msg').textContent='';$('#roundLbl').textContent='รอบที่ '+round;
-  $('#hint').textContent='สูตรนี้ใช้วัตถุดิบครบทั้ง '+n+' ชิ้น ลองเดาลำดับจากบนลงล่าง';
+  $('#hint').textContent='สูตรนี้ใช้วัตถุดิบครบทั้ง '+n+' ชิ้น ลองเดาลำดับจากบนลงล่าง'+(customRecipe?' · สูตรกำหนดเอง':'')+(customHint?' 💡 '+customHint:'');
   render();
 }
 const TOTAL=1200,SEG=300;
@@ -152,10 +181,12 @@ function ui(){
   else txt='จบเกมแล้ว';
   $('#phase').textContent=txt;
   const ov=$('#ov');
-  if(phase==='ready'){ov.style.display='flex';ov.style.pointerEvents='auto';ov.style.background='rgba(40,25,30,.45)';$('#ovIcon').textContent='🥪';$('#ovTitle').textContent='พร้อมเล่นไหม? มีเวลา 20 นาที';$('#ovTime').style.display='none';$('#ovBtns').style.display=''}
+  if(phase==='ready'){ov.style.display='flex';ov.style.pointerEvents='auto';ov.style.background='rgba(40,25,30,.45)';$('#ovIcon').textContent='🥪';$('#ovTitle').textContent='พร้อมเล่นไหม? มีเวลา 20 นาที';$('#ovNote').textContent=customRecipe?('🎁 สูตรกำหนดเอง'+(customHint?' · 💡 '+customHint:'')):'';$('#ovRandom').style.display=customRecipe?'':'none';$('#ovTime').style.display='none';$('#ovBtns').style.display=''}
   else if(phase==='playing'&&lk){ov.style.display='flex';ov.style.pointerEvents='none';ov.style.background='transparent';$('#ovIcon').textContent='🔒';$('#ovTitle').textContent='ล็อก ขยับไม่ได้ อีก';$('#ovTime').style.display='';$('#ovTime').textContent=fmt(window._left);$('#ovBtns').style.display='none'}
   else ov.style.display='none';
   $('#checkBtn').disabled=lk;$('#clearBtn').disabled=lk;
+  $('#giveBtn').disabled=phase!=='playing';
+  if(phase!=='playing'&&armed){armed=false;$('#giveBtn').textContent='🏳️ จบเกม ยอมแพ้'}
   $('#zone').style.opacity=lk?.7:1;
   if(lk&&drag){drag.ghost&&drag.ghost.remove();drag=null;$('#zone').classList.remove('over');render()}
 }
@@ -250,7 +281,79 @@ $('#closeBtn').onclick=closeModal;
 $('#clearBtn').onclick=()=>{if(locked())return;stack=[];snd('del');render()};
 $('#newBtn').onclick=()=>{snd('pick');newRound()};
 $('#muteBtn').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';if(!muted)snd('pick')};
+let armed=false,armT=null;
+function giveUp(){
+  if(phase!=='playing')return;
+  const b=$('#giveBtn');
+  if(!armed){armed=true;b.textContent='❓ แน่ใจไหม? กดอีกครั้ง';clearTimeout(armT);armT=setTimeout(()=>{armed=false;b.textContent='🏳️ จบเกม ยอมแพ้'},3000);return}
+  clearTimeout(armT);armed=false;b.textContent='🏳️ จบเกม ยอมแพ้';
+  phase='over';clearInterval(tick);won=false;ui();snd('del');
+  $('#mEmoji').textContent='🏳️';$('#mTitle').textContent='ยอมแพ้แล้ว';
+  $('#sumStack').innerHTML='🍞<br>'+recipe.map(id=>by(id).e).join('<br>')+'<br>🍞';
+  $('#sumTxt').textContent='นี่คือสูตรที่ถูกต้อง · เดาไป '+tries+' ครั้ง';
+  $('#nextBtn').textContent='เล่นใหม่';
+  $('#modal').classList.remove('hidden');$('#modal').classList.add('flex');
+}
+$('#giveBtn').onclick=giveUp;
 $('#ovStream').onclick=()=>start(true);$('#ovPlay').onclick=()=>start(false);
+/* ---- Custom Mode ---- */
+const enc=a=>a.map(id=>ING.findIndex(i=>i.id===id)).join('');
+function hexEnc(s){return [...new TextEncoder().encode(s)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function parseCode(s){
+  const m=String(s).match(/c-([0-6]{7})(?:-h([0-9a-f]*))?/);
+  if(!m||new Set(m[1]).size!==7)return null;
+  let hint='';
+  if(m[2]&&m[2].length%2===0){try{hint=new TextDecoder().decode(new Uint8Array(m[2].match(/../g).map(x=>parseInt(x,16)))).slice(0,40)}catch(e){}}
+  return{rec:[...m[1]].map(d=>ING[+d].id),hint};
+}
+let customRecipe=null,customHint='',edOrder=shuffle(ING.map(i=>i.id));
+function codeOf(rec,hint){return 'c-'+enc(rec)+(hint?'-h'+hexEnc(hint):'')}
+function applyCustom(p){customRecipe=p.rec;customHint=p.hint;newRound()}
+function fromHash(){const p=parseCode(location.hash);if(p){customRecipe=p.rec;customHint=p.hint}}
+function edCode(){
+  const code=codeOf(edOrder,$('#edHint').value.trim());
+  const base=/^https?:/.test(location.href)?location.href.split('#')[0]:'';
+  $('#edCode').value=base?base+'#'+code:code;
+}
+function edRender(){
+  $('#edList').innerHTML=edOrder.map((id,k)=>{const i=by(id);
+    return `<div class="hist"><span>${k+1}. ${i.e} ${i.n}</span><span><button class="ib" data-ed="up" data-i="${k}" aria-label="เลื่อนขึ้น">▲</button> <button class="ib" data-ed="down" data-i="${k}" aria-label="เลื่อนลง">▼</button></span></div>`}).join('');
+  edCode();
+}
+function edOpen(){edRender();$('#edMsg').textContent='';$('#cm').classList.remove('hidden');$('#cm').classList.add('flex')}
+function edHide(){$('#cm').classList.add('hidden');$('#cm').classList.remove('flex')}
+$('#edList').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-ed]');if(!b)return;
+  const i=+b.dataset.i,j=b.dataset.ed==='up'?i-1:i+1;
+  if(j<0||j>=edOrder.length)return;
+  [edOrder[i],edOrder[j]]=[edOrder[j],edOrder[i]];snd('pick');edRender();
+});
+$('#edShuffle').onclick=()=>{edOrder=shuffle(edOrder);snd('pick');edRender()};
+$('#edHint').addEventListener('input',edCode);
+$('#edCopy').onclick=()=>{
+  const f=$('#edCode'),v=f.value;
+  const ok=()=>{$('#edMsg').textContent='คัดลอกแล้ว ส่งให้เพื่อนได้เลย'},fb=()=>{f.select();try{document.execCommand('copy');ok()}catch(e){$('#edMsg').textContent='กดค้างที่ช่องแล้วคัดลอกเองได้เลย'}};
+  try{navigator.clipboard.writeText(v).then(ok,fb)}catch(e){fb()}
+};
+$('#edUse').onclick=()=>{
+  const p=parseCode($('#edImport').value);
+  if(!p){$('#edMsg').textContent='โค้ดไม่ถูกต้อง';snd('bad');return}
+  edOrder=p.rec;$('#edHint').value=p.hint;edRender();$('#edMsg').textContent='โหลดสูตรแล้ว กด ใช้สูตรนี้ เพื่อเล่น';snd('drop');
+};
+$('#edPlay').onclick=()=>{
+  const hint=$('#edHint').value.trim();
+  try{location.hash=codeOf(edOrder,hint)}catch(e){}
+  edHide();snd('drop');applyCustom({rec:edOrder.slice(),hint});
+};
+$('#edClose').onclick=edHide;
+$('#ovCustom').onclick=()=>{snd('pick');edOpen()};
+$('#ovRandom').onclick=()=>{customRecipe=null;customHint='';try{location.hash=''}catch(e){}snd('pick');newRound()};
+window.addEventListener('hashchange',()=>{
+  if(phase==='playing')return;
+  const p=parseCode(location.hash);
+  if(p&&(!customRecipe||enc(customRecipe)!==enc(p.rec)||customHint!==p.hint))applyCustom(p);
+});
+fromHash();
 newRound();
 </script>
 </body>
