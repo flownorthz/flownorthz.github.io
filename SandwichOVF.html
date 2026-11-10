@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sandwich Maker Studio</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<style>
+:root{--bg:#fff7ef;--card:#ffffff;--ink:#4a3b36;--mute:#9a8a82;--line:#f1e3d6;--accent:#ff9eb5;--accent-ink:#7a2b44;--bread:#f6d49a;--bread-edge:#e7b46a;--zone:#fff1e3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a2330;--card:#362d3d;--ink:#fbeee6;--mute:#b9a9b4;--line:#4a3f52;--accent:#ff9eb5;--accent-ink:#3b1626;--bread:#e9c27f;--bread-edge:#c99552;--zone:#30283a}}
+:root[data-theme="dark"]{--bg:#2a2330;--card:#362d3d;--ink:#fbeee6;--mute:#b9a9b4;--line:#4a3f52;--accent:#ff9eb5;--accent-ink:#3b1626;--bread:#e9c27f;--bread-edge:#c99552;--zone:#30283a}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{background:var(--bg);color:var(--ink);font-family:'Kanit',system-ui,sans-serif;min-height:100%}
+.card{background:var(--card);border:2px solid var(--line);border-radius:28px}
+.chip{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border-radius:20px;border:2px solid var(--line);background:var(--card);transition:transform .15s}
+.chip:hover{transform:translateY(-3px) rotate(-2deg)}
+.bread{height:54px;background:var(--bread);border:3px solid var(--bread-edge);display:flex;align-items:center;justify-content:center;color:#6b4516;font-weight:500;font-size:14px}
+.bread.top{border-radius:60px 60px 14px 14px}
+.bread.bot{border-radius:14px 14px 28px 28px}
+.layer{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:16px;border:2px solid var(--line);background:var(--card);margin:5px 14px}
+.layer.dragging{opacity:.3}
+.ib{width:30px;height:30px;border-radius:10px;border:0;background:var(--zone);color:var(--ink);font-size:13px;cursor:pointer;flex:none}
+.ib:hover{background:var(--accent);color:var(--accent-ink)}
+.ib:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:0;border-radius:999px;padding:11px 22px;font-weight:500;font-family:inherit;cursor:pointer;transition:transform .12s}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#zone{transition:opacity .2s}
+.btn-main{background:var(--accent);color:var(--accent-ink)}
+.btn-soft{background:var(--zone);color:var(--ink);border:2px solid var(--line)}
+#zone.over{outline:3px dashed var(--accent);outline-offset:4px}
+.ghost{position:fixed;z-index:60;pointer-events:none;transform:translate(-50%,-50%) rotate(-6deg) scale(1.1);box-shadow:0 12px 24px rgba(0,0,0,.18)}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}.chip{transition:none}}
+.hist{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;border-radius:14px;background:var(--zone);font-size:14px}
+</style>
+</head>
+<body>
+<div class="max-w-4xl mx-auto px-4 py-5">
+  <header class="flex items-center justify-between gap-3 mb-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-semibold">🥪 Sandwich Maker Studio</h1>
+      <p class="text-sm" style="color:var(--mute)">เดาลำดับไส้ให้ถูก ไม่มีสูตรบอก</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="roundLbl" class="text-sm px-3 py-1 rounded-full" style="background:var(--zone)">รอบที่ 1</span>
+      <span id="timer" class="text-sm font-medium px-3 py-1 rounded-full tabular-nums" style="background:var(--accent);color:var(--accent-ink)">⏱ 20:00</span>
+      <button id="muteBtn" class="ib" style="width:38px;height:38px;font-size:18px" aria-label="เปิดปิดเสียง">🔊</button>
+    </div>
+  </header>
+  <main class="grid md:grid-cols-2 gap-4">
+    <section class="card p-4">
+      <div id="zone" class="rounded-3xl py-3" style="background:var(--zone)">
+        <div class="bread top mx-3">🍞 ขนมปังแผ่นบน</div>
+        <div id="stack" class="min-h-[70px] py-1"></div>
+        <div class="bread bot mx-3">🍞 ขนมปังแผ่นล่าง</div>
+      </div>
+      <p id="hint" class="text-center text-sm mt-3" style="color:var(--mute)"></p>
+      <p id="phase" class="text-center font-medium mt-2"></p>
+      
+    </section>
+    <section class="flex flex-col gap-4">
+      <div class="card p-4">
+        <h2 class="font-medium mb-2">ถาดวัตถุดิบ</h2>
+        <div id="tray" class="grid grid-cols-3 sm:grid-cols-4 gap-2 min-h-[80px]"></div>
+        <p class="text-xs mt-2" style="color:var(--mute)">ลากไปวางในแซนด์วิช หรือแตะเพื่อเพิ่มเป็นชั้นล่างสุด</p>
+      </div>
+      <div class="card p-4">
+        <div class="flex gap-2 flex-wrap items-center mb-3">
+          <button id="checkBtn" class="btn btn-main">ตรวจคำตอบ</button>
+          <button id="clearBtn" class="btn btn-soft">ล้างทั้งหมด</button>
+          <button id="newBtn" class="btn btn-soft">เริ่มใหม่</button>
+        </div>
+        <p id="msg" class="font-medium min-h-[28px]"></p>
+        <div id="hist" class="flex flex-col gap-1 mt-2 max-h-48 overflow-y-auto"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="ov" class="fixed inset-0 z-40 items-center justify-center p-4" style="display:none">
+  <div class="card text-center px-8 py-6" style="box-shadow:0 20px 50px rgba(0,0,0,.25)">
+    <div id="ovIcon" style="font-size:72px;line-height:1">🔒</div>
+    <div id="ovTitle" class="text-2xl sm:text-3xl font-semibold mt-2"></div>
+    <div id="ovTime" class="text-6xl sm:text-7xl font-semibold tabular-nums my-2"></div>
+    <div id="ovBtns" class="flex flex-col gap-3 mt-3">
+      <button id="ovStream" class="btn btn-main" style="font-size:24px;padding:16px 40px">🔒 StreamPlay Mode</button>
+      <button id="ovPlay" class="btn btn-soft" style="font-size:24px;padding:16px 40px">▶ เล่น</button>
+      <p class="text-xs" style="color:var(--mute)">StreamPlay: มีช่วงล็อกสลับกับช่วงขยับได้ · เล่น: ไม่มีล็อก</p>
+    </div>
+  </div>
+</div>
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(40,25,30,.45)">
+  <div class="card p-6 max-w-sm w-full text-center">
+    <div id="mEmoji" class="text-5xl mb-2">🎉</div>
+    <h2 id="mTitle" class="text-2xl font-semibold">แซนด์วิชสมบูรณ์แบบ!</h2>
+    <div id="sumStack" class="my-3 text-3xl leading-tight"></div>
+    <p id="sumTxt" class="mb-4" style="color:var(--mute)"></p>
+    <div class="flex gap-2 justify-center flex-wrap">
+      <button id="nextBtn" class="btn btn-main">รอบต่อไป</button>
+      <button id="closeBtn" class="btn btn-soft">ปิด</button>
+    </div>
+  </div>
+</div>
+<script>
+const ING=[
+ {id:'tomato',n:'มะเขือเทศ',e:'🍅'},{id:'lettuce',n:'ผักกาด',e:'🥬'},{id:'cheese',n:'ชีส',e:'🧀'},
+ {id:'onion',n:'หัวหอม',e:'🧅'},{id:'ham',n:'แฮม',e:'🥓'},{id:'nori',n:'สาหร่าย',e:'🟩'},{id:'yor',n:'หมูยอ',e:'🍖'}];
+const $=s=>document.querySelector(s), by=id=>ING.find(i=>i.id===id);
+let phase='ready',startAt=0,tick=null,won=false,streamMode=true;
+let recipe=[],stack=[],round=1,tries=0,t0=0,history=[],muted=false,drag=null,audioReady=false,synth=null;
+function snd(kind){
+  if(muted||typeof Tone==='undefined')return;
+  try{
+    if(!audioReady){Tone.start();synth=new Tone.PolySynth(Tone.Synth,{oscillator:{type:'triangle'},envelope:{attack:.005,decay:.12,sustain:0,release:.1}}).toDestination();synth.volume.value=-10;audioReady=true}
+    const t=Tone.now();
+    if(kind==='pick')synth.triggerAttackRelease('E5','32n',t);
+    else if(kind==='drop'){synth.triggerAttackRelease('C5','16n',t);synth.triggerAttackRelease('G5','16n',t+.08)}
+    else if(kind==='del')synth.triggerAttackRelease('A3','16n',t);
+    else if(kind==='bad'){synth.triggerAttackRelease('E4','16n',t);synth.triggerAttackRelease('C4','8n',t+.12)}
+    else if(kind==='win')['C5','E5','G5','C6','E6'].forEach((n,i)=>synth.triggerAttackRelease(n,'16n',t+i*.1));
+  }catch(e){}
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function newRound(){
+  const n=ING.length;
+  const prev=recipe.join();
+  do{recipe=shuffle(ING.map(i=>i.id)).slice(0,n)}while(recipe.join()===prev);
+  stack=[];tries=0;history=[];clearInterval(tick);phase='ready';
+  $('#msg').textContent='';$('#roundLbl').textContent='รอบที่ '+round;
+  $('#hint').textContent='สูตรนี้ใช้วัตถุดิบครบทั้ง '+n+' ชิ้น ลองเดาลำดับจากบนลงล่าง';
+  render();
+}
+const TOTAL=1200,SEG=300;
+function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function locked(){if(phase!=='playing')return true;if(!streamMode)return false;return Math.floor((Date.now()-startAt)/1000/SEG)%2===0}
+function start(m){if(phase!=='ready')return;streamMode=m;phase='playing';startAt=Date.now();snd('drop');tick=setInterval(ui,250);ui()}
+function ui(){
+  let lk=true,txt='';
+  if(phase==='playing'){
+    const el=(Date.now()-startAt)/1000;
+    if(el>=TOTAL){lose();return}
+    const seg=Math.floor(el/SEG);lk=streamMode&&seg%2===0;
+    const left=Math.ceil((seg+1)*SEG-el);window._left=left;
+    $('#timer').textContent='⏱ '+fmt(Math.ceil(TOTAL-el));
+    txt=!streamMode?'🎮 โหมดเล่น ไม่มีล็อก':(lk?'🔒 ล็อก ขยับไม่ได้ อีก ':'🔓 ขยับได้ อีก ')+fmt(left)+' นาที';
+  }else if(phase==='ready'){$('#timer').textContent='⏱ 20:00';txt='กดเริ่มเกมเพื่อจับเวลา 20 นาที'}
+  else txt='จบเกมแล้ว';
+  $('#phase').textContent=txt;
+  const ov=$('#ov');
+  if(phase==='ready'){ov.style.display='flex';ov.style.pointerEvents='auto';ov.style.background='rgba(40,25,30,.45)';$('#ovIcon').textContent='🥪';$('#ovTitle').textContent='พร้อมเล่นไหม? มีเวลา 20 นาที';$('#ovTime').style.display='none';$('#ovBtns').style.display=''}
+  else if(phase==='playing'&&lk){ov.style.display='flex';ov.style.pointerEvents='none';ov.style.background='transparent';$('#ovIcon').textContent='🔒';$('#ovTitle').textContent='ล็อก ขยับไม่ได้ อีก';$('#ovTime').style.display='';$('#ovTime').textContent=fmt(window._left);$('#ovBtns').style.display='none'}
+  else ov.style.display='none';
+  $('#checkBtn').disabled=lk;$('#clearBtn').disabled=lk;
+  $('#zone').style.opacity=lk?.7:1;
+  if(lk&&drag){drag.ghost&&drag.ghost.remove();drag=null;$('#zone').classList.remove('over');render()}
+}
+function lose(){
+  phase='over';clearInterval(tick);won=false;ui();snd('bad');
+  $('#timer').textContent='⏱ 0:00';
+  $('#mEmoji').textContent='⏰';$('#mTitle').textContent='หมดเวลา!';
+  $('#sumStack').innerHTML='🍞<br>'+recipe.map(id=>by(id).e).join('<br>')+'<br>🍞';
+  $('#sumTxt').textContent='นี่คือสูตรที่ถูกต้อง · เดาไป '+tries+' ครั้ง';
+  $('#nextBtn').textContent='เล่นใหม่';
+  $('#modal').classList.remove('hidden');$('#modal').classList.add('flex');
+}
+function render(){ui();
+  const inStack=new Set(stack);
+  $('#tray').innerHTML=ING.filter(i=>!inStack.has(i.id)).map(i=>
+    `<div class="chip p-2 text-center" data-tray="${i.id}"><div class="text-3xl">${i.e}</div><div class="text-xs">${i.n}</div></div>`).join('')
+    ||'<p class="col-span-full text-sm py-4 text-center" style="color:var(--mute)">วัตถุดิบหมดถาดแล้ว</p>';
+  $('#stack').innerHTML=stack.length?stack.map((id,k)=>{const i=by(id);
+    return `<div class="layer" data-layer="${id}"><span class="text-2xl">${i.e}</span><span class="flex-1 text-sm">${i.n}</span>
+    <button class="ib" data-act="up" data-i="${k}" aria-label="เลื่อนขึ้น" ${k===0?'disabled style="opacity:.35"':''}>▲</button>
+    <button class="ib" data-act="down" data-i="${k}" aria-label="เลื่อนลง" ${k===stack.length-1?'disabled style="opacity:.35"':''}>▼</button>
+    <button class="ib" data-act="del" data-i="${k}" aria-label="ลบ">✕</button></div>`}).join('')
+    :'<p class="text-center text-sm py-5" style="color:var(--mute)">วางวัตถุดิบตรงนี้ได้เลย</p>';
+  $('#hist').innerHTML=history.map((h,k)=>`<div class="hist"><span>ครั้งที่ ${k+1} ${h.seq}</span><b>ถูก ${h.ok}/${recipe.length}</b></div>`).reverse().join('');
+}
+document.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button')||locked())return;
+  const el=e.target.closest('[data-tray],[data-layer]');if(!el)return;
+  drag={id:el.dataset.tray||el.dataset.layer,from:el.dataset.tray?'tray':'stack',el,sx:e.clientX,sy:e.clientY,moved:false,ghost:null};
+});
+function idxAt(y,id){
+  let k=0;[...$('#stack').querySelectorAll('[data-layer]')].forEach(l=>{
+    if(l.dataset.layer===id)return;const r=l.getBoundingClientRect();if(y>r.top+r.height/2)k++});
+  return k;
+}
+function overZone(x,y){const r=$('#zone').getBoundingClientRect();return x>r.left-10&&x<r.right+10&&y>r.top-10&&y<r.bottom+10}
+window.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  if(!drag.moved&&Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>6){
+    drag.moved=true;snd('pick');
+    const g=drag.el.cloneNode(true);g.classList.add('ghost');g.style.width=drag.el.offsetWidth+'px';g.style.margin='0';
+    document.body.appendChild(g);drag.ghost=g;drag.el.classList.add('dragging');
+  }
+  if(drag.moved){drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px';
+    $('#zone').classList.toggle('over',overZone(e.clientX,e.clientY))}
+});
+window.addEventListener('pointerup',e=>{
+  if(!drag)return;const d=drag;drag=null;
+  $('#zone').classList.remove('over');d.ghost&&d.ghost.remove();
+  if(!d.moved){if(d.from==='tray'){stack.push(d.id);snd('drop');render()}return}
+  if(overZone(e.clientX,e.clientY)){
+    const k=idxAt(e.clientY,d.id);
+    stack=stack.filter(x=>x!==d.id);stack.splice(k,0,d.id);snd('drop');
+  }else if(d.from==='stack'){stack=stack.filter(x=>x!==d.id);snd('del')}
+  render();
+});
+window.addEventListener('pointercancel',()=>{if(drag){drag.ghost&&drag.ghost.remove();drag=null;render()}});
+$('#stack').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');if(!b||locked())return;
+  const i=+b.dataset.i,a=b.dataset.act;
+  if(a==='del'){stack.splice(i,1);snd('del')}
+  else{const j=a==='up'?i-1:i+1;if(j<0||j>=stack.length)return;[stack[i],stack[j]]=[stack[j],stack[i]];snd('pick')}
+  render();
+});
+$('#checkBtn').onclick=()=>{
+  if(locked())return;snd('pick');const msg=$('#msg'),n=recipe.length;
+  if(stack.length!==n){msg.textContent='สูตรนี้มี '+n+' ชั้น ตอนนี้มี '+stack.length+' ชั้น';
+    const s=$('#stack');s.classList.remove('shake');void s.offsetWidth;s.classList.add('shake');snd('bad');return}
+  tries++;const ok=stack.filter((id,i)=>id===recipe[i]).length;
+  history.push({ok,seq:stack.map(id=>by(id).e).join('')});
+  if(ok===n){win();return}
+  msg.textContent='ถูก '+ok+' จาก '+n+' ตำแหน่ง';
+  snd('bad');render();
+};
+function win(){
+  snd('win');render();
+  phase='over';clearInterval(tick);ui();won=true;const s=Math.round((Date.now()-startAt)/1000);$('#mEmoji').textContent='🎉';$('#mTitle').textContent='แซนด์วิชสมบูรณ์แบบ!';$('#nextBtn').textContent='รอบต่อไป';
+  $('#msg').textContent='ถูกทุกตำแหน่งแล้ว!';
+  $('#sumStack').innerHTML='🍞<br>'+recipe.map(id=>by(id).e).join('<br>')+'<br>🍞';
+  $('#sumTxt').textContent='รอบที่ '+round+' · เดา '+tries+' ครั้ง · ใช้เวลา '+fmt(s)+' นาที';
+  $('#modal').classList.remove('hidden');$('#modal').classList.add('flex');
+  if(typeof confetti==='function'){
+    const c=['#ff9eb5','#ffd8a8','#b8e6cf','#cdb8ff','#fff3a8'];
+    confetti({particleCount:120,spread:80,origin:{y:.6},colors:c});
+    setTimeout(()=>confetti({particleCount:70,angle:60,spread:60,origin:{x:0,y:.7},colors:c}),250);
+    setTimeout(()=>confetti({particleCount:70,angle:120,spread:60,origin:{x:1,y:.7},colors:c}),250);
+  }
+}
+function closeModal(){$('#modal').classList.add('hidden');$('#modal').classList.remove('flex')}
+$('#nextBtn').onclick=()=>{closeModal();if(won)round++;newRound()};
+$('#closeBtn').onclick=closeModal;
+$('#clearBtn').onclick=()=>{if(locked())return;stack=[];snd('del');render()};
+$('#newBtn').onclick=()=>{snd('pick');newRound()};
+$('#muteBtn').onclick=()=>{muted=!muted;$('#muteBtn').textContent=muted?'🔇':'🔊';if(!muted)snd('pick')};
+$('#ovStream').onclick=()=>start(true);$('#ovPlay').onclick=()=>start(false);
+newRound();
+</script>
+</body>
+</html>
