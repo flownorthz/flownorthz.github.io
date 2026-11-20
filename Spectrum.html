@@ -8,47 +8,79 @@
 <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--ac:#a855f7;--ac2:#c084fc;--pn:rgba(24,12,42,.84)}
+  :root{--ac:#a855f7;--ac2:#c084fc;--pn:rgba(24,12,42,.88);--ln:rgba(192,132,252,.16);--mut:#b9aed2;--dim:#9b8bb8}
   html,body{height:100%;margin:0;overflow:hidden;background:#150d26;color:#ece8f6;font-family:'Prompt',system-ui,-apple-system,'Segoe UI',sans-serif}
-  #stage{position:fixed;top:0;left:0;bottom:0;right:320px;transition:right .3s}
+  *{box-sizing:border-box}
+  #stage{position:fixed;top:0;left:0;bottom:0;right:340px;transition:right .3s}
   #cv{width:100%;height:100%;display:block}
-  #side{position:fixed;top:0;right:0;bottom:0;width:320px;z-index:30;background:var(--pn);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid rgba(192,132,252,.15);overflow-y:auto;transition:transform .3s;padding:0 18px 24px}
-  #player{position:fixed;left:16px;right:336px;bottom:16px;z-index:20;transition:transform .3s,right .3s;background:var(--pn);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(192,132,252,.18);border-radius:16px;padding:12px 16px}
+  #side{position:fixed;top:0;right:0;bottom:0;width:340px;z-index:30;background:var(--pn);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-left:1px solid var(--ln);overflow-y:auto;overflow-x:hidden;transition:transform .3s;padding:0 16px 28px;scrollbar-width:thin;scrollbar-color:#3a2862 transparent}
+  #sideHead{position:sticky;top:0;z-index:5;margin:0 -16px 6px;padding:16px 110px 12px 16px;background:linear-gradient(var(--pn) 80%,transparent)}
+  #player{position:fixed;left:16px;right:356px;bottom:16px;z-index:20;transition:transform .3s,right .3s;background:var(--pn);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:16px;padding:12px 16px}
   .hide-ui #side{transform:translateX(100%)}
   .hide-ui #stage{right:0}
   .hide-ui #player{transform:translateY(130%);right:16px}
-  @media(max-width:767px){#stage{right:0}#player{right:16px}#side{width:min(320px,88vw)}}
-  #toggleUi{position:fixed;top:12px;right:12px;z-index:40;transition:opacity .3s}
+  @media(max-width:767px){#stage{right:0}#player{right:16px}#side{width:min(340px,90vw)}}
+  #toggleUi{position:fixed;top:14px;right:14px;z-index:40;transition:opacity .3s}
   .hide-ui #toggleUi{opacity:.3}.hide-ui #toggleUi:hover,.hide-ui #toggleUi:focus-visible{opacity:1}
   .hidden{display:none!important}
-  .sec{border-top:1px solid rgba(192,132,252,.14);padding:14px 0}
-  .sec>summary{cursor:pointer;font-weight:600;font-size:13px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+
+  /* ----- sections / groups ----- */
+  .sec{border:1px solid var(--ln);border-radius:14px;margin-top:10px;background:rgba(14,8,24,.35)}
+  .sec>summary{cursor:pointer;font-weight:600;font-size:13px;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;user-select:none}
   .sec>summary::-webkit-details-marker{display:none}
-  .sec>summary::after{content:'+';color:#9b8bb8;font-weight:400}
+  .sec>summary::after{content:'+';color:var(--dim);font-weight:400;font-size:16px;line-height:1}
   .sec[open]>summary::after{content:'–'}
-  .row{display:grid;grid-template-columns:1fr auto;gap:6px 8px;font-size:12px;color:#b9aed2;margin-top:12px;align-items:center}
-  .row output{color:#ece8f6;font-variant-numeric:tabular-nums}
-  .row>input[type=range],.row>input[type=text]{grid-column:1/3}
-  .seg{display:flex;background:#0e0818;border-radius:10px;padding:3px;gap:2px;margin-top:12px}
-  .seg button{flex:1;padding:7px 4px;font-size:12px;border-radius:8px;color:#b9aed2;transition:background .15s}
+  .sec>.body{padding:0 14px 14px;display:flex;flex-direction:column;gap:10px}
+  .grp{background:rgba(14,8,24,.55);border:1px solid rgba(192,132,252,.1);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+  .gt{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--dim)}
+  .note{font-size:11px;color:var(--dim);line-height:1.5}
+
+  /* ----- control rows (flex: nothing can overlap) ----- */
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:12px;color:var(--mut);min-width:0}
+  .row>span:first-child{flex:1 1 0;min-width:0;overflow-wrap:anywhere}
+  .row output{color:#ece8f6;font-variant-numeric:tabular-nums;flex:none;min-width:44px;text-align:right}
+  .row>input[type=range],.row>input[type=text]{flex:1 1 100%;width:100%}
+  .dis{opacity:.38;pointer-events:none}
+
+  /* toggle switch */
+  .tog{cursor:pointer}
+  .sw{position:relative;width:38px;height:22px;flex:none}
+  .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%;z-index:1}
+  .sw i{position:absolute;inset:0;border-radius:22px;background:#34254f;transition:background .2s}
+  .sw i::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#cfc4e6;transition:transform .2s,background .2s}
+  .sw input:checked+i{background:var(--ac)}
+  .sw input:checked+i::after{transform:translateX(16px);background:#fff}
+  .sw input:focus-visible+i{outline:2px solid var(--ac2);outline-offset:2px}
+
+  /* chips (pick several) */
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .chip{position:relative;display:block;min-width:0}
+  .chip input{position:absolute;inset:0;opacity:0;margin:0;width:100%;height:100%;cursor:pointer;z-index:1}
+  .chip span{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 6px;border-radius:10px;border:1px solid rgba(192,132,252,.2);background:#0e0818;font-size:12px;color:var(--mut);text-align:center;transition:all .15s}
+  .chip span::before{content:'';width:8px;height:8px;border-radius:50%;border:1.5px solid #6f628c;flex:none}
+  .chip input:checked+span{background:rgba(168,85,247,.22);border-color:var(--ac2);color:#fff;font-weight:500}
+  .chip input:checked+span::before{background:var(--ac2);border-color:var(--ac2)}
+  .chip input:focus-visible+span{outline:2px solid var(--ac2);outline-offset:2px}
+
+  .seg{display:flex;background:#0e0818;border-radius:10px;padding:3px;gap:2px}
+  .seg button{flex:1;padding:7px 4px;font-size:12px;border-radius:8px;color:var(--mut);transition:background .15s}
   .seg button.on{background:var(--ac);color:#fff;font-weight:600}
-  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;background:#34254f;border-radius:4px;width:100%}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--ac2);border:0;cursor:pointer}
-  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ac2);border:0;cursor:pointer}
-  input[type=color]{width:38px;height:26px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:none;padding:0;cursor:pointer}
-  input[type=text]{background:#0e0818;border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#ece8f6;padding:6px 10px;font-size:13px;width:100%}
-  select{background:#0e0818;border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#ece8f6;padding:5px 8px;font-size:12px}
-  input[type=checkbox]{accent-color:var(--ac);width:16px;height:16px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:4px;background:#34254f;border-radius:4px;width:100%;margin:6px 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac2);border:0;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--ac2);border:0;cursor:pointer}
+  input[type=color]{width:38px;height:26px;border:1px solid rgba(255,255,255,.15);border-radius:6px;background:none;padding:0;cursor:pointer;flex:none}
+  input[type=text]{background:#0e0818;border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#ece8f6;padding:7px 10px;font-size:13px;width:100%}
+  select{background:#0e0818;border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#ece8f6;padding:5px 8px;font-size:12px;max-width:55%}
   .btn{background:#2a1c45;border:1px solid rgba(192,132,252,.2);color:#ece8f6;border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer;transition:background .15s}
   .btn:hover{background:#3a2862}
   .btn.main{background:var(--ac);color:#fff;font-weight:600;border:0}
   .btn.main:hover{background:#b872ff}
   .btn.rec{background:#ff4fa3;color:#fff;font-weight:600;border:0}
+  .btn.ghost{background:transparent}
   button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
   .preset{width:100%;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.12);cursor:pointer}
-  .sub{font-size:11px;color:#9b8bb8;margin-top:16px}
   #drop{position:fixed;inset:12px;z-index:50;border:2px dashed var(--ac2);border-radius:24px;background:rgba(168,85,247,.12);display:flex;align-items:center;justify-content:center;font-size:20px;pointer-events:none}
-  #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:60;background:#2a1520;border:1px solid #ff4fa3;color:#ffd5e8;padding:10px 16px;border-radius:12px;font-size:13px}
+  #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:70;background:#2a1520;border:1px solid #ff4fa3;color:#ffd5e8;padding:10px 16px;border-radius:12px;font-size:13px;max-width:90vw}
   .eq{display:flex;gap:6px;height:72px;align-items:flex-end}
   .eq i{width:9px;height:100%;border-radius:5px;background:linear-gradient(#c084fc,#7c3aed);transform-origin:bottom;animation:eq 1.1s ease-in-out infinite;animation-delay:var(--d)}
   @keyframes eq{0%,100%{transform:scaleY(.18)}50%{transform:scaleY(1)}}
@@ -57,23 +89,31 @@
   @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   .glow{animation:glow 2s ease-in-out infinite}
   @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.55)}50%{box-shadow:0 0 0 12px rgba(168,85,247,0)}}
-  .card{background:#1a0f2e;border:1px solid rgba(192,132,252,.3);border-radius:20px;padding:28px 36px;min-width:280px;text-align:center}
-  .wf{width:min(420px,92vw);text-align:left;padding:26px 28px}
-  .wf-steps{display:flex;align-items:flex-start;margin:20px 0 6px}
+
+  /* ----- export dialog ----- */
+  #expOv{background:radial-gradient(circle at 50% 30%,rgba(60,24,110,.55),rgba(10,5,20,.9));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:16px}
+  .dlg{width:min(460px,100%);max-height:100%;overflow:auto;background:linear-gradient(160deg,#1f1238,#150b27);border:1px solid rgba(192,132,252,.3);border-radius:24px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03) inset}
+  .dlg-h{display:flex;align-items:center;gap:12px}
+  .dlg-ic{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#c084fc);display:flex;align-items:center;justify-content:center;flex:none}
+  .dlg-ic .eq{height:18px;gap:2px}.dlg-ic .eq i{width:3px;background:#fff;border-radius:2px;animation-duration:.9s}
+  .ring{--p:0;position:relative;width:168px;height:168px;margin:22px auto 6px;border-radius:50%;background:conic-gradient(#c084fc calc(var(--p)*1%),#2d2046 0);display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 18px rgba(168,85,247,.35))}
+  .ring::before{content:'';position:absolute;inset:12px;border-radius:50%;background:#170d2b}
+  .ring>div{position:relative;text-align:center}
+  .ring b{font-size:42px;font-weight:600;color:#e9d5ff;font-variant-numeric:tabular-nums;line-height:1}
+  .ring small{display:block;font-size:11px;color:var(--dim);margin-top:4px}
+  .stp{display:flex;align-items:flex-start;margin:18px 0 14px}
   .wf-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;font-size:11px;color:#6f628c;text-align:center}
   .wf-step:not(:last-child)::after{content:'';position:absolute;top:13px;left:calc(50% + 17px);right:calc(-50% + 17px);height:2px;background:#34254f}
   .wf-step.done:not(:last-child)::after{background:#a855f7}
   .wf-dot{width:26px;height:26px;border-radius:50%;border:2px solid #34254f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:#1a0f2e;position:relative;z-index:1}
   .wf-step.on{color:#ece8f6}
-  .wf-step.on .wf-dot{border-color:#c084fc;color:#fff;box-shadow:0 0 0 5px rgba(168,85,247,.25);animation:glow 1.6s ease-in-out infinite}
+  .wf-step.on .wf-dot{border-color:#c084fc;color:#fff;animation:glow 1.6s ease-in-out infinite}
   .wf-step.done{color:#c9bde0}
   .wf-step.done .wf-dot{background:#a855f7;border-color:#a855f7;color:#fff}
-  .wf-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 18px}
-  .wf-meta div{background:#0e0818;border-radius:10px;padding:8px 10px}
-  .wf-meta small{display:block;font-size:10px;color:#9b8bb8}
-  .wf-meta b{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
-  .bar{height:8px;background:#34254f;border-radius:8px;overflow:hidden;margin:16px 0}
-  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c084fc);transition:width .3s}
+  .wf-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .wf-meta div{background:#0e0818;border:1px solid rgba(192,132,252,.1);border-radius:12px;padding:8px 10px;min-width:0}
+  .wf-meta small{display:block;font-size:10px;color:var(--dim)}
+  .wf-meta b{font-size:14px;font-weight:500;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body class="">
@@ -118,7 +158,7 @@
 <button id="toggleUi" class="btn" title="ซ่อน/แสดงแผงควบคุม (H)">ซ่อน UI</button>
 
 <aside id="side">
-  <div class="pt-5 pb-4">
+  <div id="sideHead">
     <h1 class="text-xl font-semibold" style="letter-spacing:.01em;color:#d8b4fe">Spectrum</h1>
     <p class="text-xs text-slate-400">Made by Overflow</p>
   </div>
@@ -127,28 +167,29 @@
 
 <div id="drop" class="hidden">วางไฟล์เสียงเพื่อเล่น</div>
 <div id="toast" class="hidden" role="alert"></div>
-<div id="expOv" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(12,6,22,.8);backdrop-filter:blur(6px)" role="dialog" aria-modal="true" aria-labelledby="expTitle">
-  <div class="card wf">
-    <div class="flex items-baseline justify-between gap-3">
-      <h2 id="expTitle" class="text-base font-semibold" style="color:#d8b4fe">ส่งออกวิดีโอ MP4</h2>
-      <span id="expInfo" class="text-xs text-slate-400 truncate"></span>
+
+<div id="expOv" class="hidden fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="expTitle">
+  <div class="dlg">
+    <div class="dlg-h">
+      <div class="dlg-ic" aria-hidden="true"><div class="eq"><i style="--d:0s"></i><i style="--d:.2s"></i><i style="--d:.4s"></i><i style="--d:.2s"></i></div></div>
+      <div class="min-w-0 flex-1">
+        <h2 id="expTitle" class="text-base font-semibold" style="color:#e9d5ff">ส่งออกวิดีโอ MP4</h2>
+        <div id="expInfo" class="text-xs text-slate-400 truncate"></div>
+      </div>
     </div>
-    <div class="wf-steps" aria-hidden="true">
+    <div class="ring" id="expRing"><div><b id="expPct">0%</b><small id="expPhase">เตรียมไฟล์</small></div></div>
+    <div class="stp" aria-hidden="true">
       <div class="wf-step" data-s="0"><span class="wf-dot">1</span>เตรียมไฟล์</div>
       <div class="wf-step" data-s="1"><span class="wf-dot">2</span>เรนเดอร์</div>
       <div class="wf-step" data-s="2"><span class="wf-dot">3</span>บันทึกไฟล์</div>
-    </div>
-    <div class="text-center">
-      <div id="expPct" class="text-5xl font-semibold mt-3" style="color:#d8b4fe">0%</div>
-      <div class="bar"><i id="expBar"></i></div>
     </div>
     <div class="wf-meta">
       <div><small>ผ่านไป</small><b id="expEl">0:00</b></div>
       <div><small>เหลือประมาณ</small><b id="expEta">–</b></div>
       <div><small>ความยาวเพลง</small><b id="expLen">–</b></div>
     </div>
-    <p id="expMsg" class="text-xs text-slate-400 mb-4 text-center">กรุณาเปิดแท็บนี้ค้างไว้ และไม่เปลี่ยนไปแท็บอื่น</p>
-    <div class="text-center"><button class="btn rec" id="expCancel">ยกเลิก</button></div>
+    <p id="expMsg" class="text-xs text-slate-400 my-4 text-center">กรุณาเปิดแท็บนี้ค้างไว้ และไม่เปลี่ยนไปแท็บอื่น</p>
+    <button class="btn rec w-full" id="expCancel" style="padding:11px">ยกเลิก (Esc)</button>
   </div>
 </div>
 
@@ -161,72 +202,57 @@
 (()=>{
 const $=id=>document.getElementById(id);
 const S={shape:'bars',pos:'bottom',mirror:true,cmode:'gradient',c1:'#00e5c3',c2:'#5b7cff',c3:'#ff4fa3',useC3:true,glow:18,
-  fft:2048,bars:96,bw:8,gap:4,bh:100,smooth:.8,gain:1.2,beat:true,beatAmt:60,inner:22,spin:false,bgColor:'#150d26',dim:35,blur:0,expRes:720,
+  fft:8192,bars:96,bw:8,gap:4,bh:100,smooth:.8,gain:0.8,beat:true,beatAmt:60,inner:22,spin:false,bgColor:'#150d26',dim:35,blur:0,expRes:1080,
   txOn:true,txt:'Made by Overflow',tcolor:'#ffffff',tsize:48,tx:50,ty:16,tScroll:false,tGrad:false,tBlink:false,tBounce:true,tspeed:4,tbounce:50,
   bDef:true,bSnare:false,bKick:false,bBpm:false,bpm:120};
 
 /* ---------- UI builder ---------- */
 const seg=(k,o)=>`<div class="seg" data-key="${k}">${o.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('')}</div>`;
-const rng=(k,l,a,b,s,u='')=>`<label class="row"><span>${l}</span><output data-out="${k}" data-u="${u}"></output><input type="range" data-key="${k}" min="${a}" max="${b}" step="${s}"></label>`;
-const chk=(k,l,x='')=>`<label class="row inline" ${x}><span>${l}</span><input type="checkbox" data-key="${k}"></label>`;
-const col=(k,l,x='')=>`<label class="row inline" ${x}><span>${l}</span><input type="color" data-key="${k}"></label>`;
-const sel=(k,l,o,x='')=>`<label class="row inline" ${x}><span>${l}</span><select data-key="${k}">${o.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></label>`;
-const sec=(t,b,open=true)=>`<details class="sec" ${open?'open':''}><summary>${t}</summary>${b}</details>`;
+const rng=(k,l,a,b,s,u='',x='')=>`<label class="row" ${x}><span>${l}</span><output data-out="${k}" data-u="${u}"></output><input type="range" data-key="${k}" min="${a}" max="${b}" step="${s}"></label>`;
+const chk=(k,l,x='')=>`<label class="row tog" ${x}><span>${l}</span><span class="sw"><input type="checkbox" data-key="${k}"><i></i></span></label>`;
+const chip=(k,l)=>`<label class="chip"><input type="checkbox" data-key="${k}"><span>${l}</span></label>`;
+const col=(k,l,x='')=>`<label class="row" ${x}><span>${l}</span><input type="color" data-key="${k}"></label>`;
+const sel=(k,l,o,x='')=>`<label class="row" ${x}><span>${l}</span><select data-key="${k}">${o.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></label>`;
+const grp=(t,b,x='')=>`<div class="grp" ${x}>${t?`<div class="gt">${t}</div>`:''}${b}</div>`;
+const sec=(t,b,open=true)=>`<details class="sec" ${open?'open':''}><summary>${t}</summary><div class="body">${b}</div></details>`;
 const presets=[['#00e5c3','#5b7cff','#ff4fa3'],['#ff9a3c','#ff3c6e','#7b2cff'],['#9dff6b','#1fd1a5','#2a7bff'],['#ffffff','#9fb4ff','#ffb3e6']];
 
 $('panel').innerHTML=
  sec('รูปแบบ Visualizer',
   seg('shape',[['bars','แท่งกราฟ'],['circle','วงกลม'],['wave','เส้นคลื่น']])+
-  sel('pos','ตำแหน่ง',[['bottom','ด้านล่าง'],['center','กึ่งกลางจอ']],'data-for="bars wave"')+
-  chk('mirror','สมมาตรซ้าย-ขวา'))+
+  grp('',sel('pos','ตำแหน่ง',[['bottom','ด้านล่าง'],['center','กึ่งกลางจอ']],'data-for="bars wave"')+chk('mirror','สมมาตรซ้าย-ขวา')))+
  sec('สีและ Glow',
   seg('cmode',[['solid','สีเดี่ยว'],['gradient','ไล่เฉดสี']])+
-  col('c1','สีที่ 1')+col('c2','สีที่ 2','data-grad')+chk('useC3','ใช้สีที่ 3','data-grad')+col('c3','สีที่ 3','data-grad data-c3')+
-  `<div class="grid grid-cols-4 gap-2 mt-3" data-grad>${presets.map((p,i)=>`<button class="preset" data-preset="${i}" aria-label="ชุดสี ${i+1}" style="background:linear-gradient(90deg,${p.join(',')})"></button>`).join('')}</div>`+
-  rng('glow','ความฟุ้ง (Glow)',0,50,1))+
+  grp('สี',col('c1','สีที่ 1')+col('c2','สีที่ 2','data-grad')+chk('useC3','ใช้สีที่ 3','data-grad')+col('c3','สีที่ 3','data-grad data-c3'))+
+  `<div class="grid grid-cols-4 gap-2" data-grad>${presets.map((p,i)=>`<button class="preset" data-preset="${i}" aria-label="ชุดสี ${i+1}" style="background:linear-gradient(90deg,${p.join(',')})"></button>`).join('')}</div>`+
+  grp('',rng('glow','ความฟุ้ง (Glow)',0,50,1)))+
  sec('ความละเอียดและขนาดแท่ง',
-  sel('fft','FFT Size',[[256,'256'],[512,'512'],[1024,'1024'],[2048,'2048'],[4096,'4096'],[8192,'8192']])+
-  rng('bars','จำนวนแท่ง',16,256,2)+
-  rng('bw','ความกว้างแท่ง / ความหนาเส้น',1,40,1,'px')+
-  rng('bh','ความสูงแท่ง (สูงสุด)',20,150,1,'%')+
-  rng('gap','ระยะห่างแท่ง',0,30,1,'px')+
-  rng('smooth','ความสมูท (Smoothing)',0,.95,.01)+
-  rng('gain','ความไวเสียง (Gain)',.5,2.5,.05))+
+  grp('ความละเอียด',sel('fft','FFT Size',[[256,'256'],[512,'512'],[1024,'1024'],[2048,'2048'],[4096,'4096'],[8192,'8192']])+rng('bars','จำนวนแท่ง',16,256,2))+
+  grp('ขนาดและรูปร่าง',rng('bw','ความกว้างแท่ง / ความหนาเส้น',1,40,1,'px')+rng('bh','ความสูงแท่ง (สูงสุด)',20,150,1,'%')+rng('gap','ระยะห่างแท่ง',0,30,1,'px'))+
+  grp('การตอบสนองเสียง',rng('smooth','ความสมูท (Smoothing)',0,.95,.01)+rng('gain','ความไวเสียง (Gain)',.5,2.5,.05)))+
  sec('โหมดวงกลม',
-  `<div data-for="circle">`+chk('beat','วงกลมขยายตามเบส (Beat)')+rng('beatAmt','ความแรงของ Beat',0,100,1,'%')+
-  rng('inner','ขนาดวงกลมตรงกลาง',10,40,1,'%')+chk('spin','หมุนวงกลมช้าๆ')+
-  `<div class="flex gap-2 mt-3"><button class="btn flex-1" id="logoBtn">อัปโหลดโลโก้/ปก</button><button class="btn" id="logoDel">ลบ</button></div></div>`+
-  `<p class="text-xs text-slate-500 mt-3" data-for="bars wave">ตัวเลือกนี้ใช้ได้เมื่อเลือกรูปแบบวงกลม</p>`,false)+
+  `<p class="note" data-for="bars wave">ตัวเลือกนี้ใช้ได้เมื่อเลือกรูปแบบวงกลม</p>`+
+  grp('',chk('beat','วงกลมขยายตามเบส (Beat)')+rng('beatAmt','ความแรงของ Beat',0,100,1,'%','data-if="beat"')+rng('inner','ขนาดวงกลมตรงกลาง',10,40,1,'%')+chk('spin','หมุนวงกลมช้าๆ')+
+   `<div class="flex gap-2"><button class="btn flex-1" id="logoBtn">อัปโหลดโลโก้/ปก</button><button class="btn" id="logoDel">ลบ</button></div>`,'data-for="circle"'),false)+
  sec('ข้อความ (Custom Text)',
-  chk('txOn','แสดงข้อความ')+
-  `<label class="row"><span>ข้อความ</span><input type="text" data-key="txt" maxlength="120" placeholder="พิมพ์ข้อความ…"></label>`+
-  col('tcolor','สีข้อความ')+
-  rng('tsize','ขนาดตัวอักษร',12,200,1,'px')+
-  rng('tx','ตำแหน่งแนวนอน (ซ้าย → ขวา)',0,100,1,'%')+
-  rng('ty','ตำแหน่งแนวตั้ง (บน → ล่าง)',0,100,1,'%')+
-  `<p class="sub">เอฟเฟกต์ (ติ๊กรวมกันได้)</p>`+
-  chk('tScroll','เลื่อนข้อความ (Scroll)')+
-  chk('tGrad','ไล่เฉดสีวิ่ง')+
-  chk('tBlink','กระพริบ')+
-  chk('tBounce','เด้งตามจังหวะ')+
-  rng('tspeed','ความเร็ว Scroll',1,20,1)+
-  rng('tbounce','ความแรงการเด้ง (เบา → แรง)',0,100,1,'%')+
-  `<p class="sub">จังหวะที่ใช้เด้ง (ติ๊กได้หลายอัน)</p>`+
-  chk('bDef','Default (ระดับเสียงรวม)')+
-  chk('bSnare','Snare')+
-  chk('bKick','Kick / Bass')+
-  chk('bBpm','BPM (จังหวะคงที่)')+
-  rng('bpm','BPM',40,220,1))+
+  grp('',chk('txOn','แสดงข้อความ'))+
+  `<div data-if="txOn" style="display:flex;flex-direction:column;gap:10px">`+
+  grp('ข้อความและสี',`<input type="text" data-key="txt" maxlength="120" placeholder="พิมพ์ข้อความ…" aria-label="ข้อความ">`+col('tcolor','สีข้อความ')+rng('tsize','ขนาดตัวอักษร',12,200,1,'px'))+
+  grp('ตำแหน่ง',`<p class="note hidden" data-if="tScroll">เปิด Scroll อยู่ ข้อความจะวิ่งเอง จึงปรับแนวนอนไม่ได้</p>`+rng('tx','แนวนอน (ซ้าย → ขวา)',0,100,1,'%','data-offif="tScroll"')+rng('ty','แนวตั้ง (บน → ล่าง)',0,100,1,'%'))+
+  grp('เอฟเฟกต์ (เลือกรวมกันได้)',`<div class="chips">${chip('tScroll','เลื่อน (Scroll)')}${chip('tGrad','ไล่เฉดสีวิ่ง')}${chip('tBlink','กระพริบ')}${chip('tBounce','เด้งตามจังหวะ')}</div>`+rng('tspeed','ความเร็ว Scroll',1,20,1,'','data-if="tScroll"'))+
+  grp('การเด้งตามจังหวะ',
+   rng('tbounce','ความแรง (เบา → แรง)',0,100,1,'%')+
+   `<div class="gt" style="margin-top:2px">จังหวะที่ใช้ (เลือกได้หลายอัน)</div><div class="chips">${chip('bDef','Default (รวม)')}${chip('bSnare','Snare')}${chip('bKick','Kick / Bass')}${chip('bBpm','BPM คงที่')}</div>`+
+   rng('bpm','BPM',40,220,1,'','data-if="bBpm"'),'data-if="tBounce"')+
+  `</div>`)+
  sec('พื้นหลัง',
-  col('bgColor','สีพื้นหลัง')+
-  `<div class="flex gap-2 mt-3"><button class="btn flex-1" id="bgBtn">อัปโหลดรูปพื้นหลัง</button><button class="btn" id="bgDel">ลบ</button></div>`+
-  rng('dim','ความมืด (Overlay Dim)',0,90,1,'%')+rng('blur','ความเบลอ (Blur)',0,30,1,'px'),false)+
+  grp('',col('bgColor','สีพื้นหลัง')+`<div class="flex gap-2"><button class="btn flex-1" id="bgBtn">อัปโหลดรูปพื้นหลัง</button><button class="btn" id="bgDel">ลบ</button></div>`)+
+  grp('',rng('dim','ความมืด (Overlay Dim)',0,90,1,'%')+rng('blur','ความเบลอ (Blur)',0,30,1,'px')),false)+
  sec('ส่งออกวิดีโอ',
-  `<label class="row"><span>ชื่อไฟล์</span><input type="text" id="exName" maxlength="80" placeholder="spectrum"></label>`+
-  sel('expRes','ความละเอียด',[[720,'720p (1280×720)'],[1080,'1080p (1920×1080)']])+
-  `<button class="btn rec expBtn w-full mt-3">ส่งออกเป็น MP4</button>`+
-  `<p id="expStat" class="text-xs text-slate-400 mt-3">ระหว่างส่งออกจะไม่มีเสียงออกลำโพง แสดงความคืบหน้าเป็น % (ใช้เวลาเท่าความยาวเพลง) กรุณาเปิดแท็บนี้ค้างไว้</p>`)+
- `<p class="text-xs text-slate-500 mt-4">ปุ่มลัด: Space เล่น/หยุด · H ซ่อน/แสดงแผงควบคุม</p>`;
+  grp('',`<label class="row"><span>ชื่อไฟล์</span><input type="text" id="exName" maxlength="80" placeholder="spectrum"></label>`+sel('expRes','ความละเอียด',[[720,'720p (1280×720)'],[1080,'1080p (1920×1080)']]))+
+  `<button class="btn rec expBtn w-full" style="padding:11px">ส่งออกเป็น MP4</button>`+
+  `<p id="expStat" class="note">ระหว่างส่งออกจะไม่มีเสียงออกลำโพง ใช้เวลาเท่าความยาวเพลง กรุณาเปิดแท็บนี้ค้างไว้</p>`)+
+ `<p class="note" style="margin-top:14px">ปุ่มลัด: Space เล่น/หยุด · H ซ่อน/แสดงแผงควบคุม</p>`;
 
 /* ---------- state sync ---------- */
 let stops=[],analyser=null,ac=null,outGain=null,adest=null,freq=new Uint8Array(1024),bgUrl=null,bgImg=null,logo=null,logoUrl=null,volV=.8,muted=false;
@@ -246,6 +272,8 @@ function sync(){
   });
   document.querySelectorAll('[data-out]').forEach(o=>{o.textContent=S[o.dataset.out]+o.dataset.u});
   document.querySelectorAll('[data-for]').forEach(e=>e.classList.toggle('hidden',!e.dataset.for.split(' ').includes(S.shape)));
+  document.querySelectorAll('[data-if]').forEach(e=>e.classList.toggle('hidden',!S[e.dataset.if]));
+  document.querySelectorAll('[data-offif]').forEach(e=>e.classList.toggle('dis',!!S[e.dataset.offif]));
   document.querySelectorAll('[data-grad]').forEach(e=>e.classList.toggle('hidden',S.cmode==='solid'));
   document.querySelectorAll('[data-c3]').forEach(e=>e.classList.toggle('hidden',S.cmode==='solid'||!S.useC3));
   refresh();
@@ -345,6 +373,7 @@ function toggleUi(){const h=document.body.classList.toggle('hide-ui');$('toggleU
 $('toggleUi').onclick=toggleUi;
 if(innerWidth<768)toggleUi();
 addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&rec){stopExport(false);return}
   if(e.target.matches('input[type=text],select,textarea,button'))return;
   if(e.code==='Space'){e.preventDefault();$('playBtn').click()}
   else if(e.key==='h'||e.key==='H')toggleUi();
@@ -487,6 +516,7 @@ function paint(ctx,w,h,data,exp){
 let exC=null,exG=null,exCancel=false,exTimer=0;
 const EXW=1280,EXH=720;
 const PH_MSG=['กำลังเตรียมเสียงและตัวเข้ารหัส…','กำลังเรนเดอร์ภาพและเสียง กรุณาเปิดแท็บนี้ค้างไว้','กำลังรวมไฟล์ MP4 อีกสักครู่…'];
+const PH_NAME=['เตรียมไฟล์','กำลังเรนเดอร์','บันทึกไฟล์'];
 const tm=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 function setExpUi(msg,busy,pct,phase){
   $('expStat').textContent=msg;
@@ -496,7 +526,7 @@ function setExpUi(msg,busy,pct,phase){
   if(!busy)return;
   const p=Math.max(0,Math.min(100,Math.round(pct||0)));
   const ph=phase!=null?phase:(p>=100?2:1);
-  $('expPct').textContent=p+'%';$('expBar').style.width=p+'%';
+  $('expPct').textContent=p+'%';$('expRing').style.setProperty('--p',p);$('expPhase').textContent=PH_NAME[ph];
   document.querySelectorAll('.wf-step').forEach(e=>{const n=+e.dataset.s;e.classList.toggle('on',n===ph);e.classList.toggle('done',n<ph)});
   $('expMsg').textContent=PH_MSG[ph];
   if(!was){$('expInfo').textContent=exFname()+' · '+S.expRes+'p';$('expCancel').focus()}
