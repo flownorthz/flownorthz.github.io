@@ -156,6 +156,7 @@
         <span id="dur" class="w-10">0:00</span>
       </div>
     </div>
+    <button class="btn capBtn hidden md:block whitespace-nowrap">🎧 จับเสียงแท็บ</button>
     <button id="shBtn" class="btn hidden md:block whitespace-nowrap">สุ่ม</button>
     <button id="lpBtn" class="btn hidden md:block whitespace-nowrap">วน: ปิด</button>
     <button class="btn expBtn whitespace-nowrap hidden sm:block">ส่งออกวิดีโอ</button>
@@ -236,7 +237,7 @@ $('panel').innerHTML=
   grp('',chk('shuffle','สุ่มเล่น (Shuffle)')+seg('loop',[['off','ไม่วน'],['all','วนทั้งคิว'],['one','วน 1 เพลง']]))+
   `<div id="qList" class="flex flex-col gap-1"></div>`+
   `<button class="btn ghost" id="qClear">ล้างคิวทั้งหมด</button>`+
-  `<p class="note">เพลงจาก YouTube: กราฟเป็นแอนิเมชันจำลอง และส่งออก MP4 ไม่ได้</p>`)+
+  `<button class="btn w-full capBtn">🎧 จับเสียงแท็บ</button><p id="capStat" class="note"></p><p class="note">ใช้กับเพลง YouTube: เลือก "แท็บนี้" แล้วติ๊กแชร์เสียงแท็บ · ปรับเสียงหรือปิดเสียงแล้วกราฟจะเบาตามไปด้วย · ส่งออก MP4 ไม่ได้กับเพลง YouTube</p>`)+
  sec('รูปแบบ Visualizer',
   seg('shape',[['bars','แท่งกราฟ'],['circle','วงกลม'],['wave','เส้นคลื่น']])+
   grp('',sel('pos','ตำแหน่ง',[['bottom','ด้านล่าง'],['center','กึ่งกลางจอ']],'data-for="bars wave"')+chk('mirror','สมมาตรซ้าย-ขวา')))+
@@ -310,7 +311,7 @@ let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.remove('
 
 /* ---------- audio ---------- */
 const audio=$('audio');let curUrl=null,curFile=null,seeking=false,rec=null,exStart=0,exBusy=false;
-function applyVol(){if(outGain)outGain.gain.value=(rec||muted)?0:volV;if(yt.p&&yt.ready)try{yt.p.setVolume(muted?0:volV*100)}catch(e){}}
+function applyVol(){if(outGain)outGain.gain.value=(rec||muted||cap.routed)?0:volV;if(yt.p&&yt.ready)try{yt.p.setVolume(muted?0:volV*100)}catch(e){}}
 function initAudio(){
   if(ac)return;
   const AC=window.AudioContext||window.webkitAudioContext;
@@ -416,7 +417,7 @@ function playIdx(i){
   Q.i=i;const it=Q.list[i];Q.done.add(it);renderQ();
   if(it.t==='f'){stopYT();loadAudio(it.file)}else playYT(it);
 }
-function stopYT(){yt.on=false;if(yt.p&&yt.ready)try{yt.p.stopVideo()}catch(e){}}
+function stopYT(){yt.on=false;capRoute();if(yt.p&&yt.ready)try{yt.p.stopVideo()}catch(e){}}
 function stopAll(){audio.pause();stopYT();$('track').textContent='ยังไม่ได้เลือกไฟล์';icons()}
 function moveQ(k,d){
   const j=k+d;if(j<0||j>=Q.list.length)return;
@@ -442,7 +443,8 @@ function loadYT(cb){
   window._ytq.push(cb);
 }
 function playYT(it){
-  audio.pause();yt.on=true;yt.want=it.id;
+  audio.pause();yt.on=true;yt.want=it.id;capRoute();
+  if(!cap.stream&&!yt.hint){yt.hint=1;toast('กดปุ่ม 🎧 จับเสียงแท็บ เพื่อให้กราฟตามจังหวะเพลงจริง')}
   $('track').textContent=it.name;$('empty').classList.add('hidden');
   $('seek').value=0;$('cur').textContent='0:00';$('dur').textContent='0:00';icons();
   loadYT(()=>{
@@ -462,12 +464,47 @@ function playYT(it){
 }
 function simFreq(){
   const playing=yt.p&&yt.ready&&yt.p.getPlayerState()===1,t=performance.now()/1000,L=freq.length;
-  const beat=playing?Math.pow(Math.max(0,Math.sin(t*Math.PI*4)),4):0;
+  const beat=playing?Math.pow(Math.max(0,Math.sin(t*Math.PI*2*S.bpm/60)),4):0;
   for(let i=0;i<L;i++){
     const x=i/L,e=Math.pow(1-x,.6)*(.5+.5*Math.sin(t*2.3+i*.21)*Math.sin(t*1.1+i*.07));
     freq[i]=playing?Math.min(255,e*(.55+.45*beat)*(i<L*.03?1.25:1)*255):0;
   }
 }
+/* ---------- จับเสียงแท็บ (สำหรับ YouTube) ---------- */
+const cap={stream:null,src:null,routed:false};
+function capUi(){
+  const on=!!cap.stream;
+  document.querySelectorAll('.capBtn').forEach(b=>{b.textContent=on?'🎧 จับเสียงอยู่ (กดเพื่อหยุด)':'🎧 จับเสียงแท็บ';b.classList.toggle('main',on)});
+  const t=$('capStat');if(t)t.textContent=on?'กราฟตามเสียงจริงจากแท็บนี้':'ยังไม่ได้จับเสียง กราฟเป็นภาพจำลอง';
+}
+function capRoute(){
+  if(!cap.src||!analyser)return;
+  if(yt.on&&!cap.routed){cap.src.connect(analyser);cap.routed=true}
+  else if(!yt.on&&cap.routed){try{cap.src.disconnect()}catch(e){}cap.routed=false}
+  applyVol();
+}
+async function startCap(){
+  if(cap.stream){stopCap();return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){toast('เบราว์เซอร์นี้ไม่รองรับการจับเสียงแท็บ (ใช้ Chrome/Edge บนคอมพิวเตอร์)');return}
+  let st;
+  try{st=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true,preferCurrentTab:true,selfBrowserSurface:'include'})}
+  catch(e){toast('ไม่ได้อนุญาตการแชร์ กราฟจะเป็นภาพจำลอง');return}
+  const at=st.getAudioTracks();
+  st.getVideoTracks().forEach(t=>t.stop());
+  if(!at.length){toast('ไม่ได้แชร์เสียง ต้องเลือกแท็บนี้และติ๊ก "แชร์เสียงแท็บ"');return}
+  initAudio();
+  if(ac.state==='suspended')ac.resume();
+  cap.stream=new MediaStream(at);cap.src=ac.createMediaStreamSource(cap.stream);cap.routed=false;
+  at[0].addEventListener('ended',stopCap);
+  capRoute();capUi();toast('จับเสียงแท็บแล้ว');
+}
+function stopCap(){
+  if(cap.src){try{cap.src.disconnect()}catch(e){}}
+  if(cap.stream)cap.stream.getTracks().forEach(t=>t.stop());
+  cap.stream=null;cap.src=null;cap.routed=false;applyVol();capUi();
+}
+document.querySelectorAll('.capBtn').forEach(b=>b.onclick=startCap);
+capUi();
 audio.addEventListener('ended',()=>{if(rec||yt.on)return;const j=nextIdx(true);if(j>=0)playIdx(j)});
 $('ytAdd').onclick=()=>{addUrl($('ytIn').value);$('ytIn').value=''};
 $('ytIn').onkeydown=e=>{if(e.key==='Enter')$('ytAdd').click()};
@@ -802,7 +839,7 @@ $('expCancel').onclick=()=>stopExport(false);
 function frame(){
   requestAnimationFrame(frame);
   updTime();
-  if(yt.on)simFreq();else if(analyser)analyser.getByteFrequencyData(freq);else freq.fill(0);
+  if(yt.on&&!cap.routed)simFreq();else if(analyser)analyser.getByteFrequencyData(freq);else freq.fill(0);
   const bass=bassLevel();env=bass>env?bass:env*.9;
   const n=S.bars,K=S.mirror?Math.ceil(n/2):n,vals=bins(K),V=new Float32Array(n),T=new Float32Array(n);
   for(let j=0;j<n;j++){const k=S.mirror?(j<K?K-1-j:j-K):j,kk=Math.min(k,K-1);V[j]=vals[kk];T[j]=kk/Math.max(1,K-1)}
