@@ -90,6 +90,13 @@
   .glow{animation:glow 2s ease-in-out infinite}
   @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.55)}50%{box-shadow:0 0 0 12px rgba(168,85,247,0)}}
 
+  /* ----- queue ----- */
+  .qi{display:flex;align-items:center;gap:2px;border-radius:8px;padding:2px}
+  .qi.cur{background:rgba(168,85,247,.22)}
+  .qi button{color:var(--mut);padding:5px 7px;font-size:12px;border-radius:6px;flex:none}
+  .qi button:hover{background:#3a2862;color:#fff}
+  .qi .qn{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
   /* ----- export dialog ----- */
   #expOv{background:radial-gradient(circle at 50% 30%,rgba(60,24,110,.55),rgba(10,5,20,.9));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:16px}
   .dlg{width:min(460px,100%);max-height:100%;overflow:auto;background:linear-gradient(160deg,#1f1238,#150b27);border:1px solid rgba(192,132,252,.3);border-radius:24px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03) inset}
@@ -127,7 +134,7 @@
     <div class="zone flex flex-col items-center gap-3">
       <div class="eq" aria-hidden="true"><i style="--d:0s"></i><i style="--d:.15s"></i><i style="--d:.3s"></i><i style="--d:.45s"></i><i style="--d:.6s"></i><i style="--d:.3s"></i><i style="--d:.15s"></i></div>
       <p class="text-lg font-medium mt-2">ลากไฟล์ .mp3 หรือ .wav มาวางที่นี่</p>
-      <p class="text-sm text-slate-400">หรือเลือกไฟล์จากเครื่องของคุณ</p>
+      <p class="text-sm text-slate-400">หรือเลือกไฟล์จากเครื่องของคุณ · หรือวางลิงก์ YouTube ในแผงควบคุม</p>
       <button class="btn main glow" id="pickBtn" style="padding:10px 22px;font-size:13px">เลือกไฟล์เสียง</button>
     </div>
   </div>
@@ -135,10 +142,12 @@
 
 <div id="player">
   <div class="flex items-center gap-3">
+    <button id="prevBtn" class="btn !rounded-full" style="width:36px;height:36px;padding:0" aria-label="เพลงก่อนหน้า">⏮</button>
     <button id="playBtn" class="btn main !rounded-full" style="width:42px;height:42px;padding:0;display:flex;align-items:center;justify-content:center" aria-label="เล่น/หยุดชั่วคราว">
       <svg id="icPlay" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>
       <svg id="icPause" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
     </button>
+    <button id="nextBtn" class="btn !rounded-full" style="width:36px;height:36px;padding:0" aria-label="ข้าม">⏭</button>
     <div class="flex-1 min-w-0">
       <div id="track" class="text-xs text-slate-400 truncate mb-1">ยังไม่ได้เลือกไฟล์</div>
       <div class="flex items-center gap-2 text-xs tabular-nums text-slate-300">
@@ -147,6 +156,8 @@
         <span id="dur" class="w-10">0:00</span>
       </div>
     </div>
+    <button id="shBtn" class="btn hidden md:block whitespace-nowrap">สุ่ม</button>
+    <button id="lpBtn" class="btn hidden md:block whitespace-nowrap">วน: ปิด</button>
     <button class="btn expBtn whitespace-nowrap hidden sm:block">ส่งออกวิดีโอ</button>
     <div class="flex items-center gap-2 w-28 sm:w-32" title="เสียงที่ได้ยินในเบราว์เซอร์ (ไม่มีผลกับไฟล์ที่ส่งออก)">
       <button id="muteBtn" class="shrink-0" aria-label="ปิด/เปิดเสียง" style="color:#c9bde0;line-height:0"></button>
@@ -193,10 +204,11 @@
   </div>
 </div>
 
-<input id="fAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav" class="hidden">
+<input id="fAudio" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav" multiple class="hidden">
 <input id="fBg" type="file" accept="image/*" class="hidden">
 <input id="fLogo" type="file" accept="image/*" class="hidden">
 <audio id="audio" preload="auto"></audio>
+<div id="ytBox" style="position:fixed;left:-9999px;top:0;width:200px;height:200px"></div>
 
 <script>
 (()=>{
@@ -204,7 +216,7 @@ const $=id=>document.getElementById(id);
 const S={shape:'bars',pos:'bottom',mirror:true,cmode:'gradient',c1:'#00e5c3',c2:'#5b7cff',c3:'#ff4fa3',useC3:true,glow:18,
   fft:8192,bars:96,bw:8,gap:4,bh:100,smooth:.8,gain:0.8,beat:true,beatAmt:60,inner:22,spin:false,bgColor:'#150d26',dim:35,blur:0,expRes:1080,
   txOn:true,txt:'Made by Overflow',tcolor:'#ffffff',tsize:48,tx:50,ty:16,tScroll:false,tGrad:false,tBlink:false,tBounce:true,tspeed:4,tbounce:50,
-  bDef:true,bSnare:false,bKick:false,bBpm:false,bpm:120};
+  bDef:true,bSnare:false,bKick:false,bBpm:false,bpm:120,shuffle:false,loop:'off'};
 
 /* ---------- UI builder ---------- */
 const seg=(k,o)=>`<div class="seg" data-key="${k}">${o.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join('')}</div>`;
@@ -218,6 +230,13 @@ const sec=(t,b,open=true)=>`<details class="sec" ${open?'open':''}><summary>${t}
 const presets=[['#00e5c3','#5b7cff','#ff4fa3'],['#ff9a3c','#ff3c6e','#7b2cff'],['#9dff6b','#1fd1a5','#2a7bff'],['#ffffff','#9fb4ff','#ffb3e6']];
 
 $('panel').innerHTML=
+ sec('คิวเพลง / YouTube',
+  `<div class="flex gap-2"><input type="text" id="ytIn" style="flex:1;min-width:0" placeholder="วางลิงก์ YouTube…" aria-label="ลิงก์ YouTube"><button class="btn main" id="ytAdd">เพิ่ม</button></div>`+
+  `<button class="btn w-full" id="addFiles">เพิ่มไฟล์เสียง (เลือกได้หลายไฟล์)</button>`+
+  grp('',chk('shuffle','สุ่มเล่น (Shuffle)')+seg('loop',[['off','ไม่วน'],['all','วนทั้งคิว'],['one','วน 1 เพลง']]))+
+  `<div id="qList" class="flex flex-col gap-1"></div>`+
+  `<button class="btn ghost" id="qClear">ล้างคิวทั้งหมด</button>`+
+  `<p class="note">เพลงจาก YouTube: กราฟเป็นแอนิเมชันจำลอง และส่งออก MP4 ไม่ได้</p>`)+
  sec('รูปแบบ Visualizer',
   seg('shape',[['bars','แท่งกราฟ'],['circle','วงกลม'],['wave','เส้นคลื่น']])+
   grp('',sel('pos','ตำแหน่ง',[['bottom','ด้านล่าง'],['center','กึ่งกลางจอ']],'data-for="bars wave"')+chk('mirror','สมมาตรซ้าย-ขวา')))+
@@ -276,7 +295,7 @@ function sync(){
   document.querySelectorAll('[data-offif]').forEach(e=>e.classList.toggle('dis',!!S[e.dataset.offif]));
   document.querySelectorAll('[data-grad]').forEach(e=>e.classList.toggle('hidden',S.cmode==='solid'));
   document.querySelectorAll('[data-c3]').forEach(e=>e.classList.toggle('hidden',S.cmode==='solid'||!S.useC3));
-  refresh();
+  refresh();qUi();
 }
 document.querySelectorAll('[data-key]').forEach(e=>{
   const k=e.dataset.key;
@@ -291,7 +310,7 @@ let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.remove('
 
 /* ---------- audio ---------- */
 const audio=$('audio');let curUrl=null,curFile=null,seeking=false,rec=null,exStart=0,exBusy=false;
-function applyVol(){if(outGain)outGain.gain.value=(rec||muted)?0:volV}
+function applyVol(){if(outGain)outGain.gain.value=(rec||muted)?0:volV;if(yt.p&&yt.ready)try{yt.p.setVolume(muted?0:volV*100)}catch(e){}}
 function initAudio(){
   if(ac)return;
   const AC=window.AudioContext||window.webkitAudioContext;
@@ -322,11 +341,14 @@ function loadAudio(file){
   play();
 }
 audio.addEventListener('error',()=>{if(audio.getAttribute('src'))toast('อ่านไฟล์เสียงนี้ไม่ได้ ไฟล์อาจเสียหาย')});
-const icons=()=>{const p=audio.paused;$('icPlay').classList.toggle('hidden',!p);$('icPause').classList.toggle('hidden',p)};
+const icons=()=>{const p=yt.on?!(yt.p&&yt.ready&&[1,3].includes(yt.p.getPlayerState())):audio.paused;$('icPlay').classList.toggle('hidden',!p);$('icPause').classList.toggle('hidden',p)};
 ['play','pause','ended','emptied'].forEach(e=>audio.addEventListener(e,icons));
-$('playBtn').onclick=()=>{ if(!audio.getAttribute('src')){$('fAudio').click();return} audio.paused?play():audio.pause() };
+$('playBtn').onclick=()=>{
+  if(yt.on){if(yt.p&&yt.ready){[1,3].includes(yt.p.getPlayerState())?yt.p.pauseVideo():yt.p.playVideo()}return}
+  if(!audio.getAttribute('src')){if(Q.list.length)playIdx(Math.max(0,Q.i));else $('fAudio').click();return}
+  audio.paused?play():audio.pause()};
 $('pickBtn').onclick=()=>$('fAudio').click();
-$('fAudio').onchange=e=>{loadAudio(e.target.files[0]);e.target.value=''};
+$('fAudio').onchange=e=>{addFiles(e.target.files);e.target.value=''};
 
 const icVol='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>';
 const icMute='<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.6 3 2.4-2.4-1.4-1.4-2.4 2.4-2.4-2.4-1.4 1.4 2.4 2.4-2.4 2.4 1.4 1.4 2.4-2.4 2.4 2.4 1.4-1.4z"/></svg>';
@@ -339,20 +361,135 @@ const fmt=s=>isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(
 const seek=$('seek');
 seek.onpointerdown=()=>seeking=true;
 seek.onpointerup=seek.onchange=()=>seeking=false;
-seek.oninput=()=>{if(rec)return;if(isFinite(audio.duration)){audio.currentTime=seek.value/1000*audio.duration;$('cur').textContent=fmt(audio.currentTime)}};
+seek.oninput=()=>{
+  if(rec)return;
+  if(yt.on){if(yt.p&&yt.ready){const d=yt.p.getDuration();if(d)yt.p.seekTo(seek.value/1000*d,true)}return}
+  if(isFinite(audio.duration)){audio.currentTime=seek.value/1000*audio.duration;$('cur').textContent=fmt(audio.currentTime)}};
 function updTime(){
+  if(yt.on){if(yt.p&&yt.ready){const d=yt.p.getDuration()||0,c=yt.p.getCurrentTime()||0;$('dur').textContent=fmt(d);if(!seeking){$('cur').textContent=fmt(c);seek.value=d?c/d*1000:0}}return}
   if(!isFinite(audio.duration))return;
   $('dur').textContent=fmt(audio.duration);
   if(!seeking){$('cur').textContent=fmt(audio.currentTime);seek.value=audio.currentTime/audio.duration*1000}
   if(rec)setExpUi('กำลังบันทึก… '+Math.min(100,Math.round(audio.currentTime/audio.duration*100))+'%',true,Math.min(100,audio.currentTime/audio.duration*100));
 }
 
+/* ---------- queue ---------- */
+const Q={list:[],i:-1,done:new Set()};
+const yt={on:false,p:null,ready:false,want:null};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ytId=u=>{u=String(u).trim();const m=u.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(u)?u:null)};
+function qUi(){const s=$('shBtn'),l=$('lpBtn');if(!s)return;s.classList.toggle('main',S.shuffle);l.classList.toggle('main',S.loop!=='off');l.textContent={off:'วน: ปิด',all:'วน: ทั้งคิว',one:'วน: 1 เพลง'}[S.loop]}
+function renderQ(){
+  $('qList').innerHTML=Q.list.length?Q.list.map((it,k)=>`<div class="qi${k===Q.i?' cur':''}"><button class="qn" data-a="play" data-k="${k}">${k===Q.i?'▶ ':(k+1)+'. '}${it.t==='y'?'[YT] ':''}${esc(it.name)}</button><button data-a="up" data-k="${k}" aria-label="เลื่อนขึ้น">↑</button><button data-a="dn" data-k="${k}" aria-label="เลื่อนลง">↓</button><button data-a="del" data-k="${k}" aria-label="ลบ">✕</button></div>`).join(''):'<p class="note">ยังไม่มีเพลงในคิว</p>';
+}
+function addFiles(fl){
+  const ok=[...fl].filter(f=>/\.(mp3|wav)$/i.test(f.name)||/^audio\/(mpeg|mp3|wav|x-wav|wave)/.test(f.type));
+  if(!ok.length){toast('รองรับเฉพาะไฟล์ .mp3 และ .wav');return}
+  const first=Q.list.length;ok.forEach(f=>Q.list.push({t:'f',file:f,name:f.name}));
+  renderQ();if(Q.i<0)playIdx(first);
+}
+function addUrl(txt){
+  const ids=String(txt).split(/\s+/).map(ytId).filter(Boolean);
+  if(!ids.length){toast('ลิงก์ YouTube ไม่ถูกต้อง');return}
+  const first=Q.list.length;
+  ids.forEach(id=>{
+    const it={t:'y',id,name:'YouTube '+id};Q.list.push(it);
+    fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id))
+      .then(r=>r.json()).then(j=>{if(j.title){it.name=j.title;renderQ()}}).catch(()=>{});
+  });
+  renderQ();if(Q.i<0)playIdx(first);
+}
+function nextIdx(auto){
+  const n=Q.list.length;if(!n)return -1;
+  if(auto&&S.loop==='one')return Q.i;
+  if(S.shuffle&&n>1){
+    let pool=Q.list.map((_,k)=>k).filter(k=>k!==Q.i&&!Q.done.has(Q.list[k]));
+    if(!pool.length){if(auto&&S.loop!=='all')return -1;Q.done.clear();pool=Q.list.map((_,k)=>k).filter(k=>k!==Q.i)}
+    return pool[Math.random()*pool.length|0];
+  }
+  if(Q.i+1<n)return Q.i+1;
+  return (S.loop==='all'||!auto)?0:-1;
+}
+function playIdx(i){
+  if(i<0||i>=Q.list.length)return;
+  if(rec)stopExport(false);
+  Q.i=i;const it=Q.list[i];Q.done.add(it);renderQ();
+  if(it.t==='f'){stopYT();loadAudio(it.file)}else playYT(it);
+}
+function stopYT(){yt.on=false;if(yt.p&&yt.ready)try{yt.p.stopVideo()}catch(e){}}
+function stopAll(){audio.pause();stopYT();$('track').textContent='ยังไม่ได้เลือกไฟล์';icons()}
+function moveQ(k,d){
+  const j=k+d;if(j<0||j>=Q.list.length)return;
+  [Q.list[k],Q.list[j]]=[Q.list[j],Q.list[k]];
+  if(Q.i===k)Q.i=j;else if(Q.i===j)Q.i=k;
+  renderQ();
+}
+function delQ(k){
+  const was=k===Q.i;Q.list.splice(k,1);
+  if(was){Q.i=-1;if(Q.list.length)playIdx(Math.min(k,Q.list.length-1));else stopAll()}
+  else if(k<Q.i)Q.i--;
+  renderQ();
+}
+function loadYT(cb){
+  if(window.YT&&YT.Player)return cb();
+  if(!window._ytq){
+    window._ytq=[];
+    window.onYouTubeIframeAPIReady=()=>window._ytq.forEach(f=>f());
+    const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';
+    s.onerror=()=>{window._ytq=null;toast('โหลด YouTube ไม่ได้ (ต้องต่ออินเทอร์เน็ต)')};
+    document.head.appendChild(s);
+  }
+  window._ytq.push(cb);
+}
+function playYT(it){
+  audio.pause();yt.on=true;yt.want=it.id;
+  $('track').textContent=it.name;$('empty').classList.add('hidden');
+  $('seek').value=0;$('cur').textContent='0:00';$('dur').textContent='0:00';icons();
+  loadYT(()=>{
+    if(!yt.on||Q.list[Q.i]!==it)return;
+    if(yt.p&&yt.ready){yt.p.loadVideoById(it.id);applyVol();return}
+    if(yt.p)return;
+    yt.p=new YT.Player('ytBox',{width:200,height:200,playerVars:{autoplay:1,playsinline:1,rel:0},events:{
+      onReady:e=>{yt.ready=true;applyVol();e.target.loadVideoById(yt.want)},
+      onStateChange:e=>{
+        if(e.data===0){const j=nextIdx(true);if(j>=0)playIdx(j)}
+        if(e.data===1){const d=e.target.getVideoData(),c=Q.list[Q.i];if(d&&d.title&&c&&c.t==='y'){c.name=d.title;$('track').textContent=d.title;renderQ()}}
+        icons();
+      },
+      onError:()=>{toast('เล่นวิดีโอนี้ไม่ได้ (อาจปิดการฝังหรือเป็นส่วนตัว) ข้ามไปเพลงถัดไป');const j=nextIdx(true);if(j>=0&&j!==Q.i)playIdx(j)}
+    }});
+  });
+}
+function simFreq(){
+  const playing=yt.p&&yt.ready&&yt.p.getPlayerState()===1,t=performance.now()/1000,L=freq.length;
+  const beat=playing?Math.pow(Math.max(0,Math.sin(t*Math.PI*4)),4):0;
+  for(let i=0;i<L;i++){
+    const x=i/L,e=Math.pow(1-x,.6)*(.5+.5*Math.sin(t*2.3+i*.21)*Math.sin(t*1.1+i*.07));
+    freq[i]=playing?Math.min(255,e*(.55+.45*beat)*(i<L*.03?1.25:1)*255):0;
+  }
+}
+audio.addEventListener('ended',()=>{if(rec||yt.on)return;const j=nextIdx(true);if(j>=0)playIdx(j)});
+$('ytAdd').onclick=()=>{addUrl($('ytIn').value);$('ytIn').value=''};
+$('ytIn').onkeydown=e=>{if(e.key==='Enter')$('ytAdd').click()};
+$('addFiles').onclick=()=>$('fAudio').click();
+$('qClear').onclick=()=>{Q.list=[];Q.i=-1;Q.done.clear();stopAll();renderQ()};
+$('qList').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=+b.dataset.k;({play:()=>playIdx(k),up:()=>moveQ(k,-1),dn:()=>moveQ(k,1),del:()=>delQ(k)})[b.dataset.a]()};
+$('nextBtn').onclick=()=>{const j=nextIdx(false);if(j>=0)playIdx(j)};
+$('prevBtn').onclick=()=>{
+  if(yt.on&&yt.p&&yt.ready&&yt.p.getCurrentTime()>3){yt.p.seekTo(0,true);return}
+  if(!yt.on&&audio.currentTime>3){audio.currentTime=0;return}
+  if(Q.list.length)playIdx((Q.i-1+Q.list.length)%Q.list.length);
+};
+$('shBtn').onclick=()=>{S.shuffle=!S.shuffle;sync()};
+$('lpBtn').onclick=()=>{S.loop={off:'all',all:'one',one:'off'}[S.loop];sync()};
+renderQ();qUi();
+
 /* drag & drop */
 let dc=0;
 addEventListener('dragenter',e=>{e.preventDefault();dc++;$('drop').classList.remove('hidden')});
 addEventListener('dragover',e=>e.preventDefault());
 addEventListener('dragleave',e=>{e.preventDefault();if(--dc<=0){dc=0;$('drop').classList.add('hidden')}});
-addEventListener('drop',e=>{e.preventDefault();dc=0;$('drop').classList.add('hidden');loadAudio(e.dataTransfer.files[0])});
+addEventListener('drop',e=>{e.preventDefault();dc=0;$('drop').classList.add('hidden');addFiles(e.dataTransfer.files)});
 
 /* images */
 $('bgBtn').onclick=()=>$('fBg').click();
@@ -627,6 +764,7 @@ async function finishWC(r){
 async function startExport(){
   if(rec){stopExport(false);return}
   if(exBusy)return;
+  if(yt.on){toast('ส่งออกวิดีโอไม่ได้กับเพลงจาก YouTube');return}
   if(!audio.getAttribute('src')||!curFile){toast('กรุณาเลือกไฟล์เสียงก่อนส่งออก');return}
   if(window.VideoEncoder&&window.AudioEncoder&&window.AudioData&&window.VideoFrame&&window.Mp4Muxer){
     exBusy=true;exStart=performance.now();setExpUi('กำลังเตรียมไฟล์…',true,0,0);
@@ -664,7 +802,7 @@ $('expCancel').onclick=()=>stopExport(false);
 function frame(){
   requestAnimationFrame(frame);
   updTime();
-  if(analyser)analyser.getByteFrequencyData(freq);else freq.fill(0);
+  if(yt.on)simFreq();else if(analyser)analyser.getByteFrequencyData(freq);else freq.fill(0);
   const bass=bassLevel();env=bass>env?bass:env*.9;
   const n=S.bars,K=S.mirror?Math.ceil(n/2):n,vals=bins(K),V=new Float32Array(n),T=new Float32Array(n);
   for(let j=0;j<n;j++){const k=S.mirror?(j<K?K-1-j:j-K):j,kk=Math.min(k,K-1);V[j]=vals[kk];T[j]=kk/Math.max(1,K-1)}
